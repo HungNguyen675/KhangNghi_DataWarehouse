@@ -1,4 +1,4 @@
-﻿CREATE DATABASE DWH_KhangNghi;
+﻿
 USE DWH_KhangNghi;
 GO
 
