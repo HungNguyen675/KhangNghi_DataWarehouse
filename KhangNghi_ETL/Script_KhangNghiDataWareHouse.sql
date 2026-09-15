@@ -1,4 +1,7 @@
 ﻿
+CREATE DATABASE DWH_KhangNghi;
+
+
 USE DWH_KhangNghi;
 GO
 
@@ -26,6 +29,11 @@ DROP TABLE IF EXISTS Dim_SalesChannel;
 DROP TABLE IF EXISTS Dim_Warehouse;
 DROP TABLE IF EXISTS Dim_PaymentMethod;
 DROP TABLE IF EXISTS Dim_Service;
+
+--Xóa 2 cột Phone ,Country
+ALTER TABLE dbo.Dim_Supplier
+DROP COLUMN Country, Phone;
+
 
 ---------------------------------------------------------
 -- PHẦN 2: TẠO 13 BẢNG DIMENSION (ĐẦY ĐỦ KHÓA & AUDIT)
@@ -74,12 +82,16 @@ CREATE TABLE Dim_Shipper (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
+-- phần này mới sửa
 CREATE TABLE Dim_Supplier (
-    SupplierKey INT IDENTITY(1,1) PRIMARY KEY, SupplierID NVARCHAR(50),                
-    SupplierName NVARCHAR(255), Country NVARCHAR(100), Phone NVARCHAR(50),
-    SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
-);
+    SupplierKey INT IDENTITY(1,1) PRIMARY KEY,
+    SupplierID NVARCHAR(50) NOT NULL,
+    SupplierName NVARCHAR(255),
 
+    SourceSystem NVARCHAR(100),
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    UpdatedDate DATETIME DEFAULT GETDATE()
+);
 -- [5 BẢNG DIM MỚI THÊM VÀO]
 CREATE TABLE Dim_Promotion (
     PromotionKey INT IDENTITY(1,1) PRIMARY KEY, PromotionID NVARCHAR(50),
@@ -179,3 +191,4 @@ CREATE TABLE Fact_Inventory (
     ReorderLevel INT,
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
+
