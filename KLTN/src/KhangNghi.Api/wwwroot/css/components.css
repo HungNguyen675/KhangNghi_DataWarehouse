@@ -1,0 +1,404 @@
+/* ==========================================================================
+   KHANG NGHI BUSINESS INTELLIGENCE - ENTERPRISE UI COMPONENTS
+   KPI Cards, Context Menu, Data Tables, Detail Drawers, Skeleton Shimmer, Toasts
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CARDS & CONTAINERS
+   -------------------------------------------------------------------------- */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  position: relative;
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-color-strong);
+}
+
+/* --------------------------------------------------------------------------
+   2. KPI CARDS (Current, Change %, Vs Prior, Sparkline, Tooltip)
+   -------------------------------------------------------------------------- */
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 118px;
+}
+
+.kpi-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-info-tooltip-icon {
+  font-size: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.kpi-value-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.kpi-main-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.kpi-change-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.kpi-change-tag.positive { background: var(--color-success-bg); color: var(--color-success); }
+.kpi-change-tag.negative { background: var(--color-danger-bg); color: var(--color-danger); }
+
+.kpi-bottom-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kpi-sparkline-box {
+  width: 80px;
+  height: 24px;
+}
+
+/* --------------------------------------------------------------------------
+   3. CHART CARDS & CONTEXT MENU (...)
+   -------------------------------------------------------------------------- */
+.chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chart-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-description {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+/* Context Menu (...) */
+.chart-context-menu-trigger {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast);
+}
+
+.chart-context-menu-trigger:hover {
+  color: var(--text-main);
+  background: var(--bg-surface-secondary);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 14px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 150;
+  display: none;
+  min-width: 150px;
+  padding: 4px 0;
+}
+
+.dropdown-menu.active {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.chart-canvas-wrapper {
+  flex: 1;
+  min-height: 270px;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   4. DATA TABLES (Search, Sort, Pagination, Row Detail Click)
+   -------------------------------------------------------------------------- */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.table-search-input {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  font-size: 12px;
+  color: var(--text-main);
+  outline: none;
+  width: 220px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.enterprise-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: left;
+}
+
+.enterprise-table th {
+  padding: 10px 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color-strong);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: var(--bg-surface-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.enterprise-table th:hover {
+  color: var(--text-main);
+}
+
+.enterprise-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.enterprise-table tbody tr {
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.enterprise-table tbody tr:hover td {
+  background-color: var(--color-primary-light);
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pagination-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   5. STATUS BADGES & ALERT NOTIFICATIONS
+   -------------------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-healthy { background: var(--color-success-bg); color: var(--color-success); }
+.badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.badge-critical { background: var(--color-danger-bg); color: var(--color-danger); }
+.badge-info { background: var(--color-info-bg); color: var(--color-info); }
+
+/* --------------------------------------------------------------------------
+   6. SKELETON SHIMMER LOADER
+   -------------------------------------------------------------------------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface-secondary) 25%, var(--border-color) 50%, var(--bg-surface-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: var(--radius-xs);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+  width: 80%;
+}
+
+.skeleton-title {
+  height: 22px;
+  margin-bottom: 12px;
+  width: 60%;
+}
+
+.skeleton-chart {
+  height: 250px;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   8. MODAL OVERLAY & SMART PROMPT CHIPS
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex !important;
+}
+
+.modal-box {
+  width: 90%;
+  max-width: 620px;
+  max-height: 85vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(15px);
+  transition: transform var(--transition-fast);
+  margin: auto;
+}
+
+.modal-overlay.active .modal-box {
+  transform: translateY(0);
+}
+
+.smart-prompts-container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.smart-prompt-chip {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-secondary);
+  border: 1px solid var(--border-color);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.smart-prompt-chip:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary-border);
+}
+

@@ -1,0 +1,48 @@
+-- ==============================================================
+-- CÁC CÂU TRUY VẤN MDX MẪU TRÊN KHỐI DỮ LIỆU ĐA CHIỀU (OLAP)
+-- CSDL: KhangNghi_SSAS_DB
+-- ==============================================================
+
+-- 1. Xem Tổng Doanh Thu theo Từng Năm
+SELECT 
+    [Measures].[Total Sales] ON COLUMNS,
+    [Dim Time].[Year].MEMBERS ON ROWS
+FROM [KhangNghi_Cube];
+
+-- 2. Xem Doanh Thu theo Danh Mục Sản Phẩm và Khu Vực (Cross-Tab / Ma Trận)
+SELECT 
+    [Dim Location].[Region].MEMBERS ON COLUMNS,
+    [Dim Product].[Category].MEMBERS ON ROWS
+FROM [KhangNghi_Cube]
+WHERE ([Measures].[Total Sales]);
+
+-- 3. Top 10 Sản Phẩm Mang Lại Lợi Nhuận Cao Nhất
+SELECT 
+    [Measures].[Total Profit] ON COLUMNS,
+    TOPCOUNT([Dim Product].[Product Name].MEMBERS, 10, [Measures].[Total Profit]) ON ROWS
+FROM [KhangNghi_Cube];
+
+-- 4. Drill-down: Phân tích Doanh Thu Quý 4 năm 2026 chi tiết theo Từng Quốc Gia
+SELECT 
+    [Measures].[Total Sales] ON COLUMNS,
+    [Dim Location].[Country].MEMBERS ON ROWS
+FROM [KhangNghi_Cube]
+WHERE ([Dim Time].[Year].&[2026], [Dim Time].[Quarter].&[4]);
+
+-- 5. Cảnh báo tồn kho: Liệt kê các sản phẩm có Tồn kho thực tế < Mức tái đặt hàng
+-- (Tính bằng Calculated Member)
+WITH MEMBER [Measures].[Stock Deficit] AS 
+    [Measures].[Reorder Level] - [Measures].[Quantity On Hand]
+SELECT 
+    { [Measures].[Quantity On Hand], [Measures].[Reorder Level], [Measures].[Stock Deficit] } ON COLUMNS,
+    FILTER(
+        [Dim Product].[Product Name].MEMBERS,
+        [Measures].[Quantity On Hand] < [Measures].[Reorder Level]
+    ) ON ROWS
+FROM [KhangNghi_Cube];
+
+-- 6. Xem chi phí vận chuyển trung bình theo từng Nhà vận chuyển
+SELECT 
+    [Measures].[Average Shipping Cost] ON COLUMNS,
+    [Dim Shipper].[Shipper Name].MEMBERS ON ROWS
+FROM [KhangNghi_Cube];

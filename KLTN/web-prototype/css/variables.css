@@ -1,0 +1,103 @@
+/* ==========================================================================
+   KHANG NGHI BUSINESS INTELLIGENCE - DESIGN SYSTEM TOKENS
+   Enterprise BI Visual Direction (Power BI / Tableau / SAP Analytics Inspired)
+   ========================================================================== */
+
+:root {
+  /* Typography Scale */
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* Color Palette - Enterprise Primary & Accents */
+  --color-primary: #0f62fe;          /* IBM / Power BI Blue */
+  --color-primary-hover: #0353e9;
+  --color-primary-light: rgba(15, 98, 254, 0.08);
+  --color-primary-border: rgba(15, 98, 254, 0.25);
+  
+  --color-accent: #8a3ffc;           /* Purple Accent */
+  --color-accent-light: rgba(138, 63, 252, 0.08);
+
+  /* Status & SLA Indicators */
+  --color-success: #198038;          /* Healthy */
+  --color-success-bg: rgba(25, 128, 56, 0.1);
+  --color-warning: #b25900;          /* At Risk / Warning */
+  --color-warning-bg: rgba(178, 89, 0, 0.1);
+  --color-danger: #da1e28;           /* Breached / Critical */
+  --color-danger-bg: rgba(218, 30, 40, 0.1);
+  --color-info: #0043ce;
+  --color-info-bg: rgba(0, 67, 206, 0.1);
+
+  /* Neutral Light Theme Surfaces */
+  --bg-app: #f4f4f6;
+  --bg-sidebar: #ffffff;
+  --bg-topbar: rgba(255, 255, 255, 0.92);
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafafa;
+  --bg-surface-secondary: #f0f0f3;
+  --bg-modal: rgba(255, 255, 255, 0.96);
+  --bg-input: #eef0f3;
+
+  /* Text Hierarchy - Light Theme */
+  --text-main: #161616;
+  --text-secondary: #525252;
+  --text-muted: #8d8d8d;
+  --text-on-primary: #ffffff;
+
+  /* Borders & Micro Shadows */
+  --border-color: #e0e0e0;
+  --border-color-strong: #c6c6c6;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --shadow-drawer: -8px 0 24px rgba(0, 0, 0, 0.08);
+
+  /* Subdued Glassmorphism Effects */
+  --glass-blur: blur(12px);
+  --glass-border: 1px solid rgba(0, 0, 0, 0.06);
+
+  /* Layout Dimensions & Radius */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 72px;
+  --topbar-height: 60px;
+  --filter-panel-width: 340px;
+  --detail-drawer-width: 420px;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Animation Speeds */
+  --transition-fast: 0.15s cubic-bezier(0.2, 0, 0.38, 0.9);
+  --transition-normal: 0.25s cubic-bezier(0.2, 0, 0.38, 0.9);
+}
+
+/* Enterprise Dark Theme Overrides */
+[data-theme="dark"] {
+  --bg-app: #121214;
+  --bg-sidebar: #18181b;
+  --bg-topbar: rgba(24, 24, 27, 0.92);
+  --bg-card: #202024;
+  --bg-card-hover: #27272a;
+  --bg-surface-secondary: #2a2a2e;
+  --bg-modal: rgba(32, 32, 36, 0.96);
+  --bg-input: #2d2d32;
+
+  --text-main: #f4f4f6;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  --border-color: #2e2e34;
+  --border-color-strong: #3f3f46;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.6);
+  --shadow-drawer: -8px 0 24px rgba(0, 0, 0, 0.6);
+
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  --color-success: #24a148;
+  --color-warning: #f1c21b;
+  --color-danger: #fa4d56;
+}
