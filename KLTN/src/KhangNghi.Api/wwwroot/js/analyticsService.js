@@ -375,6 +375,30 @@ window.analyticsService = (function () {
     document.body.removeChild(link);
   }
 
+  async function getCustomerDetail(customerId) {
+    if (!customerId) return { success: false, message: "Natural Key CustomerID is required" };
+    if (!client) return { success: false, message: "API Client not available" };
+
+    const res = await client.get(`/customers/${encodeURIComponent(customerId)}`);
+    if (res.success && res.data) {
+      return { success: true, data: res.data };
+    }
+    console.warn(`[Data Quality Alert] Customer with Natural Key '${customerId}' not found or returned N/A.`);
+    return { success: false, message: res.message || "Customer not found", status: "N/A" };
+  }
+
+  async function getOrderDetail(orderId) {
+    if (!orderId) return { success: false, message: "Natural Key OrderID is required" };
+    if (!client) return { success: false, message: "API Client not available" };
+
+    const res = await client.get(`/orders/${encodeURIComponent(orderId)}`);
+    if (res.success && res.data) {
+      return { success: true, data: res.data };
+    }
+    console.warn(`[Data Quality Alert] Order with Natural Key '${orderId}' not found or returned N/A.`);
+    return { success: false, message: res.message || "Order not found", status: "N/A" };
+  }
+
   return {
     getExecutiveOverview,
     getSalesOverview,
@@ -391,6 +415,8 @@ window.analyticsService = (function () {
     getForecastOverview,
     getSystemStatusOverview,
     getProductDetails,
+    getCustomerDetail,
+    getOrderDetail,
     exportToCSV
   };
 })();

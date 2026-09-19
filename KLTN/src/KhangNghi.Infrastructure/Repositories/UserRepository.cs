@@ -100,18 +100,34 @@ namespace KhangNghi.Infrastructure.Repositories
             try
             {
                 using var db = _connectionFactory.CreateConnection();
+                const string createTableSql = @"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Sys_User')
+                    BEGIN
+                        CREATE TABLE dbo.Sys_User (
+                            UserID INT IDENTITY(1,1) PRIMARY KEY,
+                            Username NVARCHAR(100) NOT NULL UNIQUE,
+                            PasswordHash NVARCHAR(255) NOT NULL,
+                            FullName NVARCHAR(255) NULL,
+                            Email NVARCHAR(255) NULL,
+                            Role NVARCHAR(50) NOT NULL DEFAULT 'Admin',
+                            IsActive BIT NOT NULL DEFAULT 1,
+                            CreatedAt DATETIME DEFAULT GETDATE()
+                        );
+                    END";
+                await db.ExecuteAsync(createTableSql);
+
                 var count = await db.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM dbo.Sys_User");
                 if (count == 0)
                 {
-                    // Tạo sẵn các tài khoản chuẩn theo phân quyền 5 role + Admin
+                    // Tạo sẵn các tài khoản chuẩn theo phân quyền
                     var defaultUsers = new[]
                     {
-                        new SysUser { Username = "admin", FullName = "Quản Trị Viên Hệ Thống", Email = "admin@khangnghi.com.vn", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123") },
-                        new SysUser { Username = "giamdoc", FullName = "Ban Giám Đốc Khang Nghị", Email = "ceo@khangnghi.com.vn", Role = "GiamDoc", PasswordHash = BCrypt.Net.BCrypt.HashPassword("giamdoc123") },
-                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "QuanLyKinhDoanh", PasswordHash = BCrypt.Net.BCrypt.HashPassword("kinhdoanh123") },
-                        new SysUser { Username = "muahang", FullName = "Trưởng Phòng Mua Hàng", Email = "purchase@khangnghi.com.vn", Role = "QuanLyMuaHang", PasswordHash = BCrypt.Net.BCrypt.HashPassword("muahang123") },
-                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "QuanLyKho", PasswordHash = BCrypt.Net.BCrypt.HashPassword("kho123") },
-                        new SysUser { Username = "vanchuyen", FullName = "Trưởng Phòng Logistics", Email = "shipping@khangnghi.com.vn", Role = "QuanLyVanChuyen", PasswordHash = BCrypt.Net.BCrypt.HashPassword("vanchuyen123") }
+                        new SysUser { Username = "admin", FullName = "Quản Trị Viên Hệ Thống", Email = "admin@khangnghi.com.vn", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
+                        new SysUser { Username = "giamdoc", FullName = "Ban Giám Đốc Khang Nghị", Email = "ceo@khangnghi.com.vn", Role = "Director", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
+                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "SalesManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
+                        new SysUser { Username = "muahang", FullName = "Trưởng Phòng Mua Hàng", Email = "purchase@khangnghi.com.vn", Role = "PurchaseManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
+                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "InventoryManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
+                        new SysUser { Username = "vanchuyen", FullName = "Trưởng Phòng Logistics", Email = "shipping@khangnghi.com.vn", Role = "ShippingStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") }
                     };
 
                     const string insertSql = @"
@@ -124,9 +140,9 @@ namespace KhangNghi.Infrastructure.Repositories
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Bỏ qua nếu bảng chưa sẵn sàng
+                Console.WriteLine("EnsureDefaultUsersAsync error: " + ex.Message);
             }
         }
     }

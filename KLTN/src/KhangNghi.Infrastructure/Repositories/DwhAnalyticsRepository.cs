@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -27,6 +27,8 @@ namespace KhangNghi.Infrastructure.Repositories
         Task<IEnumerable<dynamic>> Q10_HighDiscountLowProfitProductsAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q11_TopCustomersByRevenueAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q12_TopCustomersByProfitAsync(int top = 10);
+        Task<dynamic?> GetCustomerDetailByNaturalIdAsync(string customerId);
+        Task<dynamic?> GetOrderDetailByNaturalIdAsync(string orderId);
         Task<IEnumerable<dynamic>> Q13_RevenueBySegmentAsync();
         Task<IEnumerable<dynamic>> Q14_QuantityBySegmentAsync();
         Task<IEnumerable<dynamic>> Q15_RevenueByRegionAsync();
@@ -256,11 +258,11 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerName, c.Segment, 
+                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.SalesAmount), 2) AS Revenue, COUNT(DISTINCT f.OrderID) AS OrderCount
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
-                GROUP BY c.CustomerKey, c.CustomerName, c.Segment ORDER BY Revenue DESC";
+                GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Revenue DESC";
             return await db.QueryAsync(sql, commandTimeout: 60);
         }
 
@@ -268,11 +270,11 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerName, c.Segment, 
+                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
-                GROUP BY c.CustomerKey, c.CustomerName, c.Segment ORDER BY Profit DESC";
+                GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Profit DESC";
             return await db.QueryAsync(sql, commandTimeout: 60);
         }
 
@@ -697,6 +699,126 @@ namespace KhangNghi.Infrastructure.Repositories
                 GROUP BY t.Year, t.Month
                 ORDER BY t.Year, t.Month ASC";
             return await db.QueryAsync(sql, new { Category = category });
+        }
+
+        public async Task<dynamic?> GetCustomerDetailByNaturalIdAsync(string customerId)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            
+            string customerSql = @"
+                SELECT TOP 1 CustomerKey, CustomerID, CustomerName, Segment, SourceSystem, CreatedDate
+                FROM dbo.Dim_Customer WITH (NOLOCK)
+                WHERE CustomerID = @CustomerID";
+            var customer = await db.QueryFirstOrDefaultAsync<dynamic>(customerSql, new { CustomerID = customerId });
+            if (customer == null) return null;
+
+            int customerKey = (int)customer.CustomerKey;
+
+            string summarySql = @"
+                SELECT 
+                    ROUND(SUM(SalesAmount), 2) AS TotalRevenue,
+                    ROUND(SUM(ProfitAmount), 2) AS TotalProfit,
+                    COUNT(DISTINCT OrderID) AS TotalOrders,
+                    SUM(Quantity) AS TotalQuantity
+                FROM dbo.Fact_Sales WITH (NOLOCK)
+                WHERE CustomerKey = @CustomerKey";
+            var summary = await db.QueryFirstOrDefaultAsync<dynamic>(summarySql, new { CustomerKey = customerKey });
+
+            string ordersSql = @"
+                SELECT TOP 50
+                    f.OrderID,
+                    t.FullDate AS OrderDate,
+                    p.ProductID,
+                    p.ProductName,
+                    f.Quantity,
+                    ROUND(f.SalesAmount, 2) AS SalesAmount,
+                    ROUND(f.ProfitAmount, 2) AS ProfitAmount,
+                    f.SourceSystem
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                LEFT JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                LEFT JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                WHERE f.CustomerKey = @CustomerKey
+                ORDER BY t.FullDate DESC, f.OrderID DESC";
+            var orders = await db.QueryAsync<dynamic>(ordersSql, new { CustomerKey = customerKey });
+
+            int totalOrdersCount = summary?.TotalOrders != null ? (int)summary.TotalOrders : orders.Count();
+
+            var lineage = new
+            {
+                Source = (string)(customer.SourceSystem ?? "Excel_Superstore"),
+                NaturalKey = $"CustomerID = {customer.CustomerID}",
+                Dimension = "Dim_Customer",
+                SurrogateKey = $"CustomerKey = {customer.CustomerKey}",
+                Fact = "Fact_Sales",
+                RelatedRecords = $"{totalOrdersCount} orders"
+            };
+
+            return new
+            {
+                Customer = customer,
+                Summary = summary,
+                Lineage = lineage,
+                Orders = orders
+            };
+        }
+
+        public async Task<dynamic?> GetOrderDetailByNaturalIdAsync(string orderId)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            
+            string sql = @"
+                SELECT 
+                    f.OrderID,
+                    c.CustomerKey,
+                    c.CustomerID,
+                    c.CustomerName,
+                    c.Segment AS CustomerSegment,
+                    p.ProductKey,
+                    p.ProductID,
+                    p.ProductName,
+                    p.Category,
+                    p.SubCategory,
+                    t.FullDate AS OrderDate,
+                    f.Quantity,
+                    ROUND(f.SalesAmount, 2) AS SalesAmount,
+                    ROUND(f.DiscountAmount, 2) AS DiscountAmount,
+                    ROUND(f.ProfitAmount, 2) AS ProfitAmount,
+                    f.SourceSystem
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                LEFT JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
+                LEFT JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                LEFT JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                WHERE f.OrderID = @OrderID";
+            
+            var items = await db.QueryAsync<dynamic>(sql, new { OrderID = orderId });
+            if (!items.Any()) return null;
+
+            var first = items.First();
+            var lineage = new
+            {
+                Source = (string)(first.SourceSystem ?? "Excel_Superstore"),
+                NaturalKey = $"OrderID = {first.OrderID}",
+                Dimension = "Dim_Customer & Dim_Product",
+                SurrogateKey = $"CustomerKey = {first.CustomerKey}, ProductKey = {first.ProductKey}",
+                Fact = "Fact_Sales",
+                RelatedRecords = $"{items.Count()} items in order"
+            };
+
+            return new
+            {
+                OrderHeader = new
+                {
+                    OrderID = first.OrderID,
+                    CustomerID = first.CustomerID,
+                    CustomerName = first.CustomerName,
+                    CustomerSegment = first.CustomerSegment,
+                    OrderDate = first.OrderDate,
+                    ItemCount = items.Count(),
+                    SourceSystem = (string)(first.SourceSystem ?? "Excel_Superstore")
+                },
+                Lineage = lineage,
+                Items = items
+            };
         }
     }
 }

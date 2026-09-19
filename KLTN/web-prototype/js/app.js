@@ -558,7 +558,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const body = document.getElementById("customer-table-body");
     if (body) {
       body.innerHTML = (data.topCustomers || []).map(c => {
-        const id = c.customerKey || c.CustomerKey || c.customerID || c.id || "KH-N/A";
+        const rawNaturalId = c.customerID || c.CustomerID || c.customerId;
+        const naturalId = rawNaturalId && rawNaturalId !== "undefined" && rawNaturalId !== "null" ? rawNaturalId : "N/A";
+        if (naturalId === "N/A") {
+          console.warn(`[Data Quality Warning] Missing Customer Natural Key for CustomerKey: ${c.customerKey || c.CustomerKey}`);
+        }
         const name = c.customerName || c.CustomerName || c.name || "Khách hàng DWH";
         const segment = c.segment || c.Segment || "Consumer";
         const orders = c.orderCount || c.OrderCount || c.orders || 1;
@@ -566,8 +570,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const profit = c.profit || c.Profit || Math.round(revenue * 0.12);
         const margin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) : "12.0";
         return `
-        <tr style="cursor:pointer;" onclick="KhangNghiComponents.showToast('Chi tiết Khách hàng ${name}')">
-          <td><strong style="color:var(--color-primary);">${id}</strong></td>
+        <tr style="cursor:pointer;" onclick="KhangNghiComponents.openCustomerDetailDrawer('${naturalId}')">
+          <td><strong style="color:var(--color-primary); text-decoration:underline;">${naturalId}</strong></td>
           <td><strong>${name}</strong></td>
           <td><span class="badge badge-info">${segment}</span></td>
           <td>Toàn cầu (DWH)</td>
