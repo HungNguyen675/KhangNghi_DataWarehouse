@@ -1,8 +1,4 @@
-﻿
-CREATE DATABASE DWH_KhangNghi;
-
-
-USE DWH_KhangNghi;
+﻿USE DWH_KhangNghi;
 GO
 
 ---------------------------------------------------------
@@ -23,17 +19,11 @@ DROP TABLE IF EXISTS Dim_Employee;
 DROP TABLE IF EXISTS Dim_Manufacturer;
 DROP TABLE IF EXISTS Dim_Shipper;
 DROP TABLE IF EXISTS Dim_Supplier;
-
 DROP TABLE IF EXISTS Dim_Promotion;
 DROP TABLE IF EXISTS Dim_SalesChannel;
 DROP TABLE IF EXISTS Dim_Warehouse;
 DROP TABLE IF EXISTS Dim_PaymentMethod;
 DROP TABLE IF EXISTS Dim_Service;
-
---Xóa 2 cột Phone ,Country
-ALTER TABLE dbo.Dim_Supplier
-DROP COLUMN Country, Phone;
-
 
 ---------------------------------------------------------
 -- PHẦN 2: TẠO 13 BẢNG DIMENSION (ĐẦY ĐỦ KHÓA & AUDIT)
@@ -82,16 +72,16 @@ CREATE TABLE Dim_Shipper (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
--- phần này mới sửa
+-- phần này mới sửa (Bản fix lỗi của ThiVan)
 CREATE TABLE Dim_Supplier (
     SupplierKey INT IDENTITY(1,1) PRIMARY KEY,
     SupplierID NVARCHAR(50) NOT NULL,
     SupplierName NVARCHAR(255),
-
     SourceSystem NVARCHAR(100),
     CreatedDate DATETIME DEFAULT GETDATE(),
     UpdatedDate DATETIME DEFAULT GETDATE()
 );
+
 -- [5 BẢNG DIM MỚI THÊM VÀO]
 CREATE TABLE Dim_Promotion (
     PromotionKey INT IDENTITY(1,1) PRIMARY KEY, PromotionID NVARCHAR(50),
@@ -127,7 +117,7 @@ CREATE TABLE Dim_Service (
 -- PHẦN 3: TẠO 4 BẢNG FACT (ĐÃ MÓC NỐI 13 BẢNG DIM)
 ---------------------------------------------------------
 
--- 1. SỰ KIỆN BÁN HÀNG (Kết nối Khuyến mãi, Kênh bán, Thanh toán, Dịch vụ)
+-- 1. SỰ KIỆN BÁN HÀNG 
 CREATE TABLE Fact_Sales (
     OrderID NVARCHAR(50), 
     TimeKey INT FOREIGN KEY REFERENCES Dim_Time(TimeKey),
@@ -148,7 +138,7 @@ CREATE TABLE Fact_Sales (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
--- 2. SỰ KIỆN NHẬP HÀNG (Kết nối Thanh toán, Kho bãi)
+-- 2. SỰ KIỆN NHẬP HÀNG 
 CREATE TABLE Fact_Purchase (
     PurchaseOrderID NVARCHAR(50),
     TimeKey INT FOREIGN KEY REFERENCES Dim_Time(TimeKey),
@@ -164,7 +154,7 @@ CREATE TABLE Fact_Purchase (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
--- 3. SỰ KIỆN VẬN CHUYỂN (Kết nối Kho bãi xuất phát)
+-- 3. SỰ KIỆN VẬN CHUYỂN
 CREATE TABLE Fact_Shipping (
     OrderID NVARCHAR(50), 
     TimeKey INT FOREIGN KEY REFERENCES Dim_Time(TimeKey),
@@ -178,7 +168,7 @@ CREATE TABLE Fact_Shipping (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
--- 4. SỰ KIỆN TỒN KHO (Kết nối Kho bãi)
+-- 4. SỰ KIỆN TỒN KHO
 CREATE TABLE Fact_Inventory (
     TimeKey INT FOREIGN KEY REFERENCES Dim_Time(TimeKey),
     ProductKey INT FOREIGN KEY REFERENCES Dim_Product(ProductKey),
@@ -192,3 +182,50 @@ CREATE TABLE Fact_Inventory (
     SourceSystem NVARCHAR(50), CreatedDate DATETIME, UpdatedDate DATETIME
 );
 
+
+SELECT * FROM Dim_Manufacturer;
+
+USE DWH_KhangNghi;
+GO
+
+-- 1. Quét sạch dữ liệu cũ ra khỏi bảng
+DELETE FROM Dim_Manufacturer;
+
+-- 2. Reset cột Khóa chính (ID) tự tăng về lại số 0 
+-- (Bước này cực kỳ quan trọng để khi nạp lại, ID sẽ đếm lại từ 1 thay vì nhảy cóc lên 6, 7, 8...)
+DBCC CHECKIDENT ('Dim_Manufacturer', RESEED, 0);
+GO
+
+
+USE DWH_KhangNghi;
+GO
+
+-- 1. Quét sạch dữ liệu lỗi cũ ra khỏi bảng
+DELETE FROM Dim_Manufacturer;
+GO
+
+-- 2. Reset cột Khóa chính tự tăng (ManufacturerKey) về lại số 0
+-- (Khi SSIS nạp dòng mới vào, nó sẽ tự động đếm lại từ số 1 rất đẹp)
+DBCC CHECKIDENT ('Dim_Manufacturer', RESEED, 0);
+GO
+
+SELECT * FROM Dim_Service;
+GO
+
+SELECT * FROM Dim_Time;
+
+
+
+USE DWH_KhangNghi;
+GO
+DELETE FROM Dim_Warehouse;
+DBCC CHECKIDENT ('Dim_Warehouse', RESEED, 0);
+GO
+
+
+DELETE FROM Dim_Product;
+DBCC CHECKIDENT ('Dim_Product', RESEED, 0);
+
+DELETE FROM Fact_Sales;
+
+SELECT * FROM Fact_Sales;

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="9/22/2026 11:03:25 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="HUNGNGUYEN"
+  DTS:CreatorName="HUNGNGUYEN\xehoi"
+  DTS:DTSID="{F17A48A9-C9EA-4959-9583-19684CC396A4}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="1066"
+  DTS:ObjectName="Package1"
+  DTS:PackageType="5"
+  DTS:VersionBuild="2"
+  DTS:VersionGUID="{8ED7D060-F243-4E1F-BC9C-5C2CDFE18B08}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{0F63AD35-333E-41B8-9BA7-712208D8B375}"
+      DTS:ObjectName="HungNguyen.DWH_KhangNghi.sa">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{0F63AD35-333E-41B8-9BA7-712208D8B375}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAvt6trbAdgud2WaZ5b1VILDNEJEUSaFjDthUuOv9dSgQAAAAAOgAAAAAIAACAAAADDa8+kzYKKObU99C9qmUTcDXIMloL7Gisv2hqANJiEFRAAAAA6k/aZps4d2RdEGBwINgLRQAAAAG1bf4GKlh7ue8Yna+xVuBOsJqU76ft8m2QRTo0pvtA4TEB2xuuSIEYVwyH3IWDavpFMXaaFXqZZDY18jKZw+sw</DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Execute SQL Task"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{CB528506-AD7B-40BB-A704-1A420BD8AA36}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Execute SQL Task"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{0F63AD35-333E-41B8-9BA7-712208D8B375}"
+          SQLTask:SqlStatementSource="-- Dọn dẹp dữ liệu cũ (nếu có)&#xA;DELETE FROM Dim_Time;&#xA;DBCC CHECKIDENT ('Dim_Time', RESEED, 0);&#xA;&#xA;-- Thiết lập mốc thời gian (Ví dụ sinh ra 5 năm liên tục: 2022 - 2026)&#xA;DECLARE @StartDate DATE = '2010-01-01'; &#xA;DECLARE @EndDate DATE = '2026-12-31';   &#xA;DECLARE @CurrentDate DATE = @StartDate;&#xA;&#xA;-- Bắt đầu vòng lặp tự động đẻ ra các ngày&#xA;WHILE @CurrentDate &lt;= @EndDate&#xA;BEGIN&#xA;    INSERT INTO Dim_Time (&#xA;        FullDate, &#xA;        [Day], &#xA;        [Month], &#xA;        [Quarter], &#xA;        [Year], &#xA;        SourceSystem, &#xA;        CreatedDate, &#xA;        UpdatedDate&#xA;    )&#xA;    VALUES (&#xA;        @CurrentDate,&#xA;        DAY(@CurrentDate),&#xA;        MONTH(@CurrentDate),&#xA;        DATEPART(QUARTER, @CurrentDate), -- Hàm tự động tính ra Quý&#xA;        YEAR(@CurrentDate),&#xA;        'SSIS_ETL',&#xA;        GETDATE(),&#xA;        GETDATE()&#xA;    );&#xA;    &#xA;    -- Cộng thêm 1 ngày để lặp tiếp&#xA;    SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="162.4,41.6"
+          Id="Package\Execute SQL Task"
+          TopLeft="290.000000617334,198.823529237488" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

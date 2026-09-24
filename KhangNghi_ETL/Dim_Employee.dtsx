@@ -5,63 +5,49 @@
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="HUNGNGUYEN"
   DTS:CreatorName="HUNGNGUYEN\xehoi"
-  DTS:DTSID="{E32F6AB6-2D29-40C5-B828-DB1FED281FC1}"
+  DTS:DTSID="{355753E4-1A54-4888-9318-CB792A27215D}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="17.0.1016.0"
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_Employee"
   DTS:PackageType="5"
-  DTS:VersionBuild="15"
-  DTS:VersionGUID="{27A08282-F2C0-46E0-B653-48466A13F43B}">
+  DTS:VersionBuild="17"
+  DTS:VersionGUID="{281184CD-66A3-4253-992B-704C8A04D8B5}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{A3204242-A98F-4CEF-9E5D-9030D2AD4DCB}"
+      DTS:DTSID="{EDD93992-CCC4-4105-804A-743E4B2311E4}"
       DTS:ObjectName="HungNguyen.DWH_KhangNghi.sa">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package-{A3204242-A98F-4CEF-9E5D-9030D2AD4DCB}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Employee-{EDD93992-CCC4-4105-804A-743E4B2311E4}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD3Rky504V4UFRzmGbIlkk28S/sdAqIJCINx4NAjtK4kQAAAAAOgAAAAAIAACAAAAA8D+37Eeum3vmD6OLlaDLpp86LBV8h4bRxyI/KvVEUxRAAAAD8M4WgXYHww7TZkjgMP7V+QAAAAHCTPGaDpcCU53j9dZUKEscGm4yG1KL4htY68Dnu1GelalD8fy6VgojlrYC+mIOf5wcAHGFpnXp9nmc35wUveH4</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.NapDuLieu_Bai01.sa]"
+      DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{460BF240-F3CB-4420-BBBD-4AF4DE5F293A}"
-      DTS:ObjectName="HungNguyen.NapDuLieu_Bai01.sa">
+      DTS:DTSID="{6353F71E-A08F-4325-8142-A2A0716F2DF6}"
+      DTS:ObjectName="HungNguyen.KhangNghi_Staging.sa">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=NapDuLieu_Bai01;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_KhachHang-{460BF240-F3CB-4420-BBBD-4AF4DE5F293A}HungNguyen.NapDuLieu_Bai01.sa;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{F66F293E-D1F1-4C9E-95B1-37B93FFAAE29}"
-      DTS:ObjectName="LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=LAPTOP-D95IAAHC\SQLEXPRESS;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Dim_Customer-{F66F293E-D1F1-4C9E-95B1-37B93FFAAE29}LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{54A7EEB5-3CE6-4AF8-83C2-902D2F245268}"
-      DTS:ObjectName="LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=LAPTOP-D95IAAHC\SQLEXPRESS;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Dim_Customer-{54A7EEB5-3CE6-4AF8-83C2-902D2F245268}LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Employee-{6353F71E-A08F-4325-8142-A2A0716F2DF6}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAyDlHgWVU2zODN5lDzdbTpGqWFM7X0nHDwlkai7azphwAAAAAOgAAAAAIAACAAAABZxP+wNQlJbh1GBjf5xX071i57gElT+NqGbb+spM27/RAAAACkyCmFvtA+H2yIXs88Nx7vQAAAAOZ11mUtYktGUIDGKW+uw8JuWpkJUb3gsQO86y8GVXsEpsmTMpLvFIyRhg/dCyFlQ0cBvDOuSR9RhQDMK1+OX78</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -71,7 +57,7 @@
       DTS:refId="Package\Data Flow Task"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task"
-      DTS:DTSID="{F92C4794-19A2-4421-9241-87A400AF1265}"
+      DTS:DTSID="{8C0D0DC9-7317-408D-9DB5-C2C0E4287FDC}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
       DTS:ObjectName="Data Flow Task"
@@ -406,8 +392,8 @@
               <connections>
                 <connection
                   refId="Package\Data Flow Task\OLE DB Destination.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
-                  connectionManagerRefId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -538,7 +524,7 @@
                 <property
                   dataType="System.String"
                   description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[OLE DB Destination]</property>
+                  name="OpenRowset">[dbo].[Stg_KhangNghiData]</property>
                 <property
                   dataType="System.String"
                   description="Specifies the variable that contains the name of the database object used to open a rowset."
@@ -573,8 +559,8 @@
               <connections>
                 <connection
                   refId="Package\Data Flow Task\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
-                  connectionManagerRefId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -885,14 +871,14 @@
                       name="Location ID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]"
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse ]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse ]"
                       length="255"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]"
-                      name="Warehouse"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse ]"
+                      name="Warehouse "
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
@@ -1044,10 +1030,10 @@
                       length="255"
                       name="Location ID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse]"
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse ]"
                       dataType="wstr"
                       length="255"
-                      name="Warehouse" />
+                      name="Warehouse " />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1191,6 +1177,12 @@
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Order Priority]"
                       name="Order Priority" />
                     <outputColumn
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse ]"
+                      dataType="wstr"
+                      length="255"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse ]"
+                      name="Warehouse " />
+                    <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Payment Method]"
                       dataType="wstr"
                       length="255"
@@ -1232,12 +1224,6 @@
                       length="255"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Location ID]"
                       name="Location ID" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse]"
-                      dataType="wstr"
-                      length="255"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse]"
-                      name="Warehouse" />
                     <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
@@ -1292,7 +1278,7 @@
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="300.714286354427,136.117646939511" />
+          TopLeft="238.571429079284,150.647058691481" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -1302,13 +1288,9 @@
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="149.6,41.6"
-          Id="Package\Data Flow Task\OLE DB Source"
-          TopLeft="115.285708638782,183.176468169709" />
-        <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\OLE DB Destination"
-          TopLeft="339.285715007964,220.999999806285" />
+          TopLeft="499.285715348562,192.705882184027" />
         <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
@@ -1317,6 +1299,44 @@
           Size="126.4,41.6"
           Id="Package\Data Flow Task\Aggregate"
           TopLeft="244.285704417497,38.3529388568399" />
+        <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Data Flow Task\OLE DB Source"
+          TopLeft="115.285708638782,183.176468169709" />
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Aggregate Output 1]"
+          TopLeft="327.21903775083,79.9529388568399">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="142.038105942602,39.3411786856531"
+              Start="0,0"
+              End="142.038105942602,31.8411786856531">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,12.0315303144036" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,12.0315303144036"
+                    Point2="0,16.0315303144036"
+                    Point3="4,16.0315303144036" />
+                  <mssgle:LineSegment
+                    End="138.038105942602,16.0315303144036" />
+                  <mssgle:CubicBezierSegment
+                    Point1="138.038105942602,16.0315303144036"
+                    Point2="142.038105942602,16.0315303144036"
+                    Point3="142.038105942602,20.0315303144036" />
+                  <mssgle:LineSegment
+                    End="142.038105942602,31.8411786856531" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="190.085708638782,183.176468169709">
@@ -1357,60 +1377,26 @@
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-44.771428685468,60.105882263792"
+              EndConnector="115.22857165513,31.8117646415341"
               Start="0,0"
-              End="-44.771428685468,52.605882263792">
+              End="115.22857165513,24.3117646415341">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,26.052941131896" />
+                    End="0,11.905882320767" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,26.052941131896"
-                    Point2="0,30.052941131896"
-                    Point3="-4,30.052941131896" />
+                    Point1="0,11.905882320767"
+                    Point2="0,15.905882320767"
+                    Point3="4,15.905882320767" />
                   <mssgle:LineSegment
-                    End="-40.771428685468,30.052941131896" />
+                    End="111.22857165513,15.905882320767" />
                   <mssgle:CubicBezierSegment
-                    Point1="-40.771428685468,30.052941131896"
-                    Point2="-44.771428685468,30.052941131896"
-                    Point3="-44.771428685468,34.052941131896" />
+                    Point1="111.22857165513,15.905882320767"
+                    Point2="115.22857165513,15.905882320767"
+                    Point3="115.22857165513,19.905882320767" />
                   <mssgle:LineSegment
-                    End="-44.771428685468,52.605882263792" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Aggregate Output 1]"
-          TopLeft="327.21903775083,79.9529388568399">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="142.038105942602,39.3411786856531"
-              Start="0,0"
-              End="142.038105942602,31.8411786856531">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,12.0315303144036" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,12.0315303144036"
-                    Point2="0,16.0315303144036"
-                    Point3="4,16.0315303144036" />
-                  <mssgle:LineSegment
-                    End="138.038105942602,16.0315303144036" />
-                  <mssgle:CubicBezierSegment
-                    Point1="138.038105942602,16.0315303144036"
-                    Point2="142.038105942602,16.0315303144036"
-                    Point3="142.038105942602,20.0315303144036" />
-                  <mssgle:LineSegment
-                    End="142.038105942602,31.8411786856531" />
+                    End="115.22857165513,24.3117646415341" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1423,7 +1409,7 @@
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Source">
+    design-time-name="Package\Data Flow Task\OLE DB Destination">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -1436,7 +1422,7 @@
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Destination">
+    design-time-name="Package\Data Flow Task\OLE DB Source">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>

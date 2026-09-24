@@ -5,63 +5,49 @@
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="HUNGNGUYEN"
   DTS:CreatorName="HUNGNGUYEN\xehoi"
-  DTS:DTSID="{A22E5889-D9D8-44F7-ADD8-A4969A3D4DFE}"
+  DTS:DTSID="{AEAE6763-2266-4F60-A3C7-039C6D08A42C}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="17.0.1016.0"
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_SalesChannel"
   DTS:PackageType="5"
-  DTS:VersionBuild="13"
-  DTS:VersionGUID="{B5292667-3407-4C15-90DC-592820D63EC8}">
+  DTS:VersionBuild="14"
+  DTS:VersionGUID="{4DC964F4-B421-4A6C-BE34-46B2696090FE}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{8919FD1C-6FC0-4AFB-AB1B-C8DB9D0DEF49}"
+      DTS:DTSID="{ADDEF0B5-285D-4C7C-B91A-6D0A96030F6F}"
       DTS:ObjectName="HungNguyen.DWH_KhangNghi.sa">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package-{8919FD1C-6FC0-4AFB-AB1B-C8DB9D0DEF49}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_SalesChannel-{ADDEF0B5-285D-4C7C-B91A-6D0A96030F6F}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADjvzDWyMui0cIO5rT+q+Clo0VWMqwp3jmC0WAYF5B4ZwAAAAAOgAAAAAIAACAAAAAXIocUp+dYMCVazKhTk9En+acmOIkM2hyAsntR+FSSqxAAAABAk/feqO29J/PEJ7E24XO6QAAAAGEWS8hpTj+ALOr//r3M3dM+7bIi8q0Fr4yZNU1J3dunXHqtavSP91d6jeRlbYuesVV784DrjarkNCV+CP8Pe34</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.NapDuLieu_Bai01.sa]"
+      DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{C280B276-0CF5-4F48-834A-F368AA89520B}"
-      DTS:ObjectName="HungNguyen.NapDuLieu_Bai01.sa">
+      DTS:DTSID="{846C3C37-715F-448E-8862-761439CA5D88}"
+      DTS:ObjectName="HungNguyen.KhangNghi_Staging.sa">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=NapDuLieu_Bai01;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_KhachHang-{C280B276-0CF5-4F48-834A-F368AA89520B}HungNguyen.NapDuLieu_Bai01.sa;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{8FA76B3F-C3C6-497C-A57A-2C2C5361EC88}"
-      DTS:ObjectName="LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=LAPTOP-D95IAAHC\SQLEXPRESS;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Dim_Customer-{8FA76B3F-C3C6-497C-A57A-2C2C5361EC88}LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{9DD69F1F-06E5-4105-8B15-77669EBA0638}"
-      DTS:ObjectName="LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=LAPTOP-D95IAAHC\SQLEXPRESS;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Dim_Customer-{9DD69F1F-06E5-4105-8B15-77669EBA0638}LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_SalesChannel-{846C3C37-715F-448E-8862-761439CA5D88}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADVOmsk2Rb/x1c7X3UZPw8zT4sZ3LDLKBjJ3sBLoryYjQAAAAAOgAAAAAIAACAAAABXsH1W5Z6HFPQi/Pa+RuUustr/QsUi8TaSf293eYkgyBAAAABvrovFU+FfEJrOuOH2sj5mQAAAAGNMz3LC440xSUMDFXcUbqtCYCV4+OXebN8jr9leKVtxT/hNC+lMyRYXeYp1AXkxxKze0dllNl7GIME0HUuy0Bo</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -71,7 +57,7 @@
       DTS:refId="Package\Data Flow Task"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task"
-      DTS:DTSID="{B518A238-2553-4A96-8CFC-5341364D26A8}"
+      DTS:DTSID="{1F52F701-231F-4650-BADC-9F848BD1753A}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
       DTS:ObjectName="Data Flow Task"
@@ -383,8 +369,8 @@
               <connections>
                 <connection
                   refId="Package\Data Flow Task\OLE DB Destination.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
-                  connectionManagerRefId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi 1]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -503,7 +489,7 @@
                 <property
                   dataType="System.String"
                   description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[OLE DB Destination]</property>
+                  name="OpenRowset">[dbo].[Stg_KhangNghiData]</property>
                 <property
                   dataType="System.String"
                   description="Specifies the variable that contains the name of the database object used to open a rowset."
@@ -538,8 +524,8 @@
               <connections>
                 <connection
                   refId="Package\Data Flow Task\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
-                  connectionManagerRefId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -850,14 +836,14 @@
                       name="Location ID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]"
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse ]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse ]"
                       length="255"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]"
-                      name="Warehouse"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse ]"
+                      name="Warehouse "
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
@@ -1009,10 +995,10 @@
                       length="255"
                       name="Location ID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse]"
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Warehouse ]"
                       dataType="wstr"
                       length="255"
-                      name="Warehouse" />
+                      name="Warehouse " />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1156,6 +1142,12 @@
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Order Priority]"
                       name="Order Priority" />
                     <outputColumn
+                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse ]"
+                      dataType="wstr"
+                      length="255"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse ]"
+                      name="Warehouse " />
+                    <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Payment Method]"
                       dataType="wstr"
                       length="255"
@@ -1197,12 +1189,6 @@
                       length="255"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Location ID]"
                       name="Location ID" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse]"
-                      dataType="wstr"
-                      length="255"
-                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Warehouse]"
-                      name="Warehouse" />
                     <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
@@ -1271,10 +1257,6 @@
           Id="Package\Data Flow Task\OLE DB Source"
           TopLeft="115.285708638782,183.176468169709" />
         <NodeLayout
-          Size="170.4,41.6"
-          Id="Package\Data Flow Task\OLE DB Destination"
-          TopLeft="339.285715007964,220.999999806285" />
-        <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
           TopLeft="392.857143693432,119.294117542493" />
@@ -1282,6 +1264,10 @@
           Size="126.4,41.6"
           Id="Package\Data Flow Task\Aggregate"
           TopLeft="244.285704417497,38.3529388568399" />
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Data Flow Task\OLE DB Destination"
+          TopLeft="339.285715007964,220.999999806285" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="190.085708638782,183.176468169709">
