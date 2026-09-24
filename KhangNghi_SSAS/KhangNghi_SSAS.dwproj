@@ -59,6 +59,18 @@
       <Name>Dim Promotion.dim</Name>
       <FullPath>Dim Promotion.dim</FullPath>
     </ProjectItem>
+    <ProjectItem>
+      <Name>Dim Supplier.dim</Name>
+      <FullPath>Dim Supplier.dim</FullPath>
+    </ProjectItem>
+    <ProjectItem>
+      <Name>Dim Shipper.dim</Name>
+      <FullPath>Dim Shipper.dim</FullPath>
+    </ProjectItem>
+    <ProjectItem>
+      <Name>Dim Warehouse.dim</Name>
+      <FullPath>Dim Warehouse.dim</FullPath>
+    </ProjectItem>
   </Dimensions>
   <DataSources>
     <ProjectItem>
