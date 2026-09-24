@@ -17,6 +17,26 @@
         </ProjectItem>
       </Dependencies>
     </ProjectItem>
+    <ProjectItem>
+      <Name>Cube_Sales.cube</Name>
+      <FullPath>Cube_Sales.cube</FullPath>
+      <Dependencies>
+        <ProjectItem>
+          <Name>Cube_Sales.partitions</Name>
+          <FullPath>Cube_Sales.partitions</FullPath>
+        </ProjectItem>
+      </Dependencies>
+    </ProjectItem>
+    <ProjectItem>
+      <Name>Cube_Inventory.cube</Name>
+      <FullPath>Cube_Inventory.cube</FullPath>
+      <Dependencies>
+        <ProjectItem>
+          <Name>Cube_Inventory.partitions</Name>
+          <FullPath>Cube_Inventory.partitions</FullPath>
+        </ProjectItem>
+      </Dependencies>
+    </ProjectItem>
   </Cubes>
   <Dimensions>
     <ProjectItem>
