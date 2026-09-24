@@ -1,0 +1,81 @@
+/* Custom Modern Dashboard Styles */
+:root {
+    --primary-color: #2563eb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-color: #1e293b;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #334155;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+}
+
+.kpi-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.nav-link {
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+    color: #60a5fa !important;
+}
+
+.nav-link.active {
+    color: #ffffff !important;
+    border-bottom: 2px solid #3b82f6;
+}
+
+.badge.status-red {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #f87171;
+}
+
+.badge.status-yellow {
+    background-color: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fcd34d;
+}
+
+.badge.status-green {
+    background-color: #d1fae5;
+    color: #059669;
+    border: 1px solid #34d399;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Print Optimization for Reports */
+@media print {
+    .navbar, .btn, .dropdown, #globalFilterBar, .no-print {
+        display: none !important;
+    }
+    body {
+        background-color: #fff !important;
+    }
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}

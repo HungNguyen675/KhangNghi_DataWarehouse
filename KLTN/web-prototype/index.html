@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KHANG NGHI BUSINESS INTELLIGENCE - Enterprise BI Platform</title>
+
+  <!-- Google Fonts: Inter / SF Pro style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-theme="light">
+
+  <div id="app-shell">
+    <!-- ======================================================================
+         1. SIDEBAR NAVIGATION (Collapsible & Grouped Submenus)
+         ====================================================================== -->
+    <aside id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-wrapper">
+          <div class="brand-icon">KN</div>
+          <div class="brand-title">
+            <span class="brand-name">KHANG NGHI</span>
+            <span class="brand-subtitle">Business Intelligence</span>
+          </div>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebar-toggle" title="Thu gọn/Mở rộng Sidebar">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+
+      <div class="workspace-selector">
+        <span>Workspace: <strong>Executive Analytics</strong></span>
+        <i class="fa-solid fa-angle-down"></i>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#/overview" class="nav-item active" data-tooltip="Overview" data-roles="ALL">
+          <i class="fa-solid fa-chart-pie nav-icon"></i>
+          <span class="nav-text">Executive Overview</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE</span>
+        </a>
+
+        <div class="menu-group-header">Analytics</div>
+
+        <a href="#/sales" class="nav-item" data-tooltip="Sales" data-roles="CEO,Sales">
+          <i class="fa-solid fa-chart-line nav-icon"></i>
+          <span class="nav-text">Sales Analytics</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE</span>
+        </a>
+
+        <a href="#/purchase" class="nav-item" data-tooltip="Purchase" data-roles="CEO,Purchase">
+          <i class="fa-solid fa-cart-flatbed nav-icon"></i>
+          <span class="nav-text">Purchase Analytics</span>
+          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+        </a>
+
+        <a href="#/inventory" class="nav-item" data-tooltip="Inventory" data-roles="CEO,Warehouse">
+          <i class="fa-solid fa-boxes-stacked nav-icon"></i>
+          <span class="nav-text">Inventory Control</span>
+          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+        </a>
+
+        <a href="#/shipping" class="nav-item" data-tooltip="Shipping" data-roles="CEO,Logistics">
+          <i class="fa-solid fa-truck-fast nav-icon"></i>
+          <span class="nav-text">Shipping & SLA</span>
+          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+        </a>
+
+        <div class="menu-group-header">Master Analysis</div>
+
+        <a href="#/customer" class="nav-item" data-tooltip="Customers" data-roles="CEO,Sales">
+          <i class="fa-solid fa-users nav-icon"></i>
+          <span class="nav-text">Customers</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE</span>
+        </a>
+
+        <a href="#/product" class="nav-item" data-tooltip="Products" data-roles="ALL">
+          <i class="fa-solid fa-box-open nav-icon"></i>
+          <span class="nav-text">Products & Matrix</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE</span>
+        </a>
+
+        <a href="#/supplier" class="nav-item" data-tooltip="Suppliers" data-roles="CEO,Purchase">
+          <i class="fa-solid fa-handshake nav-icon"></i>
+          <span class="nav-text">Suppliers</span>
+          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+        </a>
+
+        <a href="#/geography" class="nav-item" data-tooltip="Geography" data-roles="ALL">
+          <i class="fa-solid fa-globe nav-icon"></i>
+          <span class="nav-text">Geography</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE</span>
+        </a>
+
+        <div class="menu-group-header">Advanced Analytics</div>
+
+        <a href="#/cross-analysis" class="nav-item" data-tooltip="Cross Analysis" data-roles="ALL">
+          <i class="fa-solid fa-diagram-project nav-icon"></i>
+          <span class="nav-text">Cross Analysis</span>
+          <span class="nav-badge" style="background:rgba(52,152,219,0.15); color:#3498db;">PROTO</span>
+        </a>
+
+        <a href="#/forecast" class="nav-item" data-tooltip="Forecast" data-roles="CEO,Sales">
+          <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i>
+          <span class="nav-text">AI Sales Forecast</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">ML.NET</span>
+        </a>
+
+        <a href="#/what-if" class="nav-item" data-tooltip="What-If" data-roles="CEO,Sales">
+          <i class="fa-solid fa-sliders nav-icon"></i>
+          <span class="nav-text">What-If Simulator</span>
+          <span class="nav-badge" style="background:rgba(52,152,219,0.15); color:#3498db;">PROTO</span>
+        </a>
+
+        <div class="menu-group-header">Intelligence & System</div>
+
+        <a href="#/question-explorer" class="nav-item" data-tooltip="BI Catalog" data-roles="ALL">
+          <i class="fa-solid fa-book-bookmark nav-icon"></i>
+          <span class="nav-text">BI Question Catalog</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">Q01-Q40</span>
+        </a>
+
+        <a href="#/system-status" class="nav-item" data-tooltip="Data Status" data-roles="CEO,Admin">
+          <i class="fa-solid fa-server nav-icon"></i>
+          <span class="nav-text">Data Status & ETL</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">DWH</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-avatar">BV</div>
+        <div class="user-info">
+          <span class="user-name">Bùi Thị Vấn</span>
+          <span class="user-role" id="user-role-display">CEO / Administrator</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ======================================================================
+         2. TOPBAR HEADER
+         ====================================================================== -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb">
+          <span id="breadcrumb-category">Analytics</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item active" id="breadcrumb-current">Executive Overview</span>
+        </div>
+
+        <div class="global-search-wrapper">
+          <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
+          <input type="text" class="global-search-input" placeholder="Search analytics...">
+        </div>
+
+        <div class="data-status-indicator" id="lineage-badge">
+          <span class="status-dot-green"></span>
+          <span>Last ETL: 18/09/2026 08:30 (Healthy)</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Filter Panel Trigger Button -->
+        <button class="topbar-action-btn" id="filter-panel-toggle" title="Mở Bảng Điều Khiển Bộ Lọc">
+          <i class="fa-solid fa-filter"></i>
+        </button>
+
+        <!-- Topbar AI Copilot Button -->
+        <button class="topbar-action-btn" id="topbar-copilot-btn" title="Hỏi Khang Nghi AI Copilot" style="background:var(--color-primary-light); color:var(--color-primary); border-color:var(--color-primary-border); font-weight:600; gap:6px; padding:0 12px; width:auto;">
+          <i class="fa-solid fa-robot"></i> <span>Hỏi AI</span>
+        </button>
+
+        <!-- Quick Filters -->
+        <div class="filter-group" style="display:flex; align-items:center; gap:6px; background:var(--bg-input); padding:4px 8px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+          <select id="filter-year" class="filter-select" style="background:transparent; border:none; outline:none; font-size:12px; color:var(--text-main);">
+            <option value="2015" selected>Năm: 2015</option>
+            <option value="2014">Năm: 2014</option>
+            <option value="2013">Năm: 2013</option>
+            <option value="2012">Năm: 2012</option>
+          </select>
+        </div>
+
+        <!-- Notification Bell Dropdown -->
+        <div style="position:relative;">
+          <button class="topbar-action-btn" id="btn-notif" title="Thông báo hệ thống">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-badge-dot"></span>
+          </button>
+          <div class="dropdown-menu" id="notif-dropdown" style="right:0; width:280px; padding:12px;">
+            <strong style="font-size:12px; color:var(--text-main); display:block; margin-bottom:8px;">Thông Báo Hệ Thống</strong>
+            <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+              <p>🟢 <strong>ETL Reload:</strong> 51,291 bản ghi đã nạp thành công (2 phút trước)</p>
+              <p style="margin-top:6px;">⚠️ <strong>Cảnh báo Tồn:</strong> 2 sản phẩm dưới mức an toàn (15 phút trước)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="topbar-action-btn" id="btn-theme-toggle" title="Chuyển Dark/Light Mode">🌙</button>
+
+        <!-- Profile & Role Switcher Dropdown -->
+        <div style="position:relative;">
+          <div class="profile-dropdown-trigger" id="btn-profile" title="Tài khoản & Phân quyền">
+            <div class="user-avatar user-avatar-text" style="width:28px; height:28px; font-size:11px;">BV</div>
+            <i class="fa-solid fa-angle-down" style="font-size:11px; color:var(--text-muted);"></i>
+          </div>
+          <div class="dropdown-menu" id="profile-dropdown" style="right:0; width:250px; padding:0; overflow:hidden;">
+            <div style="padding:12px 14px; border-bottom:1px solid var(--border-color); background:var(--bg-card);">
+              <div class="user-name-text" style="font-size:13px; font-weight:700; color:var(--text-main);">Bùi Thị Vấn</div>
+              <div class="user-dept-text" style="font-size:11px; color:var(--text-muted);">Ban Giám Đốc</div>
+              <div style="margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
+                <span class="user-role-text" style="font-size:10.5px; font-weight:700; background:var(--color-primary-light); color:var(--color-primary); padding:2px 8px; border-radius:4px;">Ban Giám Đốc (CEO)</span>
+              </div>
+            </div>
+            
+            <!-- Demo Role Switcher Submenu -->
+            <div style="padding:10px 14px; border-bottom:1px solid var(--border-color); background:var(--bg-app);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">DEMO ROLE SWITCHER</span>
+                <span style="font-size:9px; font-weight:700; background:var(--color-warning-bg); color:var(--color-warning); padding:1px 5px; border-radius:3px;">DEMO ONLY</span>
+              </div>
+              <select id="demo-role-select" onchange="KhangNghiApp.switchDemoRole(this.value)" style="width:100%; font-size:11.5px; padding:6px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-main); outline:none;">
+                <option value="CEO">👑 CEO (Ban Giám Đốc)</option>
+                <option value="Sales">📈 Sales (Bán hàng)</option>
+                <option value="Purchase">🛒 Purchase (Mua hàng)</option>
+                <option value="Warehouse">📦 Warehouse (Thủ kho)</option>
+                <option value="Logistics">🚚 Logistics (Vận chuyển)</option>
+                <option value="Admin">⚙️ Admin (Quản trị viên)</option>
+              </select>
+            </div>
+
+            <button type="button" id="topbar-signout-btn" onclick="KhangNghiAuth.logout()" style="width:100%; text-align:left; background:none; border:none; padding:12px 14px; font-size:12px; color:var(--color-danger); font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-right-from-bracket"></i> <span>Đăng Xuất (Sign Out)</span>
+            </button>
+          </div>
+        </div>
+
+        <span class="demo-environment-badge">PROTOTYPE DEMO</span>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         3. MAIN CONTENT CONTAINER VIEWS
+         ====================================================================== -->
+    <main id="main-content">
+      <!-- Active Filter Chips Bar -->
+      <div class="active-filters-bar" id="active-filter-chips"></div>
+
+      <!-- VIEW 00: AUTHENTICATION LOGIN PAGE -->
+      <section class="view-section" id="view-login" style="display:none; padding:0;">
+        <div class="login-wrapper" style="min-height:85vh; display:flex; align-items:center; justify-content:center; padding:20px;">
+          <div class="login-card" style="width:100%; max-width:440px; background:var(--bg-card); backdrop-filter:blur(24px); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow-xl); color:var(--text-main);">
+            
+            <!-- Brand Header -->
+            <div style="text-align:center; margin-bottom:24px;">
+              <div style="width:52px; height:52px; background:linear-gradient(135deg, var(--color-primary), #1d4ed8); border-radius:14px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; color:white; margin-bottom:12px; box-shadow:0 10px 20px rgba(59, 130, 246, 0.3);">
+                KN
+              </div>
+              <h2 style="font-size:20px; font-weight:800; letter-spacing:-0.5px; margin:0 0 4px 0; color:var(--text-main);">KHANG NGHI</h2>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--color-primary); font-weight:700;">Business Intelligence</div>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-top:8px;">Đăng nhập vào hệ thống phân tích dữ liệu doanh nghiệp</p>
+            </div>
+
+            <!-- Alert Message Box -->
+            <div id="login-alert-box" style="display:none; background:var(--color-danger-bg); border:1px solid var(--color-danger); color:var(--color-danger); padding:10px 14px; border-radius:var(--radius-sm); font-size:12.5px; margin-bottom:20px; align-items:center; gap:8px;">
+              <i class="fa-solid fa-circle-exclamation" style="font-size:14px;"></i>
+              <span id="login-alert-msg">Email hoặc mật khẩu không chính xác.</span>
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" onsubmit="event.preventDefault(); KhangNghiApp.handleLogin();">
+              <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Email hoặc Tên tài khoản</label>
+                <div style="position:relative;">
+                  <i class="fa-solid fa-envelope" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+                  <input type="text" id="login-email" placeholder="ceo@khangnghi.demo" required style="width:100%; padding:10px 12px 10px 36px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:13px; outline:none; transition:all 0.2s;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='var(--border-color)'">
+                </div>
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Mật khẩu</label>
+                <div style="position:relative;">
+                  <i class="fa-solid fa-lock" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+                  <input type="password" id="login-password" placeholder="••••••••" required style="width:100%; padding:10px 36px 10px 36px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:13px; outline:none; transition:all 0.2s;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='var(--border-color)'">
+                  <button type="button" onclick="KhangNghiApp.togglePasswordVisibility()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:13px;">
+                    <i class="fa-solid fa-eye" id="password-toggle-icon"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:12px;">
+                <label style="display:flex; align-items:center; gap:8px; color:var(--text-muted); cursor:pointer;">
+                  <input type="checkbox" id="login-remember" style="accent-color:var(--color-primary); cursor:pointer;">
+                  <span>Ghi nhớ đăng nhập (Remember me)</span>
+                </label>
+              </div>
+
+              <button type="submit" id="login-submit-btn" style="width:100%; padding:11px; background:linear-gradient(135deg, var(--color-primary), #2563eb); border:none; border-radius:var(--radius-sm); color:white; font-size:13.5px; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 12px rgba(37, 99, 235, 0.3);">
+                <span id="login-btn-text">Đăng Nhập</span>
+              </button>
+            </form>
+
+            <!-- Quick Demo Account Selector (For Evaluation / Defense) -->
+            <div style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border-color);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Đăng Nhập Nhanh (Demo Accounts)</span>
+                <span style="font-size:9.5px; font-weight:700; background:var(--color-primary-light); color:var(--color-primary); padding:2px 6px; border-radius:4px;">1-CLICK</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('ceo@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">👑 CEO</button>
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('sales@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">📈 Sales</button>
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('purchase@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">🛒 Purchase</button>
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('warehouse@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">📦 Warehouse</button>
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('logistics@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">🚚 Logistics</button>
+                <button type="button" onclick="KhangNghiApp.fillDemoAccount('admin@khangnghi.demo')" style="padding:7px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); font-size:11px; font-weight:600; cursor:pointer; text-align:center;">⚙️ Admin</button>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top:24px; text-align:center; font-size:11px; color:var(--text-muted);">
+              <div>Khang Nghi Business Intelligence</div>
+              <div style="margin-top:2px;">Graduation Thesis Project &bull; Enterprise DWH</div>
+              <div style="margin-top:8px; display:inline-block; font-weight:700; background:var(--color-warning-bg); color:var(--color-warning); padding:2px 8px; border-radius:12px; font-size:10px;">
+                DEMO ENVIRONMENT
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 403: ACCESS DENIED PAGE -->
+      <section class="view-section" id="view-403" style="display:none;">
+        <div style="min-height:60vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 20px;">
+          <div style="max-width:500px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:40px; box-shadow:var(--shadow-xl); backdrop-filter:blur(16px);">
+            <div style="width:70px; height:70px; background:var(--color-danger-bg); color:var(--color-danger); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:32px; margin-bottom:20px;">
+              <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <h1 style="font-size:48px; font-weight:800; color:var(--color-danger); margin:0 0 10px 0; letter-spacing:-1px;">403</h1>
+            <h2 style="font-size:20px; font-weight:700; margin:0 0 12px 0; color:var(--text-main);">Access Denied (Không Có Quyền Truy Cập)</h2>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:20px;">
+              Bạn không có quyền truy cập không gian phân tích dữ liệu này (<code id="403-attempted-route">/route</code>).
+            </p>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px 14px; border-radius:var(--radius-sm); font-size:12px; text-align:left; margin-bottom:24px;">
+              <div style="color:var(--text-muted); margin-bottom:4px;">Vai trò tài khoản hiện tại:</div>
+              <div style="font-weight:700; color:var(--text-main);" id="403-current-role">Sales</div>
+            </div>
+            <a href="#/overview" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-weight:600; text-decoration:none;">
+              <i class="fa-solid fa-house"></i> Quay Về Executive Overview
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 404: NOT FOUND PAGE -->
+      <section class="view-section" id="view-404" style="display:none;">
+        <div style="min-height:60vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 20px;">
+          <div style="max-width:500px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:40px; box-shadow:var(--shadow-xl); backdrop-filter:blur(16px);">
+            <div style="width:70px; height:70px; background:var(--color-warning-bg); color:var(--color-warning); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:32px; margin-bottom:20px;">
+              <i class="fa-solid fa-compass-slash"></i>
+            </div>
+            <h1 style="font-size:48px; font-weight:800; color:var(--color-warning); margin:0 0 10px 0; letter-spacing:-1px;">404</h1>
+            <h2 style="font-size:20px; font-weight:700; margin:0 0 12px 0; color:var(--text-main);">Page Not Found (Không Tìm Thấy Trang)</h2>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:24px;">
+              Đường dẫn phân tích này không tồn tại hoặc đã được di chuyển trong hệ thống BI Khang Nghị.
+            </p>
+            <a href="#/overview" class="btn btn-primary" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-weight:600; text-decoration:none;">
+              <i class="fa-solid fa-house"></i> Quay Về Executive Overview
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 01: EXECUTIVE OVERVIEW -->
+      <section id="view-overview" class="view-section active">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Executive Overview</h1>
+            <p class="page-subtitle">Tổng quan hiệu quả hoạt động kinh doanh Công ty Cổ phần Khang Nghị</p>
+          </div>
+        </div>
+
+        <div class="grid-kpi-4" id="overview-kpis"></div>
+
+        <div class="grid-charts-2-1">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-chart-area" style="color:var(--color-primary);"></i> Xu Hướng Doanh Thu & Lợi Nhuận</h3>
+                <span class="chart-description">Theo 12 tháng năm 2015 ($1,000)</span>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-ov-trend"></div>
+          </div>
+
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-accent);"></i> Cơ Cấu Doanh Thu</h3>
+                <span class="chart-description">Theo Nhóm sản phẩm</span>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-ov-category"></div>
+          </div>
+        </div>
+
+        <div class="grid-charts-2">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-globe" style="color:var(--color-primary);"></i> Doanh Số Theo Khu Vực (Top Regions)</h3>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-ov-region"></div>
+          </div>
+
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--color-warning);"></i> AI Forecast Preview (ML.NET SSA)</h3>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-ov-forecast-preview"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 02: SALES ANALYTICS -->
+      <section id="view-sales" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Sales Analytics</h1>
+            <p class="page-subtitle" id="sales-dynamic-subtitle">Giám sát doanh số, lợi nhuận, AOV và chiết khấu (Q01 - Q20)</p>
+          </div>
+        </div>
+
+        <!-- SMART FILTER BAR -->
+        <div class="glass-card smart-filter-bar" style="padding:12px 16px; margin-bottom:14px; border-radius:var(--radius-md); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+          
+          <!-- Search & Selectors Group -->
+          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:320px; position:relative;">
+            <!-- Modern Search Box with Ctrl+K -->
+            <div style="position:relative; flex:1; min-width:220px;">
+              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+              <input type="text" id="sales-search-input" placeholder="Search products, customers, regions..." style="width:100%; padding:8px 60px 8px 34px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); outline:none; transition:all 0.2s;" onfocus="KhangNghiApp.showSearchSuggestions()" oninput="KhangNghiApp.onSearchInput(this.value)">
+              <span style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:10px; font-weight:700; background:var(--bg-app); border:1px solid var(--border-color); padding:2px 5px; border-radius:4px; color:var(--text-muted); pointer-events:none;">Ctrl K</span>
+              
+              <!-- Suggestions Dropdown -->
+              <div id="sales-search-suggestions" style="display:none; position:absolute; left:0; top:110%; width:100%; max-height:280px; overflow-y:auto; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); box-shadow:var(--shadow-xl); z-index:1000; padding:8px 0; backdrop-filter:blur(16px);"></div>
+            </div>
+
+            <!-- Quick Selectors -->
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <select id="sales-filter-year" onchange="KhangNghiFilters.setFilter('year', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="2015" selected>Năm: 2015</option>
+                <option value="2014">Năm: 2014</option>
+                <option value="2013">Năm: 2013</option>
+                <option value="2012">Năm: 2012</option>
+                <option value="ALL">Tất cả năm</option>
+              </select>
+
+              <select id="sales-filter-region" onchange="KhangNghiFilters.setFilter('region', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Regions" selected>Vùng: Tất cả</option>
+                <option value="North America">North America</option>
+                <option value="South East Asia">South East Asia</option>
+                <option value="Western Europe">Western Europe</option>
+                <option value="East Asia">East Asia</option>
+                <option value="South America">South America</option>
+              </select>
+
+              <select id="sales-filter-category" onchange="KhangNghiFilters.setFilter('category', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Categories" selected>Danh mục: Tất cả</option>
+                <option value="Truyền động">Truyền động</option>
+                <option value="Tự động hóa">Tự động hóa</option>
+                <option value="Thiết bị đóng cắt">Thiết bị đóng cắt</option>
+              </select>
+
+              <select id="sales-filter-segment" onchange="KhangNghiFilters.setFilter('segment', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Segments" selected>Phân khúc: Tất cả</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Consumer">Consumer</option>
+                <option value="Home Office">Home Office</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Actions & Presets Group -->
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <!-- Presets Select -->
+            <select id="sales-preset-select" onchange="KhangNghiFilters.loadPreset(this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;" title="Filter Presets">
+              <option value="All Sales">View: All Sales</option>
+              <option value="High Profit Sales">View: High Profit</option>
+              <option value="APAC Technology 2015">View: APAC Tech 2015</option>
+              <option value="Low Margin Alert">View: Low Margin</option>
+            </select>
+
+            <!-- Save View Button -->
+            <button class="topbar-action-btn" onclick="KhangNghiApp.saveCurrentPreset()" title="Lưu View Hiện Tại" style="width:auto; padding:0 8px; font-size:11.5px;">
+              <i class="fa-regular fa-bookmark"></i>
+            </button>
+
+            <!-- [+ Filters Drawer] -->
+            <button class="topbar-action-btn" onclick="document.getElementById('filter-panel').classList.add('active')" title="Lọc Nâng Cao" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-sliders"></i> <span>Filters</span> <span class="filter-count-badge" style="display:none; font-weight:700; color:var(--color-primary);">(0)</span>
+            </button>
+
+            <!-- Compare Mode Button -->
+            <button class="topbar-action-btn" id="sales-compare-btn" onclick="KhangNghiApp.toggleCompareMode()" title="So sánh 2015 vs 2014" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-code-compare"></i> <span>Compare</span>
+            </button>
+
+            <!-- Refresh Button -->
+            <button class="topbar-action-btn" id="sales-refresh-btn" onclick="KhangNghiApp.refreshSalesData()" title="Làm mới dữ liệu" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-arrows-rotate" id="sales-refresh-icon"></i> <span>Refresh</span>
+            </button>
+
+            <!-- Export Menu -->
+            <div style="position:relative;">
+              <button class="topbar-action-btn" onclick="KhangNghiApp.toggleExportMenu()" title="Xuất Báo Cáo" style="width:auto; padding:0 10px; font-size:12px; gap:6px; background:var(--color-primary); color:white; border:none; font-weight:600;">
+                <i class="fa-solid fa-download"></i> <span>Export</span> <i class="fa-solid fa-caret-down"></i>
+              </button>
+              <div id="sales-export-dropdown" class="dropdown-menu" style="right:0; width:180px; padding:6px 0; display:none;">
+                <div class="dropdown-item" onclick="KhangNghiApp.exportSalesCSV()"><i class="fa-solid fa-file-csv" style="color:var(--color-success); margin-right:8px;"></i> Export CSV Data</div>
+                <div class="dropdown-item" onclick="KhangNghiApp.exportChartPNG()"><i class="fa-solid fa-image" style="color:var(--color-primary); margin-right:8px;"></i> Export Chart PNG</div>
+                <div class="dropdown-item" onclick="KhangNghiApp.printSalesView()"><i class="fa-solid fa-print" style="color:var(--text-muted); margin-right:8px;"></i> Print View</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE CHIPS CONTAINER -->
+        <div id="sales-active-chips" style="margin-bottom:14px;"></div>
+
+        <!-- KPI Summary Cards -->
+        <div class="grid-kpi-4" id="sales-kpis"></div>
+
+        <!-- EMPTY STATE CONTAINER (Hidden by default) -->
+        <div id="sales-empty-state" style="display:none; padding:40px; text-align:center; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); margin-bottom:16px;">
+          <div style="width:60px; height:60px; background:var(--color-warning-bg); color:var(--color-warning); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+          </div>
+          <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:var(--text-main);">No Sales Data Found</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">Không tìm thấy đơn hàng nào phù hợp với điều kiện lọc hiện tại.</p>
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn btn-primary" onclick="KhangNghiFilters.resetAllFilters()">Clear All Filters</button>
+            <button class="btn btn-secondary" onclick="KhangNghiFilters.setFilter('year', 'ALL')">Change Date Range</button>
+          </div>
+        </div>
+
+        <!-- CHARTS SECTION WITH METRIC & GRANULARITY SWITCHERS -->
+        <div class="grid-charts-2" id="sales-charts-container">
+          <!-- Trend Chart Card -->
+          <div class="glass-card chart-card">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Xu Hướng Doanh Số</h3>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <!-- Metric Switcher -->
+                <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                  <button class="segment-btn active" data-metric="revenue" onclick="KhangNghiApp.switchSalesMetric('revenue', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Revenue</button>
+                  <button class="segment-btn" data-metric="profit" onclick="KhangNghiApp.switchSalesMetric('profit', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Profit</button>
+                  <button class="segment-btn" data-metric="quantity" onclick="KhangNghiApp.switchSalesMetric('quantity', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Quantity</button>
+                  <button class="segment-btn" data-metric="margin" onclick="KhangNghiApp.switchSalesMetric('margin', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Margin</button>
+                </div>
+
+                <!-- Time Granularity Switcher -->
+                <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                  <button class="gran-btn active" data-gran="monthly" onclick="KhangNghiApp.switchGranularity('monthly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Monthly</button>
+                  <button class="gran-btn" data-gran="quarterly" onclick="KhangNghiApp.switchGranularity('quarterly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Quarterly</button>
+                  <button class="gran-btn" data-gran="yearly" onclick="KhangNghiApp.switchGranularity('yearly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Yearly</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-canvas-wrapper" id="chart-sal-trend"></div>
+          </div>
+
+          <!-- Category & Ranking Card -->
+          <div class="glass-card chart-card">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div class="chart-title-group">
+                <h3 class="chart-title" id="sales-ranking-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-accent);"></i> Cơ Cấu Doanh Thu</h3>
+              </div>
+
+              <!-- Top/Bottom Ranking Switcher -->
+              <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                <button class="rank-btn active" data-rank="top10" onclick="KhangNghiApp.switchRankingMode('top10', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Top 10</button>
+                <button class="rank-btn" data-rank="bottom10" onclick="KhangNghiApp.switchRankingMode('bottom10', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Bottom 10</button>
+              </div>
+            </div>
+
+            <div class="chart-canvas-wrapper" id="chart-sal-cat"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 03: PURCHASE ANALYTICS WORKSPACE -->
+      <section id="view-purchase" class="view-section">
+        <!-- PAGE HEADER -->
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">Purchase Analytics</h1>
+            <p class="page-subtitle" id="purchase-dynamic-subtitle">Phân tích chi phí mua hàng, nhà cung cấp và hiệu quả nhập hàng</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted);">
+            <span class="badge badge-info" style="font-size:10.5px;">SIMULATED VENDOR MASTER DATA</span>
+            <span>Last updated: 18/09/2026 08:30 (Healthy)</span>
+          </div>
+        </div>
+
+        <!-- SMART FILTER BAR (PURCHASE WORKSPACE) -->
+        <div class="glass-card smart-filter-bar" style="padding:12px 16px; margin-bottom:14px; border-radius:var(--radius-md); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+          
+          <!-- Search & Selectors Group -->
+          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:320px; position:relative;">
+            <!-- Modern Search Box with Ctrl+K -->
+            <div style="position:relative; flex:1; min-width:220px;">
+              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+              <input type="text" id="purchase-search-input" placeholder="Search suppliers, products, purchase orders..." style="width:100%; padding:8px 60px 8px 34px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); outline:none; transition:all 0.2s;" onfocus="KhangNghiApp.showPurchaseSearchSuggestions()" oninput="KhangNghiApp.onPurchaseSearchInput(this.value)">
+              <span style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:10px; font-weight:700; background:var(--bg-app); border:1px solid var(--border-color); padding:2px 5px; border-radius:4px; color:var(--text-muted); pointer-events:none;">Ctrl K</span>
+              
+              <!-- Suggestions Dropdown -->
+              <div id="purchase-search-suggestions" style="display:none; position:absolute; left:0; top:110%; width:100%; max-height:280px; overflow-y:auto; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); box-shadow:var(--shadow-xl); z-index:1000; padding:8px 0; backdrop-filter:blur(16px);"></div>
+            </div>
+
+            <!-- Quick Selectors -->
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <select id="purchase-filter-year" onchange="KhangNghiFilters.setFilter('year', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="2015" selected>Năm: 2015</option>
+                <option value="2014">Năm: 2014</option>
+                <option value="2013">Năm: 2013</option>
+                <option value="2012">Năm: 2012</option>
+                <option value="ALL">Tất cả năm</option>
+              </select>
+
+              <select id="purchase-filter-supplier" onchange="KhangNghiFilters.setFilter('supplier', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Suppliers" selected>NCC: Tất cả</option>
+                <option value="Tập đoàn HP Việt Nam">Tập đoàn HP Việt Nam</option>
+                <option value="Canon Asia Marketing Corp">Canon Asia Marketing Corp</option>
+                <option value="Nội thất Hòa Phát">Nội thất Hòa Phát</option>
+                <option value="Deli Office Supplies Global">Deli Office Supplies Global</option>
+                <option value="Panasonic Industry Vietnam">Panasonic Industry Vietnam</option>
+                <option value="Parker Pen International">Parker Pen International</option>
+              </select>
+
+              <select id="purchase-filter-category" onchange="KhangNghiFilters.setFilter('category', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Categories" selected>Danh mục: Tất cả</option>
+                <option value="Thiết bị Văn phòng">Thiết bị Văn phòng</option>
+                <option value="Nội thất Văn phòng">Nội thất Văn phòng</option>
+                <option value="Đồ dùng Văn phòng">Đồ dùng Văn phòng</option>
+              </select>
+
+              <select id="purchase-filter-manufacturer" onchange="KhangNghiFilters.setFilter('manufacturer', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
+                <option value="All Manufacturers" selected>Hãng: Tất cả</option>
+                <option value="Canon Inc">Canon Inc</option>
+                <option value="Ergonomic Corp">Ergonomic Corp</option>
+                <option value="SmartDesk Furniture Ltd">SmartDesk Furniture Ltd</option>
+                <option value="Double A Paper Group">Double A Paper Group</option>
+                <option value="Panasonic Electric">Panasonic Electric</option>
+                <option value="Parker Pen International">Parker Pen International</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Actions & Presets Group -->
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <!-- Presets Select -->
+            <select id="purchase-preset-select" onchange="KhangNghiFilters.loadPreset(this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;" title="Filter Presets">
+              <option value="All Purchases">View: All Purchases</option>
+              <option value="Top Suppliers">View: Top Suppliers</option>
+              <option value="High Cost Products">View: High Cost</option>
+              <option value="Cost Increase Alert">View: Cost Increase Alert</option>
+            </select>
+
+            <!-- Save View Button -->
+            <button class="topbar-action-btn" onclick="KhangNghiApp.savePurchasePreset()" title="Lưu View Hiện Tại" style="width:auto; padding:0 8px; font-size:11.5px;">
+              <i class="fa-regular fa-bookmark"></i>
+            </button>
+
+            <!-- [+ Filters Drawer] -->
+            <button class="topbar-action-btn" onclick="document.getElementById('filter-panel').classList.add('active')" title="Lọc Nâng Cao" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-sliders"></i> <span>Filters</span> <span class="filter-count-badge" style="display:none; font-weight:700; color:var(--color-primary);">(0)</span>
+            </button>
+
+            <!-- Compare Mode Button -->
+            <button class="topbar-action-btn" id="purchase-compare-btn" onclick="KhangNghiApp.togglePurchaseCompareMode()" title="So sánh 2015 vs 2014" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-code-compare"></i> <span>Compare</span>
+            </button>
+
+            <!-- Refresh Button -->
+            <button class="topbar-action-btn" id="purchase-refresh-btn" onclick="KhangNghiApp.refreshPurchaseData()" title="Làm mới dữ liệu" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-arrows-rotate" id="purchase-refresh-icon"></i> <span>Refresh</span>
+            </button>
+
+            <!-- Export Menu -->
+            <div style="position:relative;">
+              <button class="topbar-action-btn" onclick="KhangNghiApp.togglePurchaseExportMenu()" title="Xuất Báo Cáo" style="width:auto; padding:0 10px; font-size:12px; gap:6px; background:var(--color-primary); color:white; border:none; font-weight:600;">
+                <i class="fa-solid fa-download"></i> <span>Export</span> <i class="fa-solid fa-caret-down"></i>
+              </button>
+              <div id="purchase-export-dropdown" class="dropdown-menu" style="right:0; width:180px; padding:6px 0; display:none;">
+                <div class="dropdown-item" onclick="KhangNghiApp.exportPurchaseCSV()"><i class="fa-solid fa-file-csv" style="color:var(--color-success); margin-right:8px;"></i> Export CSV Data</div>
+                <div class="dropdown-item" onclick="KhangNghiApp.exportPurchaseChartPNG()"><i class="fa-solid fa-image" style="color:var(--color-primary); margin-right:8px;"></i> Export Chart PNG</div>
+                <div class="dropdown-item" onclick="KhangNghiApp.printPurchaseView()"><i class="fa-solid fa-print" style="color:var(--text-muted); margin-right:8px;"></i> Print View</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE CHIPS CONTAINER -->
+        <div id="purchase-active-chips" style="margin-bottom:14px;"></div>
+
+        <!-- 6 KPI SUMMARY CARDS WITH TOOLTIPS -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:16px;" id="purchase-kpis"></div>
+
+        <!-- EMPTY STATE CONTAINER (Hidden by default) -->
+        <div id="purchase-empty-state" style="display:none; padding:40px; text-align:center; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); margin-bottom:16px;">
+          <div style="width:60px; height:60px; background:var(--color-warning-bg); color:var(--color-warning); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+          </div>
+          <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:var(--text-main);">No Purchase Data Found</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">Không tìm thấy đơn hàng mua (PO) nào phù hợp với điều kiện lọc hiện tại.</p>
+          <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn btn-primary" onclick="KhangNghiFilters.resetAllFilters()">Clear All Filters</button>
+          </div>
+        </div>
+
+        <!-- MAIN CONTAINER FOR CHARTS & DASHBOARDS -->
+        <div id="purchase-main-container">
+          <!-- LEVEL 2: MAIN PURCHASE TREND CHART -->
+          <div class="glass-card chart-card" style="margin-bottom:16px;">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div class="chart-title-group">
+                <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Purchase Cost Trend</h3>
+                <span class="chart-description">Xu hướng chi phí nhập hàng & số lượng mua theo thời gian</span>
+              </div>
+              
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <!-- Metric Switcher -->
+                <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                  <button class="segment-btn active" data-metric="cost" onclick="KhangNghiApp.switchPurchaseMetric('cost', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Purchase Cost</button>
+                  <button class="segment-btn" data-metric="qty" onclick="KhangNghiApp.switchPurchaseMetric('qty', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Quantity</button>
+                  <button class="segment-btn" data-metric="unitCost" onclick="KhangNghiApp.switchPurchaseMetric('unitCost', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Avg Unit Cost</button>
+                </div>
+
+                <!-- Time Granularity Switcher -->
+                <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                  <button class="gran-btn active" data-gran="monthly" onclick="KhangNghiApp.switchPurchaseGranularity('monthly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Monthly</button>
+                  <button class="gran-btn" data-gran="quarterly" onclick="KhangNghiApp.switchPurchaseGranularity('quarterly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Quarterly</button>
+                  <button class="gran-btn" data-gran="yearly" onclick="KhangNghiApp.switchPurchaseGranularity('yearly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Yearly</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-canvas-wrapper" id="chart-pur-trend"></div>
+          </div>
+
+          <!-- LEVEL 3: SUPPLIER SPEND & CONTRIBUTION & CONCENTRATION -->
+          <div class="grid-charts-2" style="margin-bottom:16px;">
+            <!-- Supplier Spend Bar Chart -->
+            <div class="glass-card chart-card">
+              <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-truck-field" style="color:var(--color-primary);"></i> Supplier Spend Breakdown</h3>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
+                    <button class="rank-btn active" data-rank="top5" onclick="KhangNghiApp.switchSupplierRankingMode('top5', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Top 5</button>
+                    <button class="rank-btn" data-rank="top10" onclick="KhangNghiApp.switchSupplierRankingMode('top10', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Top 10</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-canvas-wrapper" id="chart-pur-supplier"></div>
+            </div>
+
+            <!-- Supplier Contribution & Concentration Card -->
+            <div class="glass-card chart-card">
+              <div class="chart-card-header" style="margin-bottom:12px;">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-accent);"></i> Supplier Contribution & Concentration</h3>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center;">
+                <div class="chart-canvas-wrapper" id="chart-pur-sup-donut"></div>
+                <div>
+                  <div style="background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:12px; margin-bottom:10px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">SUPPLIER CONCENTRATION</div>
+                    <div style="font-size:22px; font-weight:800; color:var(--color-primary); margin:4px 0;" id="sup-conc-top1">32.4%</div>
+                    <div style="font-size:11.5px; color:var(--text-secondary);" id="sup-conc-desc">Top 1 Supplier (Tập đoàn HP Việt Nam) chiếm 32.4% tổng spend.</div>
+                  </div>
+                  
+                  <div style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px solid var(--border-color);">
+                    <span>Top 3 Suppliers Share:</span><strong id="sup-conc-top3">78.4%</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0;">
+                    <span>Top 5 Suppliers Share:</span><strong id="sup-conc-top5">96.4%</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEVEL 4: CATEGORY SPEND & MANUFACTURER ANALYSIS -->
+          <div class="grid-charts-2" style="margin-bottom:16px;">
+            <div class="glass-card chart-card">
+              <div class="chart-card-header">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-boxes-stacked" style="color:var(--color-warning);"></i> Purchase Cost by Category</h3>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper" id="chart-pur-cat"></div>
+            </div>
+
+            <div class="glass-card chart-card">
+              <div class="chart-card-header">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-industry" style="color:var(--color-success);"></i> Purchase by Manufacturer</h3>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper" id="chart-pur-mfg"></div>
+            </div>
+          </div>
+
+          <!-- LEVEL 5: UNIT COST TREND & COST VARIANCE TABLE -->
+          <div class="grid-charts-2" style="margin-bottom:16px;">
+            <div class="glass-card chart-card">
+              <div class="chart-card-header">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-calculator" style="color:var(--color-primary);"></i> Weighted Average Unit Cost Trend</h3>
+                  <span class="chart-description">Biến động chi phí nhập trung bình trọng số ($/sản phẩm)</span>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper" id="chart-pur-unit-cost"></div>
+            </div>
+
+            <div class="glass-card chart-card">
+              <div class="chart-card-header" style="margin-bottom:10px;">
+                <div class="chart-title-group">
+                  <h3 class="chart-title"><i class="fa-solid fa-arrow-trend-up" style="color:var(--color-danger);"></i> Cost Variance (Biến Động Giá Nhập)</h3>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="enterprise-table" style="font-size:12px;">
+                  <thead>
+                    <tr>
+                      <th>Sản Phẩm</th>
+                      <th>Giá Nhập Kỳ Trước</th>
+                      <th>Giá Nhập Hiện Tại</th>
+                      <th>Biến Động %</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pur-cost-variance-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEVEL 6: SUPPLIER x CATEGORY MATRIX -->
+          <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h3 style="font-size:14px; font-weight:700; color:var(--text-main); margin:0;">
+                <i class="fa-solid fa-table-cells" style="color:var(--color-primary); margin-right:6px;"></i> Supplier × Category Spend Matrix
+              </h3>
+              <span style="font-size:11px; color:var(--text-muted);">Phân bổ ngân sách mua hàng theo Nhà cung cấp & Danh mục ($)</span>
+            </div>
+            <div class="table-responsive">
+              <table class="enterprise-table" style="font-size:12px;">
+                <thead>
+                  <tr>
+                    <th>Nhà Cung Cấp</th>
+                    <th>Thiết bị Văn phòng</th>
+                    <th>Nội thất Văn phòng</th>
+                    <th>Đồ dùng Văn phòng</th>
+                    <th>Tổng Chi Phí Mua</th>
+                  </tr>
+                </thead>
+                <tbody id="pur-matrix-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LEVEL 7: PURCHASE ORDERS TABLE -->
+          <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <h3 style="font-size:14px; font-weight:700; color:var(--text-main); margin:0;">
+                <i class="fa-solid fa-file-contract" style="color:var(--color-accent); margin-right:6px;"></i> Purchase Performance & Order Registry
+              </h3>
+              <span style="font-size:11.5px; color:var(--text-muted);">Nhấp vào dòng đơn hàng để xem chi tiết PO Detail Drawer</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="enterprise-table" style="font-size:12px;">
+                <thead>
+                  <tr>
+                    <th>Mã PO</th>
+                    <th>Ngày Nhập</th>
+                    <th>Nhà Cung Cấp</th>
+                    <th>Sản Phẩm</th>
+                    <th>Hãng Sản Xuất</th>
+                    <th>Số Lượng</th>
+                    <th>Đơn Giá Nhập</th>
+                    <th>Tổng Chi Phí Mua</th>
+                  </tr>
+                </thead>
+                <tbody id="pur-orders-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- LEVEL 8: INSIGHTS, ALERTS & PREVIEW CONTEXT CARDS -->
+          <div class="grid-charts-2" style="margin-bottom:16px;">
+            <!-- Key Insights & Attention Required -->
+            <div class="glass-card" style="padding:16px;">
+              <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+                <i class="fa-solid fa-lightbulb" style="color:var(--color-warning); margin-right:6px;"></i> Key Insights & Procurement Rule Alerts
+              </h3>
+              <div id="pur-insights-container" style="font-size:12px; line-height:1.7; color:var(--text-secondary); margin-bottom:14px;"></div>
+              <div id="pur-alerts-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+
+            <!-- Context Previews: Purchase vs Sales & Purchase & Inventory -->
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <!-- Purchase vs Sales Card -->
+              <div class="glass-card" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <h4 style="font-size:13px; font-weight:700; margin:0; color:var(--text-main);"><i class="fa-solid fa-scale-balanced" style="color:var(--color-primary);"></i> Purchase vs Sales Alignment</h4>
+                  <a href="#/cross-analysis" class="btn btn-secondary" style="font-size:10.5px; padding:3px 8px; text-decoration:none;">Open Cross Analysis</a>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;" id="pur-vs-sales-body"></div>
+              </div>
+
+              <!-- Purchase & Inventory Card -->
+              <div class="glass-card" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <h4 style="font-size:13px; font-weight:700; margin:0; color:var(--text-main);"><i class="fa-solid fa-warehouse" style="color:var(--color-success);"></i> Purchase & Inventory Safety Context</h4>
+                  <a href="#/inventory" class="btn btn-secondary" style="font-size:10.5px; padding:3px 8px; text-decoration:none;">View Inventory Analysis</a>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;" id="pur-vs-inv-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 04: INVENTORY CONTROL CENTER (ROUND 1) -->
+      <section id="view-inventory" class="view-section">
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">Inventory Analytics</h1>
+            <p class="page-subtitle" id="inventory-dynamic-subtitle">Phân tích tồn kho, mức tồn và sức khỏe hàng hóa</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <a href="#/sales" class="btn btn-secondary" style="font-size:11px; padding:4px 10px; text-decoration:none;"><i class="fa-solid fa-chart-line"></i> View Sales Performance</a>
+            <a href="#/purchase" class="btn btn-secondary" style="font-size:11px; padding:4px 10px; text-decoration:none;"><i class="fa-solid fa-cart-flatbed"></i> View Purchase History</a>
+            <a href="#/cross-analysis" class="btn btn-primary" style="font-size:11px; padding:4px 10px; text-decoration:none;"><i class="fa-solid fa-diagram-project"></i> Open Cross Analysis</a>
+          </div>
+        </div>
+
+        <!-- SMART FILTER BAR -->
+        <div class="glass-card smart-filter-bar" style="padding:12px 16px; margin-bottom:14px; border-radius:var(--radius-md); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:320px;">
+            <input type="text" id="inventory-search-input" placeholder="Search products, warehouses, SKUs..." style="padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); outline:none; flex:1;" oninput="KhangNghiApp.onInventorySearchInput(this.value)">
+            <select id="inventory-filter-warehouse" onchange="KhangNghiFilters.setFilter('warehouse', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);">
+              <option value="All Warehouses" selected>Warehouse: Tất cả</option>
+              <option value="Kho Miền Bắc (Hà Nội)">Kho Miền Bắc (Hà Nội)</option>
+              <option value="Kho Miền Nam (TP.HCM)">Kho Miền Nam (TP.HCM)</option>
+              <option value="Kho Miền Trung (Đà Nẵng)">Kho Miền Trung (Đà Nẵng)</option>
+            </select>
+            <select id="inventory-filter-category" onchange="KhangNghiFilters.setFilter('category', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);">
+              <option value="All Categories" selected>Danh mục: Tất cả</option>
+              <option value="Thiết bị Văn phòng">Thiết bị Văn phòng</option>
+              <option value="Nội thất Văn phòng">Nội thất Văn phòng</option>
+              <option value="Đồ dùng Văn phòng">Đồ dùng Văn phòng</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="topbar-action-btn" onclick="KhangNghiApp.refreshInventoryData()" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+              <i class="fa-solid fa-arrows-rotate"></i> Refresh
+            </button>
+            <button class="topbar-action-btn" onclick="KhangNghiApp.exportInventoryCSV()" style="width:auto; padding:0 10px; font-size:12px; gap:6px; background:var(--color-primary); color:white; border:none; font-weight:600;">
+              <i class="fa-solid fa-download"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 KPI SUMMARY CARDS -->
+        <div class="grid-kpi-4" id="inventory-kpis" style="margin-bottom:16px;"></div>
+
+        <!-- INVENTORY HEALTH SUMMARY VISUAL BAR -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="font-size:13.5px; font-weight:700; color:var(--text-main); margin:0;">
+              <i class="fa-solid fa-heart-pulse" style="color:var(--color-success); margin-right:6px;"></i> Sức Khỏe Tồn Kho (Inventory Health Status)
+            </h3>
+            <span style="font-size:11.5px; color:var(--text-muted);" id="inv-health-ratio-text">Healthy: 72% | Warning: 18% | Critical: 10%</span>
+          </div>
+          <div style="height:12px; border-radius:6px; overflow:hidden; display:flex; background:var(--bg-app);">
+            <div id="inv-health-bar-healthy" style="width:72%; background:var(--color-success);" title="Healthy (An toàn)"></div>
+            <div id="inv-health-bar-warning" style="width:18%; background:var(--color-warning);" title="Warning (Cảnh báo)"></div>
+            <div id="inv-health-bar-critical" style="width:10%; background:var(--color-danger);" title="Critical (Nguy cấp/Hết hàng)"></div>
+          </div>
+        </div>
+
+        <!-- CHARTS GRID -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-warehouse" style="color:var(--color-primary);"></i> Tồn Kho Theo Warehouse</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-inv-warehouse"></div>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-arrow-trend-up" style="color:var(--color-accent);"></i> Biến Động Nhập Xuất Tồn (Stock Movement)</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-inv-movement"></div>
+          </div>
+        </div>
+
+        <!-- MAIN INVENTORY DATA TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-boxes-stacked" style="color:var(--color-primary); margin-right:6px;"></i> Danh Mục Tồn Kho Chi Tiết & Safety Stock Alert
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Mã SKU</th>
+                  <th>Tên Sản Phẩm</th>
+                  <th>Danh Mục</th>
+                  <th>Kho Lưu Trữ</th>
+                  <th>Tồn Kho</th>
+                  <th>Safety Stock</th>
+                  <th>Giá Trị Tồn Kho</th>
+                  <th>Trạng Thái</th>
+                  <th>Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 05: SHIPPING ANALYTICS & SLA (ROUND 2) -->
+      <section id="view-shipping" class="view-section">
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">Shipping Analytics</h1>
+            <p class="page-subtitle" id="shipping-dynamic-subtitle">Phân tích hiệu quả vận chuyển và SLA giao hàng</p>
+          </div>
+        </div>
+
+        <!-- 6 KPI CARDS -->
+        <div class="grid-kpi-4" id="shipping-kpis" style="margin-bottom:16px;"></div>
+
+        <!-- CHARTS GRID -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Chi Phí Vận Chuyển Theo Thời Gian</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-shp-trend"></div>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--color-accent);"></i> Tỷ Lệ Giao Đúng Hạn SLA (On-Time vs Late)</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-shp-donut"></div>
+          </div>
+        </div>
+
+        <!-- SHIPPER PERFORMANCE & LATE DELIVERIES TABLE -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+              <i class="fa-solid fa-truck-fast" style="color:var(--color-primary); margin-right:6px;"></i> Shipper Performance & SLA Rate
+            </h3>
+            <div class="table-responsive">
+              <table class="enterprise-table" style="font-size:12px;">
+                <thead>
+                  <tr>
+                    <th>Đơn Vị Vận Chuyển</th>
+                    <th>Thời Gian TB</th>
+                    <th>Tỷ Lệ Trễ</th>
+                    <th>Trạng Thái SLA</th>
+                  </tr>
+                </thead>
+                <tbody id="shipping-shippers-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+              <i class="fa-solid fa-circle-exclamation" style="color:var(--color-danger); margin-right:6px;"></i> Phân Tích Đơn Hàng Giao Trễ SLA (Late Deliveries)
+            </h3>
+            <div class="table-responsive">
+              <table class="enterprise-table" style="font-size:12px;">
+                <thead>
+                  <tr>
+                    <th>Mã Đơn</th>
+                    <th>Đơn Vị</th>
+                    <th>Dự Kiến</th>
+                    <th>Thực Tế</th>
+                    <th>Trễ</th>
+                  </tr>
+                </thead>
+                <tbody id="shipping-late-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 06: CUSTOMER ANALYTICS (ROUND 3) -->
+      <section id="view-customer" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Customer Analytics</h1>
+            <p class="page-subtitle">Phân tích khách hàng và hành vi mua hàng</p>
+          </div>
+        </div>
+
+        <!-- 6 KPI CARDS -->
+        <div class="grid-kpi-4" id="customer-kpis" style="margin-bottom:16px;"></div>
+
+        <!-- CHARTS GRID -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-primary);"></i> Cơ Cấu Khách Hàng Theo Phân Khúc</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-cus-seg"></div>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-table-cells" style="color:var(--color-accent);"></i> Ma Trận Giá Trị Khách Hàng (Customer Value Matrix)</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-cus-scatter"></div>
+          </div>
+        </div>
+
+        <!-- TOP CUSTOMERS TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-users" style="color:var(--color-primary); margin-right:6px;"></i> Danh Sách Khách Hàng Chiến Lược & Lợi Nhuận
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Mã KH</th>
+                  <th>Tên Khách Hàng</th>
+                  <th>Phân Khúc</th>
+                  <th>Khu Vực</th>
+                  <th>Số Đơn Hàng</th>
+                  <th>Doanh Thu ($)</th>
+                  <th>Lợi Nhuận ($)</th>
+                  <th>Margin (%)</th>
+                </tr>
+              </thead>
+              <tbody id="customer-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 07: PRODUCT ANALYTICS (ROUND 4) -->
+      <section id="view-product" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Product Analytics</h1>
+            <p class="page-subtitle">Phân tích hiệu quả sản phẩm và danh mục</p>
+          </div>
+        </div>
+
+        <!-- 6 KPI CARDS -->
+        <div class="grid-kpi-4" id="product-kpis" style="margin-bottom:16px;"></div>
+
+        <!-- CHARTS GRID -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-primary);"></i> Cơ Cấu Sản Phẩm Theo Danh Mục</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-prd-cat"></div>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-cubes-stacked" style="color:var(--color-accent);"></i> Ma Trận Sinh Lời Sản Phẩm (Profitability Matrix)</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-prd-matrix"></div>
+          </div>
+        </div>
+
+        <!-- PRODUCT REGISTRY TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-box-open" style="color:var(--color-primary); margin-right:6px;"></i> Product Master Registry & Performance
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Mã SKU</th>
+                  <th>Tên Sản Phẩm</th>
+                  <th>Danh Mục</th>
+                  <th>Hãng SX</th>
+                  <th>Đơn Giá</th>
+                  <th>Margin</th>
+                  <th>Tồn Kho</th>
+                  <th>Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody id="product-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 08: SUPPLIER ANALYTICS (ROUND 5) -->
+      <section id="view-supplier" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Supplier Analytics</h1>
+            <p class="page-subtitle">Phân tích nhà cung cấp và chi phí mua hàng</p>
+          </div>
+        </div>
+
+        <!-- 5 KPI CARDS -->
+        <div class="grid-kpi-4" id="supplier-kpis" style="margin-bottom:16px;"></div>
+
+        <!-- CHARTS GRID -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-handshake" style="color:var(--color-primary);"></i> Supplier Spend Breakdown</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-sup-rank"></div>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-card-header">
+              <h3 class="chart-title"><i class="fa-solid fa-industry" style="color:var(--color-accent);"></i> Supplier Concentration Share</h3>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-sup-donut"></div>
+          </div>
+        </div>
+
+        <!-- SUPPLIER TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-truck-field" style="color:var(--color-primary); margin-right:6px;"></i> Supplier Performance & Contract Registry
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Mã NCC</th>
+                  <th>Tên Nhà Cung Cấp</th>
+                  <th>Quốc Gia</th>
+                  <th>Leadtime (Ngày)</th>
+                  <th>Rating</th>
+                  <th>Tổng Chi Phí Nhập ($)</th>
+                  <th>Tỷ Tỉ Chi Tieu (%)</th>
+                </tr>
+              </thead>
+              <tbody id="supplier-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 09: GEOGRAPHY ANALYTICS -->
+      <section id="view-geography" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Geographic Performance</h1>
+            <p class="page-subtitle">Phân tích thị trường kinh doanh theo vùng địa lý</p>
+          </div>
+        </div>
+        <div class="glass-card chart-card" style="margin-bottom:16px;">
+          <div class="chart-canvas-wrapper" id="chart-geo-bar"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 10: CROSS ANALYSIS (ROUND 6) -->
+      <section id="view-cross-analysis" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Cross Analysis Workspace</h1>
+            <p class="page-subtitle">Phân tích mối quan hệ và tương quan giữa các miền dữ liệu (Business Domains)</p>
+          </div>
+        </div>
+
+        <!-- CONTROL PANEL -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">METRIC X (TRỤC X)</label>
+              <select id="cross-metric-x" style="padding:6px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);" onchange="KhangNghiApp.updateCrossAnalysis()">
+                <option value="revenue" selected>Sales Revenue (Doanh Thu)</option>
+                <option value="purchaseCost">Purchase Cost (Chi Phí Mua)</option>
+                <option value="shippingCost">Shipping Cost (Chi Phí Vận Chuyển)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">METRIC Y (TRỤC Y)</label>
+              <select id="cross-metric-y" style="padding:6px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);" onchange="KhangNghiApp.updateCrossAnalysis()">
+                <option value="inventoryVal" selected>Inventory Value (Giá Trị Tồn Kho)</option>
+                <option value="profit">Sales Profit (Lợi Nhuận)</option>
+                <option value="discount">Discount Rate (Mức Chiết Khấu)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">GROUP BY (NHÓM BỞI)</label>
+              <select id="cross-group-by" style="padding:6px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);" onchange="KhangNghiApp.updateCrossAnalysis()">
+                <option value="category" selected>Danh Mục Sản Phẩm</option>
+                <option value="region">Khu Vực Địa Lý</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSIGHT SUMMARY PANEL -->
+        <div class="glass-card" style="padding:14px; margin-bottom:16px; background:var(--color-primary-light); border:1px solid var(--color-primary-border);">
+          <div style="font-size:12.5px; color:var(--text-main);" id="cross-insight-text">
+            💡 <strong>Correlation Summary:</strong> Sales Revenue và Inventory Value thể hiện mối tương quan đồng biến dương rõ rệt trên toàn bộ 3 nhóm hàng.
+          </div>
+        </div>
+
+        <!-- MAIN SCATTER CHART -->
+        <div class="glass-card chart-card" style="margin-bottom:16px;">
+          <div class="chart-canvas-wrapper" id="chart-cross-matrix"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 11: AI SALES FORECAST (ROUND 7) -->
+      <section id="view-forecast" class="view-section">
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">AI Forecast Analytics <span class="badge badge-info" style="vertical-align:middle; font-size:10px;">DEMO FORECAST</span></h1>
+            <p class="page-subtitle">Dự báo xu hướng doanh số kinh doanh sử dụng mô hình ML.NET SSA</p>
+          </div>
+        </div>
+
+        <!-- SUMMARY CARDS & MODEL CARD -->
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+              <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--color-primary); margin-right:6px;"></i> Kết Quả Dự Báo Kỳ Tới (Projected Results)
+            </h3>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; text-align:center;">
+              <div style="background:var(--bg-app); padding:10px; border-radius:6px;">
+                <span style="font-size:11px; color:var(--text-muted);">Tháng Tới (T1/2016)</span>
+                <div style="font-size:18px; font-weight:800; color:var(--color-primary); margin-top:4px;">$615.0K</div>
+              </div>
+              <div style="background:var(--bg-app); padding:10px; border-radius:6px;">
+                <span style="font-size:11px; color:var(--text-muted);">Quý Tới (Q1/2016)</span>
+                <div style="font-size:18px; font-weight:800; color:var(--color-success); margin-top:4px;">$1,865.0K</div>
+              </div>
+              <div style="background:var(--bg-app); padding:10px; border-radius:6px;">
+                <span style="font-size:11px; color:var(--text-muted);">Tăng Trưởng Dự Báo</span>
+                <div style="font-size:18px; font-weight:800; color:var(--color-accent); margin-top:4px;">+8.4% YoY</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:13.5px; font-weight:700; margin-bottom:10px; color:var(--text-main);">
+              <i class="fa-solid fa-microchip" style="color:var(--color-warning); margin-right:6px;"></i> Model Metadata Card (ML.NET SSA)
+            </h3>
+            <div style="font-size:12px; line-height:1.7; color:var(--text-secondary);">
+              <div><strong>Model:</strong> ML.NET Singular Spectrum Analysis (SSA)</div>
+              <div><strong>Training Period:</strong> 2012-01 đến 2015-12 (48 chu kỳ tháng)</div>
+              <div><strong>Accuracy MAPE:</strong> 3.42% (Phù hợp mô phỏng Prototype)</div>
+              <div><strong>Status:</strong> <span class="badge badge-healthy">PROTOTYPE DEMO</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN FORECAST CHART -->
+        <div class="glass-card chart-card" style="margin-bottom:16px;">
+          <div class="chart-canvas-wrapper" id="chart-forecast-main"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 12: WHAT-IF SIMULATOR (ROUND 8) -->
+      <section id="view-what-if" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">What-If Scenario Simulator</h1>
+            <p class="page-subtitle">Mô phỏng tác động của các kịch bản kinh doanh lên lợi nhuận và doanh thu</p>
+          </div>
+        </div>
+
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card" style="padding:16px;">
+            <h3 class="chart-title" style="margin-bottom:16px;"><i class="fa-solid fa-sliders" style="color:var(--color-primary); margin-right:6px;"></i> Kịch Bản Mô Phỏng</h3>
+            <div class="slider-group" style="margin-bottom:12px;">
+              <div class="slider-label" style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Tăng Trưởng Doanh Số (%):</span><strong id="val-growth">0%</strong></div>
+              <input type="range" id="slider-growth" min="-10" max="30" value="0" step="1" style="width:100%;">
+            </div>
+            <div class="slider-group" style="margin-bottom:12px;">
+              <div class="slider-label" style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Mức Chiết Khấu (%):</span><strong id="val-discount">0%</strong></div>
+              <input type="range" id="slider-discount" min="-10" max="15" value="0" step="1" style="width:100%;">
+            </div>
+            <div class="slider-group" style="margin-bottom:12px;">
+              <div class="slider-label" style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><span>Chi Phí Vận Chuyển (%):</span><strong id="val-ship">0%</strong></div>
+              <input type="range" id="slider-ship" min="-20" max="20" value="0" step="2" style="width:100%;">
+            </div>
+            <button class="topbar-action-btn" id="whatif-save-btn" onclick="KhangNghiApp.saveWhatIfScenario()" style="width:100%; height:36px; background:var(--color-primary); color:white; font-weight:600; margin-top:12px;">Lưu Kịch Bản Mô Phỏng (LocalStorage)</button>
+          </div>
+
+          <div class="glass-card" style="padding:16px;">
+            <h3 class="chart-title" style="margin-bottom:16px;"><i class="fa-solid fa-calculator" style="color:var(--color-success); margin-right:6px;"></i> Kết Quả Mô Phỏng Lợi Nhuận</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:14px; text-align:center;">
+              <div><small style="color:var(--text-secondary);">Hiện tại:</small><div class="kpi-main-value" id="whatif-current-prof">$588.0K</div></div>
+              <div><small style="color:var(--text-secondary);">Mô phỏng:</small><div class="kpi-main-value" id="whatif-proj-prof" style="color:var(--color-success);">$588.0K</div></div>
+              <div><small style="color:var(--text-secondary);">Chênh lệch:</small><div class="kpi-main-value" id="whatif-diff">$0</div></div>
+            </div>
+            <div class="chart-canvas-wrapper" id="chart-whatif-compare"></div>
+          </div>
+        </div>
+
+        <!-- SAVED SCENARIOS TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-bookmark" style="color:var(--color-accent); margin-right:6px;"></i> Danh Sách Kịch Bản Đã Lưu (Saved Scenarios)
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>Tên Kịch Bản</th>
+                  <th>Thời Gian Lưu</th>
+                  <th>Tham Số Mô Phỏng</th>
+                  <th>Lợi Nhuận Mô Phỏng</th>
+                </tr>
+              </thead>
+              <tbody id="whatif-saved-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 13: QUESTION CATALOG EXPLORER (ROUND 9) -->
+      <section id="view-question-explorer" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">BI Question Catalog Explorer</h1>
+            <p class="page-subtitle">Quản lý và khám phá danh mục câu hỏi nghiệp vụ Business Intelligence</p>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="explorer-search-input" placeholder="Search business questions, measures..." style="padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); flex:1; outline:none;" oninput="KhangNghiApp.filterQuestionCatalog(this.value)">
+            <select id="explorer-filter-domain" style="padding:6px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);" onchange="KhangNghiApp.filterQuestionCatalogByDomain(this.value)">
+              <option value="ALL" selected>Domain: Tất cả</option>
+              <option value="Sales">Sales</option>
+              <option value="Purchase">Purchase</option>
+              <option value="Inventory">Inventory</option>
+              <option value="Shipping">Shipping</option>
+              <option value="Customer">Customer</option>
+              <option value="Product">Product</option>
+              <option value="Supplier">Supplier</option>
+              <option value="Cross Analysis">Cross Analysis</option>
+              <option value="Forecast">Forecast</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr><th>Question ID</th><th>Domain</th><th>Tên Câu Hỏi Nghiệp Vụ</th><th>Chỉ Số</th><th>Chiều Phân Tích</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+              </thead>
+              <tbody id="explorer-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 14: DATA STATUS & ETL LOG (ROUND 11) -->
+      <section id="view-system-status" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Data Status & ETL Lineage</h1>
+            <p class="page-subtitle">Giám sát tình trạng dữ liệu DWH và lịch sử đồng bộ ETL</p>
+          </div>
+        </div>
+
+        <div class="grid-kpi-4" style="margin-bottom:16px;">
+          <div class="glass-card" style="padding:14px;">
+            <span style="font-size:11px; color:var(--text-muted);">Database DWH</span>
+            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Healthy</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <span style="font-size:11px; color:var(--text-muted);">REST API Layer</span>
+            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Healthy</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <span style="font-size:11px; color:var(--text-muted);">ETL Pipeline</span>
+            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Idle (Ready)</div>
+          </div>
+          <div class="glass-card" style="padding:14px;">
+            <span style="font-size:11px; color:var(--text-muted);">Tổng Số Bản Ghi</span>
+            <div style="font-size:16px; font-weight:800; color:var(--color-primary); margin-top:4px;">51,291 Records</div>
+          </div>
+        </div>
+
+        <!-- VISUAL ETL PIPELINE DIAGRAM -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-diagram-next" style="color:var(--color-primary); margin-right:6px;"></i> Visual ETL Pipeline Diagram
+          </h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:12px; text-align:center;">
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>Source</strong><br><small style="color:var(--text-muted);">Excel Data</small>
+            </div>
+            <div>➔</div>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>Staging</strong><br><small style="color:var(--text-muted);">SqlBulkCopy</small>
+            </div>
+            <div>➔</div>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>Transform</strong><br><small style="color:var(--text-muted);">MERGE SQL</small>
+            </div>
+            <div>➔</div>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>DWH</strong><br><small style="color:var(--text-muted);">DWH_KhangNghi</small>
+            </div>
+            <div>➔</div>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>API</strong><br><small style="color:var(--text-muted);">ASP.NET Core</small>
+            </div>
+            <div>➔</div>
+            <div style="background:var(--bg-app); border:1px solid var(--border-color); padding:10px; border-radius:6px; flex:1; min-width:110px;">
+              <strong>Dashboard</strong><br><small style="color:var(--text-muted);">Web BI SPA</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETL LOG TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-list-check" style="color:var(--color-primary); margin-right:6px;"></i> Lịch Sử Chạy ETL (ETL Execution Log)
+          </h3>
+          <div class="table-responsive">
+            <table class="enterprise-table" style="font-size:12px;">
+              <thead>
+                <tr><th>Tên Bảng DWH</th><th>Loại Bảng</th><th>Số Bản Ghi</th><th>Mô Tả Chức Năng</th><th>Trạng Thái DWH / API</th></tr>
+              </thead>
+              <tbody id="system-etl-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 15: SETTINGS & PROFILE VIEW (ROUND 11) -->
+      <section id="view-settings" class="view-section">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">Settings & User Profile</h1>
+            <p class="page-subtitle">Quản lý tùy chọn giao diện và thông tin tài khoản cá nhân</p>
+          </div>
+        </div>
+
+        <div class="grid-charts-2" style="margin-bottom:16px;">
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);"><i class="fa-solid fa-user-gear" style="color:var(--color-primary); margin-right:6px;"></i> Profile Overview</h3>
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+              <div class="user-avatar user-avatar-text" style="width:48px; height:48px; font-size:18px;">BV</div>
+              <div>
+                <h4 style="margin:0; font-size:15px;" class="user-name-text">Bùi Thị Vấn</h4>
+                <div style="font-size:12px; color:var(--text-muted);" class="user-dept-text">Ban Giám Đốc</div>
+                <span class="user-role-text badge badge-info" style="font-size:10px; margin-top:4px; display:inline-block;">CEO</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:16px;">
+            <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-main);"><i class="fa-solid fa-sliders" style="color:var(--color-accent); margin-right:6px;"></i> System Preferences</h3>
+            <div style="font-size:12.5px; line-height:2;">
+              <div><strong>Giao diện:</strong> Dark / Light Mode</div>
+              <div><strong>Ngôn ngữ:</strong> Tiếng Việt (VN)</div>
+              <div><strong>Mặc định Năm:</strong> 2015</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ======================================================================
+       4. SLIDING PANELS & DRAWERS (FILTER PANEL & DETAIL DRAWER)
+       ====================================================================== -->
+
+  <!-- Right Filter Panel Slide-Out -->
+  <aside class="sliding-panel" id="filter-panel">
+    <div class="panel-header">
+      <h3 class="panel-title">Bảng Điều Khiển Bộ Lọc</h3>
+      <button class="panel-close-btn" id="filter-panel-close">&times;</button>
+    </div>
+    <div class="panel-body">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Năm</label>
+        <select id="drawer-filter-year" style="width:100%; padding:8px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-input);">
+          <option value="2015" selected>2015</option>
+          <option value="2014">2014</option>
+          <option value="2013">2013</option>
+          <option value="2012">2012</option>
+          <option value="ALL">Tất cả (2012-2015)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Khu Vực Toàn Cầu</label>
+        <select id="drawer-filter-region" style="width:100%; padding:8px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-input);">
+          <option value="All Regions" selected>All Regions (23 Regions)</option>
+          <option value="North America">North America</option>
+          <option value="South East Asia">South East Asia</option>
+          <option value="Western Europe">Western Europe</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Danh Mục Sản Phẩm</label>
+        <select id="drawer-filter-category" style="width:100%; padding:8px; border-radius:var(--radius-sm); border:1px solid var(--border-color); background:var(--bg-input);">
+          <option value="All Categories" selected>All Categories</option>
+          <option value="Thiết bị Văn phòng">Thiết bị Văn phòng</option>
+          <option value="Nội thất Văn phòng">Nội thất Văn phòng</option>
+          <option value="Đồ dùng Văn phòng">Đồ dùng Văn phòng</option>
+        </select>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="topbar-action-btn" id="filter-reset-btn" style="flex:1;">Reset</button>
+      <button class="topbar-action-btn" id="filter-apply-btn" style="flex:2; background:var(--color-primary); color:white; font-weight:600;">Áp Dụng Filter</button>
+    </div>
+  </aside>
+
+  <!-- Right Detail Drawer Slide-Out -->
+  <aside class="sliding-panel" id="detail-drawer">
+    <div class="panel-header">
+      <h3 class="panel-title">Chi Tiết Đối Tượng</h3>
+      <button class="panel-close-btn" id="detail-drawer-close">&times;</button>
+    </div>
+    <div class="panel-body" id="detail-drawer-body">
+      <!-- Populated dynamically when clicking a row -->
+    </div>
+  </aside>
+
+  <!-- Purchase Order (PO) Detail Drawer Slide-Out -->
+  <aside class="sliding-panel" id="po-detail-drawer">
+    <div class="panel-header">
+      <h3 class="panel-title">Purchase Order Details</h3>
+      <button class="panel-close-btn" id="po-detail-drawer-close" onclick="document.getElementById('po-detail-drawer').classList.remove('active')">&times;</button>
+    </div>
+    <div class="panel-body" id="po-detail-drawer-body">
+      <!-- Populated dynamically when clicking a PO row -->
+    </div>
+  </aside>
+
+  <!-- Copilot Floating Button & Modal -->
+  <button id="copilot-trigger">
+    <i class="fa-solid fa-robot"></i>
+    <span>Hỏi Khang Nghi AI</span>
+  </button>
+
+  <div class="modal-overlay" id="copilot-modal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:15px; font-weight:700;">🤖 Trợ Lý AI Copilot Trực Tuyến <span class="badge badge-info">Prototype AI</span></h3>
+        <button id="copilot-close" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- Smart Prompt Buttons (Gợi ý câu hỏi thông minh) -->
+      <div class="smart-prompts-container">
+        <button class="smart-prompt-chip" onclick="KhangNghiApp.askCopilot('Doanh thu năm 2015 là bao nhiêu?')">💡 Doanh thu 2015</button>
+        <button class="smart-prompt-chip" onclick="KhangNghiApp.askCopilot('Top 5 sản phẩm có lợi nhuận cao nhất?')">🏆 Top sản phẩm lãi</button>
+        <button class="smart-prompt-chip" onclick="KhangNghiApp.askCopilot('Sản phẩm nào có nguy cơ đứt hàng?')">🚨 Cảnh báo đứt hàng</button>
+        <button class="smart-prompt-chip" onclick="KhangNghiApp.askCopilot('Tỷ lệ đơn hàng giao trễ SLA?')">🚚 Tỷ lệ trễ SLA</button>
+        <button class="smart-prompt-chip" onclick="KhangNghiApp.askCopilot('Dự báo doanh số 6 tháng tới?')">🔮 Dự báo AI 2016</button>
+      </div>
+
+      <div id="copilot-chat-body" style="height:220px; overflow-y:auto; padding:12px; background:var(--bg-app); border-radius:var(--radius-sm); margin-bottom:12px;">
+        <div style="text-align:left; margin-bottom:10px;"><span style="background:var(--bg-input); padding:8px 12px; border-radius:10px; display:inline-block; font-size:12px;">Xin chào! Tôi là <strong>Khang Nghi AI Copilot</strong>. Bạn có thể bấm chọn câu hỏi gợi ý phía trên hoặc nhập thắc mắc của bạn!</span></div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="copilot-input" placeholder="Ví dụ: Doanh thu năm 2015 là bao nhiêu..." style="flex:1; padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-color); outline:none; background:var(--bg-input); color:var(--text-main); font-size:12.5px;">
+        <button id="copilot-send" class="topbar-action-btn" style="width:auto; padding:0 14px; background:var(--color-primary); color:white; border:none; font-weight:600;">Gửi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Lineage Modal -->
+  <div class="modal-overlay" id="lineage-modal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:15px; font-weight:700;">🔗 Sơ Đồ Data Lineage Pipeline</h3>
+        <button id="lineage-close" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+      </div>
+      <div style="line-height:1.7; font-size:13px;">
+        <p><strong>1. Source:</strong> <code>Data.xlsx</code> (~51,290 bản ghi)</p>
+        <p><strong>2. Staging & ETL:</strong> <code>SqlBulkCopy</code> & <code>MERGE</code></p>
+        <p><strong>3. Data Warehouse:</strong> <code>DWH_KhangNghi</code> (7 Dim + 4 Fact)</p>
+        <p><strong>4. API Layer:</strong> ASP.NET Core 9 REST API</p>
+        <p><strong>5. Presentation:</strong> Web BI Dashboard SPA</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/mock-data.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/apiClient.js"></script>
+  <script src="js/searchService.js"></script>
+  <script src="js/authService.js"></script>
+  <script src="js/analyticsService.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

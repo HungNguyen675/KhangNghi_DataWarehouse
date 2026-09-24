@@ -1,0 +1,124 @@
+/* ==========================================================================
+   KHANG NGHI BI - RESPONSIVE STYLES
+   Breakpoints for Desktop, Tablet, and Mobile
+   ========================================================================== */
+
+/* Large Screens & Desktop */
+@media (max-width: 1200px) {
+  .grid-charts-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-charts-main-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet Screens (768px - 1024px) */
+@media (max-width: 992px) {
+  :root {
+    --sidebar-width: 72px;
+  }
+
+  .brand-title,
+  .nav-text,
+  .nav-badge,
+  .menu-category-title,
+  .user-info {
+    display: none !important;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .sidebar-footer {
+    justify-content: center;
+    padding: 12px 0;
+  }
+
+  .grid-charts-2,
+  .grid-charts-3 {
+    grid-template-columns: 1fr;
+  }
+
+  #main-content {
+    padding: 20px;
+  }
+}
+
+/* Mobile Screens (< 768px) */
+@media (max-width: 768px) {
+  #sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+  }
+
+  #sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .brand-title,
+  .nav-text,
+  .nav-badge,
+  .menu-category-title,
+  .user-info {
+    display: flex !important;
+  }
+
+  .sidebar-brand {
+    justify-content: flex-start;
+    padding: 0 20px;
+  }
+
+  .nav-item {
+    justify-content: flex-start;
+    padding: 10px 14px;
+  }
+
+  #topbar {
+    left: 0 !important;
+    padding: 0 16px;
+  }
+
+  #main-content {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+
+  .topbar-left .breadcrumb {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+
+  .grid-kpi {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #copilot-trigger {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile Small (< 480px) */
+@media (max-width: 480px) {
+  .grid-kpi {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-group {
+    display: none; /* Accessible via mobile filter modal if needed */
+  }
+}
