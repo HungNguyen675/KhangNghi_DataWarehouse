@@ -134,7 +134,7 @@ window.KhangNghiFilters = (function () {
     }
 
     if (html) {
-      html = `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:11.5px; font-weight:700; color:var(--text-muted);">ACTIVE FILTERS:</span> ${html} <button class="reset-filters-btn" onclick="KhangNghiFilters.resetAllFilters()"><i class="fa-solid fa-arrows-rotate"></i> Clear All</button></div>`;
+      html = `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:11.5px; font-weight:700; color:var(--text-muted);">BỘ LỌC ĐANG DÙNG:</span> ${html} <button class="reset-filters-btn" onclick="KhangNghiFilters.resetAllFilters()"><i class="fa-solid fa-arrows-rotate"></i> Xóa tất cả</button></div>`;
     }
 
     return html;

@@ -22,6 +22,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEtlService, EtlService>();
 builder.Services.AddScoped<IDwhAnalyticsRepository, DwhAnalyticsRepository>();
 builder.Services.AddScoped<ISalesForecastService, SalesForecastService>();
+builder.Services.AddScoped<ISsasRepository, SsasRepository>();
 
 // Cấu hình JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "KhangNghi_DWH_Super_Secret_Security_Key_2026_Graduation_Thesis!";

@@ -94,12 +94,12 @@ window.KhangNghiAuth = (function () {
     ]
   };
 
-  // Deterministic Demo Accounts
+  // Deterministic Demo Accounts with Distinct Role-Specific Passwords
   const DEMO_ACCOUNTS = [
     {
       userId: "USR-001",
       email: "ceo@khangnghi.demo",
-      password: "123456",
+      password: "Ceo@KhangNghi2026!",
       fullName: "Bùi Thị Vấn",
       role: "CEO",
       roleTitle: "Ban Giám Đốc (CEO)",
@@ -110,7 +110,7 @@ window.KhangNghiAuth = (function () {
     {
       userId: "USR-002",
       email: "sales@khangnghi.demo",
-      password: "123456",
+      password: "Sales@KhangNghi2026$",
       fullName: "Nguyễn Văn Nam",
       role: "Sales",
       roleTitle: "Trưởng Phòng Kinh Doanh",
@@ -121,7 +121,7 @@ window.KhangNghiAuth = (function () {
     {
       userId: "USR-003",
       email: "purchase@khangnghi.demo",
-      password: "123456",
+      password: "Purchase@KhangNghi2026#",
       fullName: "Trần Thị Hoa",
       role: "Purchase",
       roleTitle: "Trưởng Phòng Mua Hàng",
@@ -132,7 +132,7 @@ window.KhangNghiAuth = (function () {
     {
       userId: "USR-004",
       email: "warehouse@khangnghi.demo",
-      password: "123456",
+      password: "Warehouse@KhangNghi2026%",
       fullName: "Phạm Hoàng Long",
       role: "Warehouse",
       roleTitle: "Thủ Kho Trưởng",
@@ -143,7 +143,7 @@ window.KhangNghiAuth = (function () {
     {
       userId: "USR-005",
       email: "logistics@khangnghi.demo",
-      password: "123456",
+      password: "Shipping@KhangNghi2026&",
       fullName: "Lê Văn Đức",
       role: "Logistics",
       roleTitle: "Trưởng Phòng Logistics",
@@ -154,7 +154,7 @@ window.KhangNghiAuth = (function () {
     {
       userId: "USR-000",
       email: "admin@khangnghi.demo",
-      password: "123456",
+      password: "Admin@KhangNghi2026#",
       fullName: "Quản Trị Viên",
       role: "Admin",
       roleTitle: "Quản Trị Hệ Thống",
