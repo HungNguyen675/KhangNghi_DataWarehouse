@@ -210,16 +210,17 @@ window.KhangNghiCharts = (function () {
     const el = document.getElementById(containerId);
     if (!el) return;
 
-    const labels = forecastData.map(d => d.month);
+    const list = Array.isArray(forecastData) ? forecastData : [];
+    const labels = list.map(d => d.month || d.Month || '');
     const options = {
       chart: { type: 'line', height: 320, toolbar: { show: true }, background: 'transparent' },
       colors: ['#0f62fe', '#b25900', '#198038', '#da1e28'],
       stroke: { curve: 'smooth', width: [2.5, 2.5, 1.5, 1.5], dashArray: [0, 4, 2, 2] },
       series: [
-        { name: 'Thực Tế (Actual)', data: forecastData.map(d => d.revenue) },
-        { name: 'Dự Báo (ML.NET SSA)', data: forecastData.map(d => d.forecast) },
-        { name: 'Upper 95%', data: forecastData.map(d => d.upper) },
-        { name: 'Lower 95%', data: forecastData.map(d => d.lower) }
+        { name: 'Thực tế (Actual)', data: list.map(d => d.revenue || d.Revenue || 0) },
+        { name: 'Dự báo (ML.NET SSA)', data: list.map(d => d.forecast || d.Forecast || 0) },
+        { name: 'Biên trên 95%', data: list.map(d => d.upper || d.Upper || 0) },
+        { name: 'Biên dưới 95%', data: list.map(d => d.lower || d.Lower || 0) }
       ],
       xaxis: { categories: labels }
     };
@@ -390,10 +391,10 @@ window.KhangNghiCharts = (function () {
       colors: ['#0f62fe', '#198038', '#da1e28', '#8a3ffc'],
       stroke: { curve: 'smooth', width: 2 },
       series: [
-        { name: 'Opening Stock', data: movements.map(m => m.opening) },
-        { name: 'Inbound (+)', data: movements.map(m => m.inbound) },
-        { name: 'Outbound (-)', data: movements.map(m => m.outbound) },
-        { name: 'Closing Stock', data: movements.map(m => m.closing) }
+        { name: 'Tồn đầu kỳ', data: movements.map(m => m.opening) },
+        { name: 'Nhập kho (+)', data: movements.map(m => m.inbound) },
+        { name: 'Xuất kho (-)', data: movements.map(m => m.outbound) },
+        { name: 'Tồn cuối kỳ', data: movements.map(m => m.closing) }
       ],
       xaxis: { categories: movements.map(m => m.month), labels: { style: { colors: tc.text } } },
       yaxis: { labels: { style: { colors: tc.text } } },
@@ -413,7 +414,7 @@ window.KhangNghiCharts = (function () {
     const tc = getThemeColors();
     const options = {
       chart: { type: 'donut', height: 240, background: 'transparent' },
-      labels: (slaData.length ? slaData : [{status:'On Time'}, {status:'Late'}]).map(s => s.status),
+      labels: (slaData.length ? slaData : [{status:'Đúng hạn'}, {status:'Giao trễ'}]).map(s => s.status),
       series: (slaData.length ? slaData : [{pct:95.8}, {pct:4.2}]).map(s => s.pct || s.count),
       colors: ['#198038', '#f1c21b', '#da1e28'],
       legend: { position: 'bottom', labels: { colors: tc.text } }

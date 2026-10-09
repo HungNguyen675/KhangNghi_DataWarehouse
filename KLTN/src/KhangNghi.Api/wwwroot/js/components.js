@@ -6,10 +6,11 @@
 window.KhangNghiComponents = (function () {
 
   function formatCurrency(num) {
-    if (num === null || num === undefined) return "$0";
-    if (num >= 1000000) return "$" + (num / 1000000).toFixed(2) + "M";
-    if (num >= 1000) return "$" + (num / 1000).toFixed(1) + "K";
-    return "$" + num.toLocaleString();
+    if (num === null || num === undefined || Number.isNaN(Number(num))) return "N/A";
+    const n = Number(num);
+    if (n >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
+    if (n >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
+    return "$" + n.toLocaleString();
   }
 
   function formatNumber(num) {

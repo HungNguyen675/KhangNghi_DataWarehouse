@@ -19,6 +19,7 @@ window.KhangNghiRouter = (function () {
     "what-if": "whatIf.view",
     "question-explorer": "biQuestions.view",
     "system-status": "systemStatus.view",
+    "etl-logs": "systemStatus.view",
     "settings": "dashboard.overview"
   };
 
@@ -131,23 +132,25 @@ window.KhangNghiRouter = (function () {
     const breadcrumbCurrent = document.getElementById("breadcrumb-current");
     
     const meta = {
-      "login": { cat: "Security", title: "Hệ Thống Đăng Nhập" },
-      "403": { cat: "Security", title: "403 Access Denied" },
-      "404": { cat: "System", title: "404 Not Found" },
-      "overview": { cat: "Executive", title: "Executive Overview" },
-      "sales": { cat: "Analytics", title: "Phân Tích Bán Hàng (Sales)" },
-      "purchase": { cat: "Analytics", title: "Phân Tích Mua Hàng (Purchase)" },
-      "inventory": { cat: "Analytics", title: "Quản Lý Tồn Kho (Inventory)" },
-      "shipping": { cat: "Analytics", title: "Vận Chuyển & SLA (Shipping)" },
-      "customer": { cat: "Master Analysis", title: "Phân Tích Khách Hàng" },
-      "product": { cat: "Master Analysis", title: "Phân Tích Sản Phẩm & Matrix" },
-      "supplier": { cat: "Master Analysis", title: "Phân Tích Nhà Cung Cấp" },
-      "geography": { cat: "Master Analysis", title: "Phân Tích Địa Lý (Geography)" },
-      "cross-analysis": { cat: "Advanced", title: "Phân Tích Chéo Đa Nghiệp Vụ" },
-      "forecast": { cat: "Intelligence", title: "Dự Báo AI (ML.NET SSA)" },
-      "what-if": { cat: "Intelligence", title: "Mô Phỏng Kịch Bản What-If" },
-      "question-explorer": { cat: "Intelligence", title: "BI Question Catalog" },
-      "system-status": { cat: "System", title: "Data Status & ETL Log" }
+      "login": { cat: "Bảo mật / Security", title: "Hệ thống đăng nhập / Login System" },
+      "403": { cat: "Bảo mật / Security", title: "403 Truy cập bị từ chối / Access Denied" },
+      "404": { cat: "Hệ thống / System", title: "404 Không tìm thấy trang / Not Found" },
+      "overview": { cat: "Tổng quan / Executive Overview", title: "Tổng quan / Executive Overview" },
+      "sales": { cat: "Phân tích kinh doanh / Business Analytics", title: "Bán hàng / Sales" },
+      "purchase": { cat: "Phân tích kinh doanh / Business Analytics", title: "Mua hàng / Purchase" },
+      "inventory": { cat: "Phân tích kinh doanh / Business Analytics", title: "Tồn kho / Inventory" },
+      "shipping": { cat: "Phân tích kinh doanh / Business Analytics", title: "Vận chuyển / Shipping" },
+      "customer": { cat: "Phân tích đối tượng / Master Analysis", title: "Khách hàng / Customers" },
+      "product": { cat: "Phân tích đối tượng / Master Analysis", title: "Sản phẩm / Products" },
+      "supplier": { cat: "Phân tích đối tượng / Master Analysis", title: "Nhà cung cấp / Suppliers" },
+      "geography": { cat: "Phân tích đối tượng / Master Analysis", title: "Khu vực / Geography" },
+      "cross-analysis": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích chéo / Cross Analysis" },
+      "forecast": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Dự báo / Forecast" },
+      "what-if": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích giả định / What-If" },
+      "question-explorer": { cat: "Trí tuệ dữ liệu / Data Intelligence", title: "Câu hỏi BI / BI Questions" },
+      "system-status": { cat: "Hệ thống / System", title: "Trạng thái dữ liệu / Data Status" },
+      "etl-logs": { cat: "Hệ thống / System", title: "Nhật ký ETL / ETL Logs" },
+      "settings": { cat: "Hệ thống / System", title: "Cài đặt / Settings" }
     };
 
     const item = meta[route] || { cat: "Dashboard", title: "Analytics" };

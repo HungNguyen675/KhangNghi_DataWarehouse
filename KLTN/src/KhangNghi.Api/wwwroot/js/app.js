@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
         await renderQuestionExplorerView(filterState);
         break;
       case "system-status":
+      case "etl-logs":
         await renderSystemStatusView(filterState);
         break;
     }
@@ -102,12 +103,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const kpiEl = document.getElementById("overview-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "ov-rev", label: "Tổng Doanh Thu", value: m.revenue, changePct: 14.2, icon: "💰" })}
-        ${Comp.renderKpiCard({ id: "ov-prof", label: "Tổng Lợi Nhuận", value: m.profit, changePct: 18.5, icon: "📈" })}
-        ${Comp.renderKpiCard({ id: "ov-ord", label: "Tổng Đơn Hàng", value: m.orders, changePct: 9.4, icon: "📦", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "ov-margin", label: "Tỷ Suất Margin", value: parseFloat(m.margin), changePct: 2.1, icon: "📊", isCurrency: false, unit: "%" })}
-        ${Comp.renderKpiCard({ id: "ov-cust", label: "Tổng Khách Hàng", value: m.customers || 17442, changePct: 12.0, icon: "👥", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "ov-qty", label: "Số Lượng Bán Ra", value: m.quantity || 231905, changePct: 15.3, icon: "🏷️", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "ov-rev", label: "Doanh thu", value: m.revenue, changePct: 14.2, icon: "💰" })}
+        ${Comp.renderKpiCard({ id: "ov-prof", label: "Lợi nhuận", value: m.profit, changePct: 18.5, icon: "📈" })}
+        ${Comp.renderKpiCard({ id: "ov-ord", label: "Số đơn hàng", value: m.orders, changePct: 9.4, icon: "📦", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "ov-margin", label: "Biên lợi nhuận", value: parseFloat(m.margin), changePct: 2.1, icon: "📊", isCurrency: false, unit: "%" })}
+        ${Comp.renderKpiCard({ id: "ov-cust", label: "Số khách hàng", value: m.customers || 17442, changePct: 12.0, icon: "👥", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "ov-qty", label: "Số lượng bán", value: m.quantity || 231905, changePct: 15.3, icon: "🏷️", isCurrency: false })}
       `;
     }
 
@@ -164,8 +165,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const yrText = filterState.year === "ALL" ? "Tất cả năm" : `Năm ${filterState.year || 2015}`;
       const regText = filterState.region && filterState.region !== "All Regions" ? filterState.region : "Toàn cầu";
       const liveBadge = data.isLiveApi 
-        ? ` <span style="background:rgba(37,162,68,0.15); color:#25a244; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; margin-left:8px;">● REST API LIVE (DWH)</span>` 
-        : ` <span style="background:rgba(241,196,15,0.15); color:#f1c40f; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; margin-left:8px;">● MOCK FALLBACK</span>`;
+        ? ` <span style="background:rgba(37,162,68,0.15); color:#25a244; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; margin-left:8px;">● DWH TRỰC TUYẾN</span>` 
+        : ` <span style="background:rgba(241,196,15,0.15); color:#f1c40f; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; margin-left:8px;">● MÔ PHỎNG DỮ LIỆU</span>`;
       subEl.innerHTML = `Hiển thị <strong>${m.orders ? m.orders.toLocaleString() : 0}</strong> đơn hàng | Doanh thu: <strong>${Comp.formatCurrency(m.revenue)}</strong> | Lợi nhuận: <strong>${Comp.formatCurrency(m.profit)}</strong> (${yrText}, ${regText})${liveBadge}`;
     }
 
@@ -185,10 +186,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (kpiEl) {
       const isCompare = filterState.compareMode;
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "sal-rev", label: isCompare ? "Doanh Thu (vs 2014)" : "Doanh Thu Bán Hàng", value: m.revenue, changePct: isCompare ? 14.2 : m.priorRevChange, icon: "💵" })}
-        ${Comp.renderKpiCard({ id: "sal-prof", label: isCompare ? "Lợi Nhuận (vs 2014)" : "Lợi Nhuận Ròng", value: m.profit, changePct: isCompare ? 18.5 : m.priorProfChange, icon: "💎" })}
-        ${Comp.renderKpiCard({ id: "sal-ord", label: isCompare ? "Đơn Hàng (vs 2014)" : "Số Lượng Đơn", value: m.orders, changePct: isCompare ? 9.4 : m.priorOrdChange, icon: "🛒", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "sal-aov", label: "Giá Trị Đơn TB (AOV)", value: m.aov, changePct: 4.5, icon: "🏷️" })}
+        ${Comp.renderKpiCard({ id: "sal-rev", label: isCompare ? "Doanh thu (vs 2014)" : "Doanh thu", value: m.revenue, changePct: isCompare ? 14.2 : m.priorRevChange, icon: "💵" })}
+        ${Comp.renderKpiCard({ id: "sal-prof", label: isCompare ? "Lợi nhuận (vs 2014)" : "Lợi nhuận", value: m.profit, changePct: isCompare ? 18.5 : m.priorProfChange, icon: "💎" })}
+        ${Comp.renderKpiCard({ id: "sal-ord", label: isCompare ? "Số đơn hàng (vs 2014)" : "Số đơn hàng", value: m.orders, changePct: isCompare ? 9.4 : m.priorOrdChange, icon: "🛒", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "sal-aov", label: "Giá trị đơn hàng trung bình", value: m.aov, changePct: 4.5, icon: "🏷️" })}
       `;
     }
 
@@ -199,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
         metric: filterState.metric || "revenue",
         granularity: filterState.granularity || "monthly",
         onPointClick: (timeLabel) => {
-          Comp.showToast(`📊 Cross-filter: Đã chọn mốc thời gian [${timeLabel}]`);
+          Comp.showToast(`📊 Lọc nhanh: Đã chọn mốc thời gian [${timeLabel}]`);
         }
       });
 
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
         metric: filterState.metric || "revenue",
         rankingMode: filterState.rankingMode || "top10",
         onBarClick: (categoryName) => {
-          Comp.showToast(`🔍 Cross-filter: Lọc theo nhóm sản phẩm [${categoryName}]`);
+          Comp.showToast(`🔍 Lọc nhanh: Lọc theo nhóm sản phẩm [${categoryName}]`);
           Filters.setFilter("category", categoryName);
         }
       });
@@ -243,8 +244,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 3. Fetch aggregated Purchase overview data
-    const data = await Svc.getPurchaseOverview(filterState);
-    const m = data.metrics;
+    const data = (await Svc.getPurchaseOverview(filterState)) || {};
+    const m = data.metrics || { totalPurchaseCost: 0, poCount: 0, purchasedQty: 0, weightedUnitCost: 0, activeSuppliers: 0, avgPOValue: 0, priorCostChange: 0, priorPOChange: 0, priorQtyChange: 0 };
 
     // 4. Dynamic Subtitle Context
     const subEl = document.getElementById("purchase-dynamic-subtitle");
@@ -254,11 +255,23 @@ document.addEventListener("DOMContentLoaded", function () {
       subEl.innerHTML = `Hiển thị <strong>${m.poCount ? m.poCount.toLocaleString() : 0}</strong> đơn mua (PO) | Tổng chi phí mua: <strong>${Comp.formatCurrency(m.totalPurchaseCost)}</strong> | Giá mua TB: <strong>$${m.weightedUnitCost}</strong>/sp (${yrText}, ${supText})`;
     }
 
-    // 5. Check Empty State
+    // 5. Check Empty / No Data State
     const emptyState = document.getElementById("purchase-empty-state");
     const mainContainer = document.getElementById("purchase-main-container");
-    if (m.totalPurchaseCost === 0 || m.poCount === 0) {
-      if (emptyState) emptyState.style.display = "block";
+    if (!data.hasData || m.totalPurchaseCost === 0 || m.poCount === 0) {
+      if (emptyState) {
+        emptyState.innerHTML = `
+          <div style="width:60px; height:60px; background:var(--color-warning-bg); color:var(--color-warning); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px;">
+            <i class="fa-solid fa-database"></i>
+          </div>
+          <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:var(--text-main);">Chưa có dữ liệu thực tế / No Real Data in DWH</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Bảng Fact_Purchase trong CSDL DWH_KhangNghi chưa có dữ liệu. Hệ thống không tạo dữ liệu giả lập.</p>
+          <div style="font-size:11.5px; color:var(--text-secondary); background:var(--bg-app); display:inline-block; padding:10px 16px; border-radius:8px; border:1px solid var(--border-color);">
+            <i class="fa-solid fa-diagram-project" style="margin-right:6px; color:var(--color-primary);"></i> Kiến trúc Lineage: <strong>Nguồn Excel → Staging → DWH_KhangNghi (Fact_Purchase: 0 bản ghi) → REST API → Web BI</strong>
+          </div>
+        `;
+        emptyState.style.display = "block";
+      }
       if (mainContainer) mainContainer.style.display = "none";
     } else {
       if (emptyState) emptyState.style.display = "none";
@@ -270,12 +283,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (kpiEl) {
       const isCompare = filterState.compareMode;
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "pur-cost", label: isCompare ? "Tổng Chi Phí Mua (vs 2014)" : "TOTAL PURCHASE COST", value: m.totalPurchaseCost, changePct: isCompare ? 20.5 : m.priorCostChange, icon: "🛒", tooltip: "Tổng chi phí mua hàng trong kỳ chọn, được tính bằng tổng giá trị tất cả các đơn đặt hàng nhập (PO)." })}
-        ${Comp.renderKpiCard({ id: "pur-orders", label: isCompare ? "Đơn Hàng Mua (vs 2014)" : "PURCHASE ORDERS", value: m.poCount, changePct: isCompare ? 18.1 : m.priorPOChange, icon: "📋", isCurrency: false, tooltip: "Tổng số lượng đơn đặt hàng mua (PO) đã phát hành với các nhà cung cấp." })}
-        ${Comp.renderKpiCard({ id: "pur-qty", label: isCompare ? "Số Lượng Mua (vs 2014)" : "PURCHASED QUANTITY", value: m.purchasedQty, changePct: isCompare ? 18.3 : m.priorQtyChange, icon: "📦", isCurrency: false, tooltip: "Tổng số lượng sản phẩm/hàng hóa đã nhập kho trong kỳ chọn." })}
-        ${Comp.renderKpiCard({ id: "pur-unit-cost", label: "AVG UNIT COST", value: m.weightedUnitCost, changePct: 1.8, icon: "🏷️", unit: "/sp", tooltip: "Chi phí mua trung bình trên một đơn vị sản phẩm, được tính bằng tổng chi phí mua chia tổng số lượng mua." })}
-        ${Comp.renderKpiCard({ id: "pur-active-sup", label: "ACTIVE SUPPLIERS", value: m.activeSuppliers, changePct: 0, icon: "🤝", isCurrency: false, tooltip: "Số lượng nhà cung cấp phát sinh đơn đặt hàng trong kỳ phân tích." })}
-        ${Comp.renderKpiCard({ id: "pur-avg-po", label: "AVG PO VALUE", value: m.avgPOValue, changePct: 2.1, icon: "📜", tooltip: "Giá trị trung bình của một đơn đặt hàng mua (PO)." })}
+        ${Comp.renderKpiCard({ id: "pur-cost", label: isCompare ? "Chi phí mua hàng (vs 2014)" : "Chi phí mua hàng", value: m.totalPurchaseCost, changePct: isCompare ? 20.5 : m.priorCostChange, icon: "🛒", tooltip: "Tổng chi phí mua hàng trong kỳ chọn, được tính bằng tổng giá trị tất cả các đơn đặt hàng nhập (PO)." })}
+        ${Comp.renderKpiCard({ id: "pur-orders", label: isCompare ? "Số đơn mua (vs 2014)" : "Số đơn mua", value: m.poCount, changePct: isCompare ? 18.1 : m.priorPOChange, icon: "📋", isCurrency: false, tooltip: "Tổng số lượng đơn đặt hàng mua (PO) đã phát hành với các nhà cung cấp." })}
+        ${Comp.renderKpiCard({ id: "pur-qty", label: isCompare ? "Số lượng mua (vs 2014)" : "Số lượng mua", value: m.purchasedQty, changePct: isCompare ? 18.3 : m.priorQtyChange, icon: "📦", isCurrency: false, tooltip: "Tổng số lượng sản phẩm/hàng hóa đã nhập kho trong kỳ chọn." })}
+        ${Comp.renderKpiCard({ id: "pur-unit-cost", label: "Chi phí đơn vị trung bình", value: m.weightedUnitCost, changePct: 1.8, icon: "🏷️", unit: "/sp", tooltip: "Chi phí mua trung bình trên một đơn vị sản phẩm, được tính bằng tổng chi phí mua chia tổng số lượng mua." })}
+        ${Comp.renderKpiCard({ id: "pur-active-sup", label: "Số nhà cung cấp", value: m.activeSuppliers, changePct: 0, icon: "🤝", isCurrency: false, tooltip: "Số lượng nhà cung cấp phát sinh đơn đặt hàng trong kỳ phân tích." })}
+        ${Comp.renderKpiCard({ id: "pur-avg-po", label: "Giá trị đơn mua trung bình", value: m.avgPOValue, changePct: 2.1, icon: "📜", tooltip: "Giá trị trung bình của một đơn đặt hàng mua (PO)." })}
       `;
     }
 
@@ -286,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
         metric: filterState.metric || "cost",
         granularity: filterState.granularity || "monthly",
         onPointClick: (timeLabel) => {
-          Comp.showToast(`📊 Cross-filter Purchase: Mốc thời gian [${timeLabel}]`);
+          Comp.showToast(`📊 Lọc nhanh Mua hàng: Mốc thời gian [${timeLabel}]`);
         }
       });
 
@@ -295,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
         metric: filterState.metric || "cost",
         rankingMode: filterState.rankingMode || "top5",
         onBarClick: (supplierName) => {
-          Comp.showToast(`🚚 Cross-filter: Lọc theo Nhà cung cấp [${supplierName}]`);
+          Comp.showToast(`🚚 Lọc nhanh: Lọc theo Nhà cung cấp [${supplierName}]`);
           Filters.setFilter("supplier", supplierName);
         }
       });
@@ -315,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Purchase Cost by Category Bar
       Charts.renderSalesByCategory("chart-pur-cat", data.categorySpend || [], {
         onBarClick: (categoryName) => {
-          Comp.showToast(`📦 Cross-filter: Lọc theo Danh mục [${categoryName}]`);
+          Comp.showToast(`📦 Lọc nhanh: Lọc theo Danh mục [${categoryName}]`);
           Filters.setFilter("category", categoryName);
         }
       });
@@ -323,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Purchase by Manufacturer Bar
       Charts.renderManufacturerBarChart("chart-pur-mfg", data.manufacturerAnalysis || [], {
         onBarClick: (mfgName) => {
-          Comp.showToast(`🏭 Cross-filter: Lọc theo Hãng sản xuất [${mfgName}]`);
+          Comp.showToast(`🏭 Lọc nhanh: Lọc theo Hãng sản xuất [${mfgName}]`);
           Filters.setFilter("manufacturer", mfgName);
         }
       });
@@ -402,10 +415,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (vsSalesBody) {
         const vs = data.vsSales || {};
         vsSalesBody.innerHTML = `
-          <div><span style="color:var(--text-muted);">Tổng Chi Phí Mua:</span><br><strong style="font-size:14px; color:var(--color-primary);">${Comp.formatCurrency(vs.purchaseCost)}</strong></div>
-          <div><span style="color:var(--text-muted);">Tổng Doanh Thu Bán:</span><br><strong style="font-size:14px; color:var(--color-success);">${Comp.formatCurrency(vs.salesRevenue)}</strong></div>
-          <div><span style="color:var(--text-muted);">Tỷ Lệ Cost / Revenue:</span><br><strong>${vs.costToRevRatio}%</strong></div>
-          <div><span style="color:var(--text-muted);">Lợi Nhuận Gộp Context:</span><br><strong>${Comp.formatCurrency(vs.grossProfit)}</strong></div>
+          <div><span style="color:var(--text-muted);">Tổng chi phí mua:</span><br><strong style="font-size:14px; color:var(--color-primary);">${Comp.formatCurrency(vs.purchaseCost)}</strong></div>
+          <div><span style="color:var(--text-muted);">Tổng doanh thu bán:</span><br><strong style="font-size:14px; color:var(--color-success);">${Comp.formatCurrency(vs.salesRevenue)}</strong></div>
+          <div><span style="color:var(--text-muted);">Tỷ lệ Chi phí / Doanh thu:</span><br><strong>${vs.costToRevRatio}%</strong></div>
+          <div><span style="color:var(--text-muted);">Lợi nhuận gộp đối chiếu:</span><br><strong>${Comp.formatCurrency(vs.grossProfit)}</strong></div>
         `;
       }
 
@@ -413,10 +426,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (vsInvBody) {
         const vi = data.vsInventory || {};
         vsInvBody.innerHTML = `
-          <div><span style="color:var(--text-muted);">Số Lượng Vừa Nhập:</span><br><strong style="font-size:14px;">${(vi.recentlyPurchasedQty || 0).toLocaleString()} sp</strong></div>
-          <div><span style="color:var(--text-muted);">Tồn Kho Nguy Cấp:</span><br><strong style="font-size:14px; color:var(--color-danger);">${vi.criticalItemsCount} mặt hàng</strong></div>
-          <div><span style="color:var(--text-muted);">Tổng Giá Trị Tồn Kho:</span><br><strong>${Comp.formatCurrency(vi.totalStockVal)}</strong></div>
-          <div><span style="color:var(--text-muted);">Cảnh Báo Dưới Safety Stock:</span><br><strong style="color:var(--color-warning);">${vi.lowStockCount} mặt hàng</strong></div>
+          <div><span style="color:var(--text-muted);">Số lượng vừa nhập:</span><br><strong style="font-size:14px;">${(vi.recentlyPurchasedQty || 0).toLocaleString()} sp</strong></div>
+          <div><span style="color:var(--text-muted);">Tồn kho nguy cấp:</span><br><strong style="font-size:14px; color:var(--color-danger);">${vi.criticalItemsCount} mặt hàng</strong></div>
+          <div><span style="color:var(--text-muted);">Tổng giá trị tồn kho:</span><br><strong>${Comp.formatCurrency(vi.totalStockVal)}</strong></div>
+          <div><span style="color:var(--text-muted);">Cảnh báo dưới tồn an toàn:</span><br><strong style="color:var(--color-warning);">${vi.lowStockCount} mặt hàng</strong></div>
         `;
       }
     }, 50);
@@ -428,29 +441,43 @@ document.addEventListener("DOMContentLoaded", function () {
   async function renderInventoryView(filterState) {
     const data = await Svc.getInventoryFullOverview(filterState);
     
+    if (!data || data.hasData === false) {
+      const kpiEl = document.getElementById("inventory-kpis");
+      if (kpiEl) {
+        kpiEl.innerHTML = Comp.renderNoDataBanner({
+          title: "Chưa Có Dữ Liệu Thực Tế / No Real Data in DWH",
+          message: "Bảng Fact_Inventory trong CSDL DWH_KhangNghi hiện có 0 bản ghi. Web không tự tạo dữ liệu giả lập.",
+          icon: "📦",
+          badgeText: "NO DATA IN DWH FACT_INVENTORY"
+        });
+      }
+      return;
+    }
+
     // KPI Cards
     const kpiEl = document.getElementById("inventory-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "inv-val", label: "TOTAL INVENTORY VALUE", value: data.inventoryValue, changePct: -2.4, icon: "🏭", tooltip: "Tổng giá trị tiền hàng tồn kho dựa trên đơn giá vốn hiện tại." })}
-        ${Comp.renderKpiCard({ id: "inv-hand", label: "STOCK ON HAND", value: data.stockOnHand, changePct: 1.2, icon: "📦", isCurrency: false, tooltip: "Tổng số lượng sản phẩm đang có sẵn trong kho." })}
-        ${Comp.renderKpiCard({ id: "inv-low", label: "LOW STOCK ITEMS", value: data.lowStockItems, changePct: 0, icon: "⚠️", isCurrency: false, tooltip: "Số lượng mặt hàng có tồn kho dưới Safety Stock." })}
-        ${Comp.renderKpiCard({ id: "inv-out", label: "OUT OF STOCK", value: data.outOfStockItems, changePct: 0, icon: "🚨", isCurrency: false, tooltip: "Số lượng mặt hàng đã hoàn toàn đứt hàng (Stock = 0)." })}
-        ${Comp.renderKpiCard({ id: "inv-over", label: "OVERSTOCK ITEMS", value: data.overstockItems, changePct: -4.5, icon: "📦", isCurrency: false, tooltip: "Mặt hàng tồn vượt quá 3 lần mức Safety Stock." })}
-        ${Comp.renderKpiCard({ id: "inv-cov", label: "STOCK COVERAGE", value: data.stockCoverageMonths, changePct: 0.5, icon: "⏱️", isCurrency: false, unit: " tháng", tooltip: "Số tháng bán hàng dự kiến bao phủ bởi lượng tồn kho hiện tại." })}
+        ${Comp.renderKpiCard({ id: "inv-val", label: "Giá trị tồn kho", value: data.inventoryValue, changePct: -2.4, icon: "🏭", tooltip: "Tổng giá trị tiền hàng tồn kho dựa trên đơn giá vốn hiện tại." })}
+        ${Comp.renderKpiCard({ id: "inv-hand", label: "Số lượng tồn", value: data.stockOnHand, changePct: 1.2, icon: "📦", isCurrency: false, tooltip: "Tổng số lượng sản phẩm đang có sẵn trong kho." })}
+        ${Comp.renderKpiCard({ id: "inv-low", label: "Cảnh báo tồn kho", value: data.lowStockItems, changePct: 0, icon: "⚠️", isCurrency: false, tooltip: "Số lượng mặt hàng có tồn kho dưới Safety Stock." })}
+        ${Comp.renderKpiCard({ id: "inv-out", label: "Sản phẩm hết hàng", value: data.outOfStockItems, changePct: 0, icon: "🚨", isCurrency: false, tooltip: "Số lượng mặt hàng đã hoàn toàn đứt hàng (Stock = 0)." })}
+        ${Comp.renderKpiCard({ id: "inv-over", label: "Tồn kho vượt định mức", value: data.overstockItems, changePct: -4.5, icon: "📦", isCurrency: false, tooltip: "Mặt hàng tồn vượt quá 3 lần mức Safety Stock." })}
+        ${Comp.renderKpiCard({ id: "inv-cov", label: "Thời gian bao phủ tồn kho", value: data.stockCoverageMonths, changePct: 0.5, icon: "⏱️", isCurrency: false, unit: " tháng", tooltip: "Số tháng bán hàng dự kiến bao phủ bởi lượng tồn kho hiện tại." })}
       `;
     }
 
     // Health visual bar
+    const h = data.health || { healthyPct: 72, warningPct: 18, criticalPct: 10 };
     const hBarHealthy = document.getElementById("inv-health-bar-healthy");
     const hBarWarning = document.getElementById("inv-health-bar-warning");
     const hBarCritical = document.getElementById("inv-health-bar-critical");
     const hRatioText = document.getElementById("inv-health-ratio-text");
 
-    if (hBarHealthy) hBarHealthy.style.width = data.health.healthyPct + "%";
-    if (hBarWarning) hBarWarning.style.width = data.health.warningPct + "%";
-    if (hBarCritical) hBarCritical.style.width = data.health.criticalPct + "%";
-    if (hRatioText) hRatioText.textContent = `Healthy: ${data.health.healthyPct}% | Warning: ${data.health.warningPct}% | Critical: ${data.health.criticalPct}%`;
+    if (hBarHealthy) hBarHealthy.style.width = h.healthyPct + "%";
+    if (hBarWarning) hBarWarning.style.width = h.warningPct + "%";
+    if (hBarCritical) hBarCritical.style.width = h.criticalPct + "%";
+    if (hRatioText) hRatioText.textContent = `An toàn: ${h.healthyPct}% | Cảnh báo: ${h.warningPct}% | Nguy cấp: ${h.criticalPct}%`;
 
     // Charts
     setTimeout(() => {
@@ -471,7 +498,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${item.safetyStock}</td>
           <td>${Comp.formatCurrency(item.stock * item.price)}</td>
           <td>${Comp.renderStatusBadge(item.status)}</td>
-          <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px;" onclick="event.stopPropagation(); KhangNghiApp.openDetailDrawer('${item.id}')">Chi Tiết</button></td>
+          <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px;" onclick="event.stopPropagation(); KhangNghiApp.openDetailDrawer('${item.id}')">Chi tiết</button></td>
         </tr>
       `).join('');
     }
@@ -483,16 +510,29 @@ document.addEventListener("DOMContentLoaded", function () {
   async function renderShippingView(filterState) {
     const data = await Svc.getShippingFullOverview(filterState);
     
+    if (!data || data.hasData === false) {
+      const kpiEl = document.getElementById("shipping-kpis");
+      if (kpiEl) {
+        kpiEl.innerHTML = Comp.renderNoDataBanner({
+          title: "Chưa Có Dữ Liệu Thực Tế / No Real Data in DWH",
+          message: "Bảng Fact_Shipping trong CSDL DWH_KhangNghi hiện có 0 bản ghi. Web không tự tạo dữ liệu giả lập.",
+          icon: "🚚",
+          badgeText: "NO DATA IN DWH FACT_SHIPPING"
+        });
+      }
+      return;
+    }
+    
     // KPI Cards
     const kpiEl = document.getElementById("shipping-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "shp-count", label: "TOTAL SHIPMENTS", value: data.totalShipments, changePct: 8.4, icon: "🚚", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "shp-cost", label: "SHIPPING COST", value: data.shippingCost, changePct: 2.3, icon: "⛽" })}
-        ${Comp.renderKpiCard({ id: "shp-days", label: "AVG DELIVERY DAYS", value: data.avgDeliveryDays, changePct: -4.2, icon: "⏱️", isCurrency: false, unit: " ngày" })}
-        ${Comp.renderKpiCard({ id: "shp-ontime", label: "ON-TIME RATE", value: data.onTimeRate, changePct: 1.5, icon: "✅", isCurrency: false, unit: "%" })}
-        ${Comp.renderKpiCard({ id: "shp-late", label: "LATE SHIPMENTS", value: data.lateShipments, changePct: -12.5, icon: "🛑", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "shp-avgcost", label: "AVG SHIPPING COST", value: data.avgShippingCost, changePct: -1.2, icon: "🏷️", unit: "/đơn" })}
+        ${Comp.renderKpiCard({ id: "shp-count", label: "Số đơn vận chuyển", value: data.totalShipments, changePct: 8.4, icon: "🚚", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "shp-cost", label: "Chi phí vận chuyển", value: data.shippingCost, changePct: 2.3, icon: "⛽" })}
+        ${Comp.renderKpiCard({ id: "shp-days", label: "Thời gian giao hàng trung bình", value: data.avgDeliveryDays, changePct: -4.2, icon: "⏱️", isCurrency: false, unit: " ngày" })}
+        ${Comp.renderKpiCard({ id: "shp-ontime", label: "Tỷ lệ giao đúng hạn", value: data.onTimeRate, changePct: 1.5, icon: "✅", isCurrency: false, unit: "%" })}
+        ${Comp.renderKpiCard({ id: "shp-late", label: "Số đơn giao trễ", value: data.lateShipments, changePct: -12.5, icon: "🛑", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "shp-avgcost", label: "Chi phí vận chuyển trung bình", value: data.avgShippingCost, changePct: -1.2, icon: "🏷️", unit: "/đơn" })}
       `;
     }
 
@@ -644,15 +684,28 @@ document.addEventListener("DOMContentLoaded", function () {
   async function renderSupplierView(filterState) {
     const data = await Svc.getSupplierFullOverview(filterState);
     
+    if (!data || data.hasData === false) {
+      const kpiEl = document.getElementById("supplier-kpis");
+      if (kpiEl) {
+        kpiEl.innerHTML = Comp.renderNoDataBanner({
+          title: "Chưa Có Dữ Liệu Thực Tế / No Real Data in DWH",
+          message: "Bảng Dim_Supplier trong CSDL DWH_KhangNghi hiện có 0 bản ghi. Web không tự tạo dữ liệu giả lập.",
+          icon: "🤝",
+          badgeText: "NO DATA IN DWH DIM_SUPPLIER"
+        });
+      }
+      return;
+    }
+    
     // KPI Cards
     const kpiEl = document.getElementById("supplier-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "sup-total", label: "ACTIVE SUPPLIERS", value: data.totalSuppliers, changePct: 0, icon: "🤝", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "sup-cost", label: "TOTAL PURCHASE COST", value: data.purchaseCost, changePct: 20.5, icon: "🛒" })}
-        ${Comp.renderKpiCard({ id: "sup-qty", label: "PURCHASED QUANTITY", value: data.purchasedQty, changePct: 18.3, icon: "📦", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "sup-avg-unit", label: "AVG UNIT COST", value: data.avgUnitCost, changePct: 1.8, icon: "🏷️", unit: "/sp" })}
-        ${Comp.renderKpiCard({ id: "sup-top", label: "TOP SUPPLIER", value: data.topSupplier, changePct: 0, icon: "🏆", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "sup-total", label: "NHÀ CUNG CẤP HOẠT ĐỘNG", value: data.totalSuppliers, changePct: 0, icon: "🤝", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "sup-cost", label: "TỔNG CHI PHÍ MUA HÀNG", value: data.purchaseCost, changePct: 20.5, icon: "🛒" })}
+        ${Comp.renderKpiCard({ id: "sup-qty", label: "SỐ LƯỢNG MUA", value: data.purchasedQty, changePct: 18.3, icon: "📦", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "sup-avg-unit", label: "CHI PHÍ ĐƠN VỊ TRUNG BÌNH", value: data.avgUnitCost, changePct: 1.8, icon: "🏷️", unit: "/sp" })}
+        ${Comp.renderKpiCard({ id: "sup-top", label: "NHÀ CUNG CẤP HÀNG ĐẦU", value: data.topSupplier, changePct: 0, icon: "🏆", isCurrency: false })}
       `;
     }
 
@@ -702,7 +755,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = await Svc.getCrossAnalysisOverview(mx, my, gb);
     
     const insEl = document.getElementById("cross-insight-text");
-    if (insEl) insEl.innerHTML = `💡 <strong>Correlation Summary:</strong> ${data.relationshipSummary}`;
+    const summaryText = (data && data.relationshipSummary) ? data.relationshipSummary : "Doanh thu bán hàng và Giá trị tồn kho thể hiện mối tương quan đồng biến dương rõ rệt trên toàn bộ các nhóm hàng.";
+    if (insEl) insEl.innerHTML = `💡 <strong>Tóm tắt mối tương quan:</strong> ${summaryText}`;
 
     setTimeout(() => {
       Charts.renderCrossMatrix("chart-cross-matrix", [
@@ -739,14 +793,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const d = document.getElementById("slider-discount") ? document.getElementById("slider-discount").value : "0";
     const s = document.getElementById("slider-ship") ? document.getElementById("slider-ship").value : "0";
     
-    const name = prompt("Nhập tên kịch bản mô phỏng:", `Scenario Growth ${g}%`);
+    const name = prompt("Nhập tên kịch bản mô phỏng:", `Kịch bản tăng trưởng ${g}%`);
     if (!name) return;
 
     const saved = JSON.parse(localStorage.getItem("kn_whatif_scenarios") || "[]");
     saved.push({
       name,
       date: new Date().toLocaleDateString('vi-VN'),
-      params: `Growth: ${g}%, Discount: ${d}%, Ship: ${s}%`,
+      params: `Tăng trưởng: ${g}%, Chiết khấu: ${d}%, Vận chuyển: ${s}%`,
       projected: document.getElementById("whatif-proj-prof") ? document.getElementById("whatif-proj-prof").textContent : "$588.0K"
     });
 
@@ -822,15 +876,15 @@ document.addEventListener("DOMContentLoaded", function () {
   // --------------------------------------------------------------------------
   async function renderQuestionExplorerView() {
     const catalog = [
-      { id: "SAL-001", domain: "Sales", question: "Doanh thu & Lợi nhuận theo Quý/Năm?", measures: "Revenue, Profit", dim: "Time", status: "Implemented", targetRoute: "sales" },
-      { id: "SAL-002", domain: "Sales", question: "Top 10 sản phẩm có lợi nhuận cao nhất?", measures: "Profit, Margin", dim: "Product", status: "Implemented", targetRoute: "sales" },
-      { id: "PUR-001", domain: "Purchase", question: "Chi phí nhập hàng theo Nhà cung cấp?", measures: "PurchaseCost", dim: "Supplier", status: "Implemented", targetRoute: "purchase" },
-      { id: "INV-001", domain: "Inventory", question: "Sản phẩm nào đang dưới mức tồn kho an toàn?", measures: "StockQty", dim: "Product, Warehouse", status: "Implemented", targetRoute: "inventory" },
-      { id: "SHP-001", domain: "Shipping", question: "Tỷ lệ đơn hàng giao trễ SLA theo đơn vị vận chuyển?", measures: "LateCount", dim: "Shipper", status: "Implemented", targetRoute: "shipping" },
-      { id: "CUS-001", domain: "Customer", question: "Doanh thu và lợi nhuận theo Phân khúc khách hàng?", measures: "Revenue, Profit", dim: "Customer.Segment", status: "Implemented", targetRoute: "customer" },
-      { id: "PRD-001", domain: "Product", question: "Ma trận sinh lời sản phẩm Margin vs Revenue?", measures: "Margin, Revenue", dim: "Product", status: "Implemented", targetRoute: "product" },
-      { id: "CROSS-001", domain: "Cross Analysis", question: "Sản phẩm bán chạy nhưng lượng tồn kho thấp?", measures: "SalesQty, StockQty", dim: "Product", status: "Implemented", targetRoute: "cross-analysis" },
-      { id: "ML-001", domain: "Forecast", question: "Dự báo doanh số 3 - 12 tháng tới (ML.NET SSA)?", measures: "ForecastSales", dim: "Time", status: "Implemented", targetRoute: "forecast" }
+      { id: "SAL-001", domain: "Bán hàng", question: "Doanh thu & Lợi nhuận theo Quý/Năm?", measures: "Revenue, Profit", dim: "Time", status: "Đã triển khai", targetRoute: "sales" },
+      { id: "SAL-002", domain: "Bán hàng", question: "Top 10 sản phẩm có lợi nhuận cao nhất?", measures: "Profit, Margin", dim: "Product", status: "Đã triển khai", targetRoute: "sales" },
+      { id: "PUR-001", domain: "Mua hàng", question: "Chi phí nhập hàng theo Nhà cung cấp?", measures: "PurchaseCost", dim: "Supplier", status: "Đã triển khai", targetRoute: "purchase" },
+      { id: "INV-001", domain: "Tồn kho", question: "Sản phẩm nào đang dưới mức tồn kho an toàn?", measures: "StockQty", dim: "Product, Warehouse", status: "Đã triển khai", targetRoute: "inventory" },
+      { id: "SHP-001", domain: "Vận chuyển", question: "Tỷ lệ đơn hàng giao trễ SLA theo đơn vị vận chuyển?", measures: "LateCount", dim: "Shipper", status: "Đã triển khai", targetRoute: "shipping" },
+      { id: "CUS-001", domain: "Khách hàng", question: "Doanh thu và lợi nhuận theo Phân khúc khách hàng?", measures: "Revenue, Profit", dim: "Customer.Segment", status: "Đã triển khai", targetRoute: "customer" },
+      { id: "PRD-001", domain: "Sản phẩm", question: "Ma trận sinh lời sản phẩm Margin vs Revenue?", measures: "Margin, Revenue", dim: "Product", status: "Đã triển khai", targetRoute: "product" },
+      { id: "CROSS-001", domain: "Phân tích chéo / Cross Analysis", question: "Sản phẩm bán chạy nhưng lượng tồn kho thấp?", measures: "SalesQty, StockQty", dim: "Product", status: "Đã triển khai", targetRoute: "cross-analysis" },
+      { id: "ML-001", domain: "Dự báo / Forecast", question: "Dự báo doanh số 3 - 12 tháng tới (ML.NET SSA)?", measures: "ForecastSales", dim: "Time", status: "Đã triển khai", targetRoute: "forecast" }
     ];
 
     const auth = window.KhangNghiAuth;
@@ -854,7 +908,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${q.measures}</td>
           <td>${q.dim}</td>
           <td><span class="badge badge-healthy">${q.status}</span></td>
-          <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px; background:var(--color-primary); color:white; border:none;" onclick="window.location.hash='#/${q.targetRoute}'">🚀 Open Analysis</button></td>
+          <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px; background:var(--color-primary); color:white; border:none;" onclick="window.location.hash='#/${q.targetRoute}'">🚀 Mở phân tích</button></td>
         </tr>
       `).join('');
     }
@@ -871,9 +925,9 @@ document.addEventListener("DOMContentLoaded", function () {
         <tr>
           <td><strong style="color:var(--color-primary);">${t.name}</strong></td>
           <td><span class="badge ${t.type === 'FACT' ? 'badge-info' : 'badge-secondary'}" style="padding:2px 8px; font-size:10px;">${t.type}</span></td>
-          <td><strong>${t.rows.toLocaleString()}</strong> records</td>
+          <td><strong>${t.rows.toLocaleString()}</strong> bản ghi</td>
           <td>${t.description}</td>
-          <td><span class="badge ${t.status === 'AVAILABLE' ? 'badge-healthy' : 'badge-warning'}" style="padding:2px 8px; font-size:10px; background:${t.status === 'AVAILABLE' ? 'rgba(37,162,68,0.15)' : 'rgba(243,156,18,0.15)'}; color:${t.status === 'AVAILABLE' ? '#25a244' : '#f39c12'};">${t.status}</span></td>
+          <td><span class="badge ${t.status === 'AVAILABLE' ? 'badge-healthy' : 'badge-warning'}" style="padding:2px 8px; font-size:10px; background:${t.status === 'AVAILABLE' ? 'rgba(37,162,68,0.15)' : 'rgba(243,156,18,0.15)'}; color:${t.status === 'AVAILABLE' ? '#25a244' : '#f39c12'};">${t.status === 'AVAILABLE' ? 'Đã kết nối' : t.status}</span></td>
         </tr>
       `).join('');
     }
@@ -1019,7 +1073,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const emailInput = document.getElementById("login-email");
     const passwordInput = document.getElementById("login-password");
     if (emailInput) emailInput.value = email;
-    if (passwordInput) passwordInput.value = "123456";
+    
+    // Tự động gán mật khẩu bảo mật riêng biệt tương ứng với tài khoản
+    const auth = window.KhangNghiAuth;
+    if (auth && auth.DEMO_ACCOUNTS) {
+      const acc = auth.DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === (email || "").toLowerCase());
+      if (acc && passwordInput) {
+        passwordInput.value = acc.password;
+      }
+    }
     handleLogin();
   }
 

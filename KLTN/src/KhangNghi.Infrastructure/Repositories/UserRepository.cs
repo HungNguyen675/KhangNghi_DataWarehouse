@@ -116,28 +116,33 @@ namespace KhangNghi.Infrastructure.Repositories
                     END";
                 await db.ExecuteAsync(createTableSql);
 
-                var count = await db.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM dbo.Sys_User");
-                if (count == 0)
-                {
-                    // Tạo sẵn các tài khoản chuẩn theo phân quyền
+                // Tạo hoặc cập nhật các tài khoản chuẩn với mật khẩu bảo mật riêng biệt cho từng vai trò
                     var defaultUsers = new[]
                     {
-                        new SysUser { Username = "admin", FullName = "Quản Trị Viên Hệ Thống", Email = "admin@khangnghi.com.vn", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
-                        new SysUser { Username = "giamdoc", FullName = "Ban Giám Đốc Khang Nghị", Email = "ceo@khangnghi.com.vn", Role = "Director", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
-                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "SalesManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
-                        new SysUser { Username = "muahang", FullName = "Trưởng Phòng Mua Hàng", Email = "purchase@khangnghi.com.vn", Role = "PurchaseManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
-                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "InventoryManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") },
-                        new SysUser { Username = "vanchuyen", FullName = "Trưởng Phòng Logistics", Email = "shipping@khangnghi.com.vn", Role = "ShippingStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456") }
+                        new SysUser { Username = "admin", FullName = "Quản Trị Viên Hệ Thống", Email = "admin@khangnghi.com.vn", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@KhangNghi2026#") },
+                        new SysUser { Username = "giamdoc", FullName = "Ban Giám Đốc Khang Nghị", Email = "ceo@khangnghi.com.vn", Role = "Director", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Ceo@KhangNghi2026!") },
+                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "SalesManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Sales@KhangNghi2026$") },
+                        new SysUser { Username = "muahang", FullName = "Trưởng Phòng Mua Hàng", Email = "purchase@khangnghi.com.vn", Role = "PurchaseManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Purchase@KhangNghi2026#") },
+                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "InventoryManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Warehouse@KhangNghi2026%") },
+                        new SysUser { Username = "vanchuyen", FullName = "Trưởng Phòng Logistics", Email = "shipping@khangnghi.com.vn", Role = "ShippingStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Shipping@KhangNghi2026&") }
                     };
 
-                    const string insertSql = @"
-                        INSERT INTO dbo.Sys_User (Username, PasswordHash, FullName, Email, Role, IsActive, CreatedAt)
-                        VALUES (@Username, @PasswordHash, @FullName, @Email, @Role, 1, GETDATE());";
+                    const string upsertSql = @"
+                        IF EXISTS (SELECT 1 FROM dbo.Sys_User WHERE Username = @Username)
+                        BEGIN
+                            UPDATE dbo.Sys_User 
+                            SET PasswordHash = @PasswordHash, FullName = @FullName, Email = @Email, Role = @Role, IsActive = 1
+                            WHERE Username = @Username;
+                        END
+                        ELSE
+                        BEGIN
+                            INSERT INTO dbo.Sys_User (Username, PasswordHash, FullName, Email, Role, IsActive, CreatedAt)
+                            VALUES (@Username, @PasswordHash, @FullName, @Email, @Role, 1, GETDATE());
+                        END";
 
-                    foreach (var u in defaultUsers)
-                    {
-                        await db.ExecuteAsync(insertSql, u);
-                    }
+                foreach (var u in defaultUsers)
+                {
+                    await db.ExecuteAsync(upsertSql, u);
                 }
             }
             catch (Exception ex)
