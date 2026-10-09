@@ -228,4 +228,16 @@ DBCC CHECKIDENT ('Dim_Product', RESEED, 0);
 
 DELETE FROM Fact_Sales;
 
-SELECT * FROM Fact_Sales;
+SELECT * FROM Fact_Shipping;
+
+SELECT * FROM Dim_Warehouse;
+
+SELECT * FROM Dim_Manufacturer;
+
+TRUNCATE TABLE Fact_Purchase;
+
+DELETE FROM Fact_Purchase;
+
+TRUNCATE TABLE Dim_Supplier;
+
+SELECT * FROM  Dim_Supplier;

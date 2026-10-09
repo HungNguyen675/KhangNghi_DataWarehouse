@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="7"
-  DTS:VersionGUID="{13A2F4B8-68A9-4B7E-AD18-5C25065628C3}">
+  DTS:VersionBuild="11"
+  DTS:VersionGUID="{9CB73244-1755-4A6D-AE13-F98DCECF0B4A}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -29,7 +29,24 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABIC8KscT6yzbcz7nYzBCOBaUKxvBJHOEgHKNRNTpmiHQAAAAAOgAAAAAIAACAAAACVNFXRkKskxdp8UMgrvSuqLS0KhYc6nyUYEr4mzL51BhAAAABPGBrrjhL2UE1r+ir7rfI+QAAAACrpNr0+JH9FLg4WhktJLZbARTmvcc3lqKH4dNtGZhePLZdJd1YKufbHjXUhudXkD4PGUztSI3XtCeQoSSdjZHw</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACtQ3sHHptxhkAD0ICTs/b/WtavS9EdNg45h5Qt58KHBwAAAAAOgAAAAAIAACAAAAA51/q+jK1f4xksd+f28e0ZmbiRKWWxaDFYM3RYQKth3RAAAABYq0ViEsGmK+8I43g1STJKQAAAAGYvQRrH6ulhZtWUNqbc/xoRAvbHfVJV72TXMecwZEXDWw5UFnpTV9AU5fP4ddtQqHS0bQLS2TMVYT5u2+HSEcc</DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa 1]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{F7B11931-1AD9-4593-AE13-6831CF4211BE}"
+      DTS:ObjectName="HungNguyen.DWH_KhangNghi.sa 1">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{F7B11931-1AD9-4593-AE13-6831CF4211BE}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAA/ej+iSYsvXkiKL4zFbFm1BgJukfN72k0ItoBw6LxlMgAAAAAOgAAAAAIAACAAAABIt11Be/DUfTMSDXnCq1+vX9u++9kn9dWLmYh94SUeuhAAAADM3ijkjY+HL2VJxZPxhIX1QAAAAOW2Rwm5hnt3lONb+7fD+KhO3lGOvTciW1Iatgd0WMNEWo5x/SyA8m4FXwjGfqWvDFfjDUfHrX5/6Wb4ROJZu/k</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -46,7 +63,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACf7QwUO/NZ1gapKr3jSYcEr5GXT/0My8wYx1Ur7IcB1gAAAAAOgAAAAAIAACAAAADPGL1ZrJsomvudikj3CA83fQXsDj942i6y+16mui5dihAAAACI3R/DimIKTPLy70DwAeG6QAAAACKFnkJ0dwAKHULGnJgtn5zCZRZCdV/vYhhP6hyfw6P7NpXXch3tBqbmsHC/CjuRQvPWbDCBt9ZHZAg0j7+gEq8</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABQpIVxXT3TJfoPvRcovIuDMCgCsJvxu12+ySwxagHxpQAAAAAOgAAAAAIAACAAAACOcB7dhXiIF2JZWoYPRW6XutC4atZb0zElUAlTYbYH3xAAAAAva+OMVw8jhas3CXqd1KNFQAAAALBu7R03XaZWa0vRPNzJI60OgOq0cSnsiCGF7T8BmllcnDG6aTkCpAw8ZAAiDHYU5H4IOXf7FbTYyle5MsUEzn0</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -68,195 +85,6 @@
           version="1">
           <components>
             <component
-              refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX"
-              componentClassID="Microsoft.Aggregate"
-              contactInfo="Aggregate;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;3"
-              description="Aggregates data with functions such as Average, Sum, Count, Max, and Min. For example, group data to compute the sum of sales per product or the average visits per day."
-              name="AGG - Lọc trùng Nhà SX"
-              version="3">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the approximate number of group by keys that the aggregation produces. Low indicates 500,000 key values, Medium indicates 5 million key values, and High indicates more than 25 million key values. Unspecified indicates no KeyScale value is used."
-                  name="KeyScale"
-                  typeConverter="KeyScaleType">0</property>
-                <property
-                  dataType="System.Null"
-                  description="Specifies the exact number of group by keys that the aggregation produces. If a KeyScale value is specified, the value in Keys takes precedence."
-                  name="Keys" />
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the approximate number of distinct values in a column that the aggregation counts distinctly. Low indicates 500,000 key values, Medium indicates 5 million key values, and High indicates more than 25 million key values. Unspecified indicates no CountDistinctScale value is used."
-                  name="CountDistinctScale"
-                  typeConverter="KeyScaleType">0</property>
-                <property
-                  dataType="System.Null"
-                  description="Specifies the exact number of distinct values in a column that the aggregation counts distinctly. If a CountDistinctScale value is specified, the value in CountDistinctKeys takes precedence."
-                  name="CountDistinctKeys" />
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the percentage by which memory can be extended during the aggregation. Valid values are between 1 and 100."
-                  name="AutoExtendFactor">25</property>
-              </properties>
-              <inputs>
-                <input
-                  refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1]"
-                  name="Aggregate Input 1">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1].Columns[Manufacturer]"
-                      cachedDataType="wstr"
-                      cachedLength="255"
-                      cachedName="Manufacturer"
-                      lineageId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]" />
-                    <inputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1].Columns[SourceSystem]"
-                      cachedDataType="wstr"
-                      cachedLength="8"
-                      cachedName="SourceSystem"
-                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[SourceSystem]" />
-                    <inputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1].Columns[CreatedDate]"
-                      cachedDataType="dbTimeStamp"
-                      cachedName="CreatedDate"
-                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[CreatedDate]" />
-                    <inputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1].Columns[UpdatedDate]"
-                      cachedDataType="dbTimeStamp"
-                      cachedName="UpdatedDate"
-                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[UpdatedDate]" />
-                  </inputColumns>
-                  <externalMetadataColumns />
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1]"
-                  name="Aggregate Output 1">
-                  <properties>
-                    <property
-                      dataType="System.Int32"
-                      description="Specifies the approximate number of group by keys that the aggregation produces. Low indicates 500,000 key values, Medium indicates 5 million key values, and High indicates more than 25 million key values. Unspecified indicates no KeyScale value is used."
-                      name="KeyScale"
-                      typeConverter="KeyScaleType">0</property>
-                    <property
-                      dataType="System.Null"
-                      description="Specifies the exact number of group by keys that the aggregation produces. If a KeyScale value is specified, the value in Keys takes precedence."
-                      name="Keys" />
-                  </properties>
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[Manufacturer]"
-                      dataType="wstr"
-                      length="255"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[Manufacturer]"
-                      name="Manufacturer">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Specifies the ID of the input column used in the aggregation."
-                          name="AggregationColumnId">#{Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]}</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the type of aggregation."
-                          name="AggregationType"
-                          typeConverter="AggregationType">0</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Indicates whether the column requires special handling because it may contain oversized data or it requires precision beyond a float data type."
-                          name="IsBig">1</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the string comparison options."
-                          name="AggregationComparisonFlags">0</property>
-                      </properties>
-                    </outputColumn>
-                    <outputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[SourceSystem]"
-                      dataType="wstr"
-                      length="8"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[SourceSystem]"
-                      name="SourceSystem">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Specifies the ID of the input column used in the aggregation."
-                          name="AggregationColumnId">#{Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[SourceSystem]}</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the type of aggregation."
-                          name="AggregationType"
-                          typeConverter="AggregationType">0</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Indicates whether the column requires special handling because it may contain oversized data or it requires precision beyond a float data type."
-                          name="IsBig">1</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the string comparison options."
-                          name="AggregationComparisonFlags">0</property>
-                      </properties>
-                    </outputColumn>
-                    <outputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[CreatedDate]"
-                      dataType="dbTimeStamp"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[CreatedDate]"
-                      name="CreatedDate">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Specifies the ID of the input column used in the aggregation."
-                          name="AggregationColumnId">#{Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[CreatedDate]}</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the type of aggregation."
-                          name="AggregationType"
-                          typeConverter="AggregationType">0</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Indicates whether the column requires special handling because it may contain oversized data or it requires precision beyond a float data type."
-                          name="IsBig">1</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the string comparison options."
-                          name="AggregationComparisonFlags">0</property>
-                      </properties>
-                    </outputColumn>
-                    <outputColumn
-                      refId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[UpdatedDate]"
-                      dataType="dbTimeStamp"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[UpdatedDate]"
-                      name="UpdatedDate">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Specifies the ID of the input column used in the aggregation."
-                          name="AggregationColumnId">#{Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[UpdatedDate]}</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the type of aggregation."
-                          name="AggregationType"
-                          typeConverter="AggregationType">0</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Indicates whether the column requires special handling because it may contain oversized data or it requires precision beyond a float data type."
-                          name="IsBig">1</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specifies the string comparison options."
-                          name="AggregationComparisonFlags">0</property>
-                      </properties>
-                    </outputColumn>
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
               refId="Package\Data Flow Task\Derived Column"
               componentClassID="Microsoft.DerivedColumn"
               contactInfo="Derived Column;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
@@ -268,32 +96,6 @@
                   refId="Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
                   description="Input to the Derived Column Transformation"
                   name="Derived Column Input">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Data Flow Task\Derived Column.Inputs[Derived Column Input].Columns[Manufacturer]"
-                      cachedDataType="wstr"
-                      cachedLength="255"
-                      cachedName="Manufacturer"
-                      errorOrTruncationOperation="Computation"
-                      errorRowDisposition="FailComponent"
-                      lineageId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]"
-                      truncationRowDisposition="FailComponent"
-                      usageType="readWrite">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.String"
-                          description="Derived Column Expression"
-                          name="Expression">[TRIM](#{Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]})</property>
-                        <property
-                          containsID="true"
-                          dataType="System.String"
-                          description="Derived Column Friendly Expression"
-                          expressionType="Notify"
-                          name="FriendlyExpression">TRIM(Manufacturer)</property>
-                      </properties>
-                    </inputColumn>
-                  </inputColumns>
                   <externalMetadataColumns />
                 </input>
               </inputs>
@@ -401,11 +203,290 @@
               </outputs>
             </component>
             <component
-              refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer"
+              refId="Package\Data Flow Task\Lookup"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Lookup"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[Dim_Manufacturer]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[Dim_Manufacturer]) [refTable]
+where [refTable].[ManufacturerID] = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ManufacturerKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="ManufacturerID" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="ManufacturerName" dataType="DT_WSTR" length="255" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Country" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="SourceSystem" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CreatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="UpdatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1258</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Data Flow Task\Lookup.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Data Flow Task\Lookup.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Lookup.Inputs[Lookup Input].Columns[ManufacturerID]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="ManufacturerID"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the column in the reference table that a column joins."
+                          name="JoinToReferenceColumn">ManufacturerID</property>
+                        <property
+                          dataType="System.Null"
+                          description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\Lookup.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\Lookup.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\Lookup.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\Lookup.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Lookup.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\Lookup.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Lookup.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Data Flow Task\OLE DB Command"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+              name="OLE DB Command"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE dbo.Dim_Manufacturer
+SET ManufacturerName = ?, Country = ?, UpdatedDate = GETDATE()
+WHERE ManufacturerID = ?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1258</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Data Flow Task\OLE DB Command.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[ManufacturerName]"
+                      cachedDataType="wstr"
+                      cachedLength="255"
+                      cachedName="ManufacturerName"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerName]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[Country]"
+                      cachedDataType="wstr"
+                      cachedLength="100"
+                      cachedName="Country"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Country]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[ManufacturerID]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="ManufacturerID"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      dataType="wstr"
+                      length="255"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      dataType="wstr"
+                      length="100"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      dataType="wstr"
+                      length="50"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Data Flow Task\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
               description="OLE DB Destination"
-              name="DST - Bảng Dim_Manufacturer"
+              name="OLE DB Destination"
               usesDispositions="true"
               version="4">
               <properties>
@@ -450,7 +531,7 @@
                 <property
                   dataType="System.String"
                   description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                  name="FastLoadOptions">CHECK_CONSTRAINTS</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
@@ -458,7 +539,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Connections[OleDbConnection]"
+                  refId="Package\Data Flow Task\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
                   connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
                   description="The OLE DB runtime connection used to access the database."
@@ -466,71 +547,85 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input]"
+                  refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].Columns[Manufacturer]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ManufacturerID]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="ManufacturerID"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerID]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ManufacturerName]"
                       cachedDataType="wstr"
                       cachedLength="255"
-                      cachedName="Manufacturer"
-                      externalMetadataColumnId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerName]"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[Manufacturer]" />
+                      cachedName="ManufacturerName"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerName]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerName]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].Columns[SourceSystem]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Country]"
+                      cachedDataType="wstr"
+                      cachedLength="100"
+                      cachedName="Country"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Country]"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Country]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SourceSystem]"
                       cachedDataType="wstr"
                       cachedLength="8"
                       cachedName="SourceSystem"
-                      externalMetadataColumnId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[SourceSystem]"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[SourceSystem]" />
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SourceSystem]"
+                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[SourceSystem]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].Columns[CreatedDate]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CreatedDate]"
                       cachedDataType="dbTimeStamp"
                       cachedName="CreatedDate"
-                      externalMetadataColumnId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[CreatedDate]" />
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
+                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[CreatedDate]" />
                     <inputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].Columns[UpdatedDate]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[UpdatedDate]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDate"
-                      externalMetadataColumnId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
-                      lineageId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1].Columns[UpdatedDate]" />
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
+                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[UpdatedDate]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerKey]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerKey]"
                       dataType="i4"
                       name="ManufacturerKey" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerID]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerID]"
                       dataType="wstr"
                       length="50"
                       name="ManufacturerID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerName]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ManufacturerName]"
                       dataType="wstr"
                       length="255"
                       name="ManufacturerName" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[Country]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Country]"
                       dataType="wstr"
                       length="100"
                       name="Country" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[SourceSystem]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SourceSystem]"
                       dataType="wstr"
                       length="50"
                       name="SourceSystem" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
                       dataType="dbTimeStamp"
                       name="CreatedDate" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
                       dataType="dbTimeStamp"
                       name="UpdatedDate" />
                   </externalMetadataColumns>
@@ -538,22 +633,22 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -586,7 +681,23 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">-- 1. Lấy Nhà SX từ bên Bán hàng
+SELECT 
+    CAST('SALE_' + CAST([Manufacturer] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ManufacturerID,
+    CAST([Manufacturer] AS NVARCHAR(255)) AS ManufacturerName,
+    CAST(NULL AS NVARCHAR(100)) AS Country
+FROM dbo.Stg_KhangNghiData
+WHERE [Manufacturer] IS NOT NULL
+
+UNION 
+
+-- 2. Lấy Nhà SX từ bên Nhập hàng
+SELECT 
+    CAST('PUR_' + CAST([Manufacturer] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ManufacturerID,
+    CAST([Manufacturer] AS NVARCHAR(255)) AS ManufacturerName,
+    CAST(NULL AS NVARCHAR(100)) AS Country
+FROM dbo.Stg_PurchaseHistory
+WHERE [Manufacturer] IS NOT NULL;</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -603,7 +714,7 @@
                   dataType="System.Int32"
                   description="Specifies the mode used to access the database."
                   name="AccessMode"
-                  typeConverter="AccessMode">0</property>
+                  typeConverter="AccessMode">2</property>
                 <property
                   dataType="System.String"
                   description="The mappings between the parameters in the SQL command and variables."
@@ -623,169 +734,53 @@
                   name="OLE DB Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Manufacturer]"
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]"
                       dataType="wstr"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Manufacturer]"
+                      externalMetadataColumnId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[ManufacturerID]"
+                      length="50"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerID]"
+                      name="ManufacturerID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[ManufacturerName]"
                       length="255"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Manufacturer]"
-                      name="Manufacturer"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[ManufacturerName]"
+                      name="ManufacturerName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Country]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Country]"
+                      length="100"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Country]"
+                      name="Country"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Row ID]"
-                      dataType="r8"
-                      name="Row ID" />
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[ManufacturerID]"
+                      dataType="wstr"
+                      length="50"
+                      name="ManufacturerID" />
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Order ID]"
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[ManufacturerName]"
                       dataType="wstr"
                       length="255"
-                      name="Order ID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Order Date]"
-                      dataType="dbTimeStamp"
-                      name="Order Date" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Ship Date]"
-                      dataType="dbTimeStamp"
-                      name="Ship Date" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Ship Mode]"
-                      dataType="wstr"
-                      length="255"
-                      name="Ship Mode" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Customer ID]"
-                      dataType="wstr"
-                      length="255"
-                      name="Customer ID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Customer Name]"
-                      dataType="wstr"
-                      length="255"
-                      name="Customer Name" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Segment]"
-                      dataType="wstr"
-                      length="255"
-                      name="Segment" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Postal Code]"
-                      dataType="r8"
-                      name="Postal Code" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[City]"
-                      dataType="wstr"
-                      length="255"
-                      name="City" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[State]"
-                      dataType="wstr"
-                      length="255"
-                      name="State" />
+                      name="ManufacturerName" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Country]"
                       dataType="wstr"
-                      length="255"
+                      length="100"
                       name="Country" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Region]"
-                      dataType="wstr"
-                      length="255"
-                      name="Region" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Market]"
-                      dataType="wstr"
-                      length="255"
-                      name="Market" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Product ID]"
-                      dataType="wstr"
-                      length="255"
-                      name="Product ID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Category]"
-                      dataType="wstr"
-                      length="255"
-                      name="Category" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Sub-Category]"
-                      dataType="wstr"
-                      length="255"
-                      name="Sub-Category" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Product Name]"
-                      dataType="wstr"
-                      length="255"
-                      name="Product Name" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Sales]"
-                      dataType="cy"
-                      name="Sales" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Quantity]"
-                      dataType="r8"
-                      name="Quantity" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Discount]"
-                      dataType="r8"
-                      name="Discount" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Profit]"
-                      dataType="cy"
-                      name="Profit" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Shipping Cost]"
-                      dataType="r8"
-                      name="Shipping Cost" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Order Priority]"
-                      dataType="wstr"
-                      length="255"
-                      name="Order Priority" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Warehouse ]"
-                      dataType="wstr"
-                      length="255"
-                      name="Warehouse " />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Payment Method]"
-                      dataType="wstr"
-                      length="255"
-                      name="Payment Method" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Sales Channel]"
-                      dataType="wstr"
-                      length="255"
-                      name="Sales Channel" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Manufacturer]"
-                      dataType="wstr"
-                      length="255"
-                      name="Manufacturer" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Service ]"
-                      dataType="wstr"
-                      length="255"
-                      name="Service " />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Employee Name]"
-                      dataType="wstr"
-                      length="255"
-                      name="Employee Name" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Promotion Name]"
-                      dataType="wstr"
-                      length="255"
-                      name="Promotion Name" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].ExternalColumns[Location ID]"
-                      dataType="wstr"
-                      length="255"
-                      name="Location ID" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -793,6 +788,24 @@
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ManufacturerID]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ManufacturerID]"
+                      name="ManufacturerID" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ManufacturerName]"
+                      dataType="wstr"
+                      length="255"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ManufacturerName]"
+                      name="ManufacturerName" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[Country]"
+                      dataType="wstr"
+                      length="100"
+                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[Country]"
+                      name="Country" />
                     <outputColumn
                       refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
@@ -805,229 +818,6 @@
                       lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[Manufacturer]"
-                      dataType="wstr"
-                      length="255"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Error Output].Columns[Manufacturer]"
-                      name="Manufacturer" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-              description="OLE DB Source"
-              name="SRC - Bảng Stg_PurchaseHistory"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[Stg_PurchaseHistory]</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
-                <property
-                  dataType="System.String"
-                  description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">1258</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">false</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-                <property
-                  dataType="System.String"
-                  description="The mappings between the parameters in the SQL command and variables."
-                  name="ParameterMapping"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
-                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.KhangNghi_Staging.sa]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].Columns[Manufacturer]"
-                      dataType="wstr"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[Manufacturer]"
-                      length="100"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].Columns[Manufacturer]"
-                      name="Manufacturer"
-                      truncationRowDisposition="FailComponent" />
-                  </outputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[PurchaseID]"
-                      codePage="1252"
-                      dataType="str"
-                      length="50"
-                      name="PurchaseID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[PurchaseDate]"
-                      dataType="dbTimeStamp"
-                      name="PurchaseDate" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[Manufacturer]"
-                      dataType="wstr"
-                      length="100"
-                      name="Manufacturer" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[ProductID]"
-                      codePage="1252"
-                      dataType="str"
-                      length="50"
-                      name="ProductID" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[Warehouse]"
-                      dataType="wstr"
-                      length="50"
-                      name="Warehouse" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[Quantity]"
-                      dataType="i4"
-                      name="Quantity" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[UnitCost]"
-                      dataType="r8"
-                      name="UnitCost" />
-                    <externalMetadataColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].ExternalColumns[TotalCost]"
-                      dataType="r8"
-                      name="TotalCost" />
-                  </externalMetadataColumns>
-                </output>
-                <output
-                  refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output]"
-                  isErrorOut="true"
-                  name="OLE DB Source Error Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                    <outputColumn
-                      refId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[Manufacturer]"
-                      dataType="wstr"
-                      length="100"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Error Output].Columns[Manufacturer]"
-                      name="Manufacturer" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu"
-              componentClassID="Microsoft.UnionAll"
-              contactInfo="Union All;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
-              description="Combines rows from multiple data flows without sorting. For example, add rows back to a data flow after correction of errors. If sorting is important, we recommend using the Merge transformation."
-              name="UNION - Hợp lưu dữ liệu"
-              version="1">
-              <inputs>
-                <input
-                  refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 1]"
-                  name="Union All Input 1">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 1].Columns[Manufacturer]"
-                      cachedDataType="wstr"
-                      cachedLength="255"
-                      cachedName="Manufacturer"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output].Columns[Manufacturer]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]}</property>
-                      </properties>
-                    </inputColumn>
-                  </inputColumns>
-                  <externalMetadataColumns />
-                </input>
-                <input
-                  refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 2]"
-                  hasSideEffects="true"
-                  name="Union All Input 2">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 2].Columns[Manufacturer]"
-                      cachedDataType="wstr"
-                      cachedLength="100"
-                      cachedName="Manufacturer"
-                      lineageId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output].Columns[Manufacturer]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]}</property>
-                      </properties>
-                    </inputColumn>
-                  </inputColumns>
-                  <externalMetadataColumns />
-                </input>
-                <input
-                  refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 3]"
-                  dangling="true"
-                  hasSideEffects="true"
-                  name="Union All Input 3">
-                  <externalMetadataColumns />
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1]"
-                  name="Union All Output 1">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]"
-                      dataType="wstr"
-                      length="255"
-                      lineageId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1].Columns[Manufacturer]"
-                      name="Manufacturer" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -1036,30 +826,25 @@
           </components>
           <paths>
             <path
-              refId="Package\Data Flow Task.Paths[Aggregate Output 1]"
-              endId="Package\Data Flow Task\DST - Bảng Dim_Manufacturer.Inputs[OLE DB Destination Input]"
-              name="Aggregate Output 1"
-              startId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Outputs[Aggregate Output 1]" />
-            <path
               refId="Package\Data Flow Task.Paths[Derived Column Output]"
-              endId="Package\Data Flow Task\AGG - Lọc trùng Nhà SX.Inputs[Aggregate Input 1]"
+              endId="Package\Data Flow Task\Lookup.Inputs[Lookup Input]"
               name="Derived Column Output"
               startId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output]" />
             <path
+              refId="Package\Data Flow Task.Paths[Lookup Match Output]"
+              endId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input]"
+              name="Lookup Match Output"
+              startId="Package\Data Flow Task\Lookup.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Data Flow Task.Paths[Lookup No Match Output]"
+              endId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="Lookup No Match Output"
+              startId="Package\Data Flow Task\Lookup.Outputs[Lookup No Match Output]" />
+            <path
               refId="Package\Data Flow Task.Paths[OLE DB Source Output]"
-              endId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 1]"
+              endId="Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
               name="OLE DB Source Output"
               startId="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData.Outputs[OLE DB Source Output]" />
-            <path
-              refId="Package\Data Flow Task.Paths[OLE DB Source Output1]"
-              endId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Inputs[Union All Input 2]"
-              name="OLE DB Source Output"
-              startId="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory.Outputs[OLE DB Source Output]" />
-            <path
-              refId="Package\Data Flow Task.Paths[Union All Output 1]"
-              endId="Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
-              name="Union All Output 1"
-              startId="Package\Data Flow Task\UNION - Hợp lưu dữ liệu.Outputs[Union All Output 1]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -1088,57 +873,37 @@
     design-time-name="Package\Data Flow Task">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="195.2,41.6"
-          Id="Package\Data Flow Task\UNION - Hợp lưu dữ liệu"
-          TopLeft="408,240" />
+          Size="170.4,41.6"
+          Id="Package\Data Flow Task\OLE DB Destination"
+          TopLeft="265.178571993067,107.058823435571" />
         <NodeLayout
-          Size="230.4,41.6"
-          Id="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData"
-          TopLeft="110,168" />
-        <NodeLayout
-          Size="192,41.6"
-          Id="Package\Data Flow Task\AGG - Lọc trùng Nhà SX"
-          TopLeft="854,234" />
-        <NodeLayout
-          Size="232,41.6"
-          Id="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory"
-          TopLeft="109,305" />
-        <NodeLayout
-          Size="223.2,41.6"
-          Id="Package\Data Flow Task\DST - Bảng Dim_Manufacturer"
-          TopLeft="1075,91" />
+          Size="112.8,41.6"
+          Id="Package\Data Flow Task\Lookup"
+          TopLeft="73.2142858701397,101.323529322951" />
         <NodeLayout
           Size="153.6,41.6"
           Id="Package\Data Flow Task\Derived Column"
-          TopLeft="657,231" />
+          TopLeft="321.285713571067,16.8823531288588" />
+        <NodeLayout
+          Size="229.6,41.6"
+          Id="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData"
+          TopLeft="43.0357141431649,10.2794119029541" />
         <EdgeLayout
-          Id="Package\Data Flow Task.Paths[OLE DB Source Output1]"
-          TopLeft="225,305">
+          Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
+          TopLeft="272.635714143165,34.3808825159065">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="280.5,-23"
+              EndConnector="48.6499994279017,0"
               Start="0,0"
-              End="280.5,-15.5">
+              End="41.1499994279017,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,-7.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,-7.5"
-                    Point2="0,-11.5"
-                    Point3="4,-11.5" />
-                  <mssgle:LineSegment
-                    End="276.5,-11.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="276.5,-11.5"
-                    Point2="280.5,-11.5"
-                    Point3="280.5,-15.5" />
-                  <mssgle:LineSegment
-                    End="280.5,-15.5" />
+                    End="41.1499994279017,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1148,53 +913,55 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
-          TopLeft="225,210">
+          Id="Package\Data Flow Task.Paths[Lookup No Match Output]"
+          TopLeft="186.01428587014,124.991176379261">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="249.333333333333,30"
+              EndConnector="79.1642861229274,0"
               Start="0,0"
-              End="249.333333333333,22.5">
+              End="71.6642861229274,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,13.853509664293" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,13.853509664293"
-                    Point2="0,17.853509664293"
-                    Point3="4,17.853509664293" />
-                  <mssgle:LineSegment
-                    End="245.333333333333,17.853509664293" />
-                  <mssgle:CubicBezierSegment
-                    Point1="245.333333333333,17.853509664293"
-                    Point2="249.333333333333,17.853509664293"
-                    Point3="249.333333333333,21.853509664293" />
-                  <mssgle:LineSegment
-                    End="249.333333333333,22.5" />
+                    End="71.6642861229274,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-19.9742436572863,5,111.6127734375,11.609375"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Derived Column Output]"
-          TopLeft="811,253.5">
+          TopLeft="398.085713571067,58.4823531288588">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="43,0"
+              EndConnector="-268.471427700927,42.8411761940919"
               Start="0,0"
-              End="35.5,0">
+              End="-268.471427700927,35.3411761940919">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="35.5,0" />
+                    End="0,17.420588097046" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17.420588097046"
+                    Point2="0,21.420588097046"
+                    Point3="-4,21.420588097046" />
+                  <mssgle:LineSegment
+                    End="-264.471427700927,21.420588097046" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-264.471427700927,21.420588097046"
+                    Point2="-268.471427700927,21.420588097046"
+                    Point3="-268.471427700927,25.420588097046" />
+                  <mssgle:LineSegment
+                    End="-268.471427700927,35.3411761940919" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1203,105 +970,75 @@
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Data Flow Task\OLE DB Command"
+          TopLeft="43.0357141431649,208.658823435571" />
         <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Aggregate Output 1]"
-          TopLeft="950,234">
+          Id="Package\Data Flow Task.Paths[Lookup Match Output]"
+          TopLeft="127.525000006652,142.923529322951">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="236.5,-101"
+              EndConnector="0,65.73529411262"
               Start="0,0"
-              End="236.5,-93.5">
+              End="0,58.23529411262">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,-46.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,-46.5"
-                    Point2="0,-50.5"
-                    Point3="4,-50.5" />
-                  <mssgle:LineSegment
-                    End="232.5,-50.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="232.5,-50.5"
-                    Point2="236.5,-50.5"
-                    Point3="236.5,-54.5" />
-                  <mssgle:LineSegment
-                    End="236.5,-93.5" />
+                    End="0,58.23529411262" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Union All Output 1]"
-          TopLeft="603,261">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="54,-9"
-              Start="0,0"
-              End="46.5,-9">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="23,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="23,0"
-                    Point2="27,0"
-                    Point3="27,-4" />
-                  <mssgle:LineSegment
-                    End="27,-5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="27,-5"
-                    Point2="27,-9"
-                    Point3="31,-9" />
-                  <mssgle:LineSegment
-                    End="46.5,-9" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-48.19138671875,23.31295955631,96.3827734375,11.609375"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\Lookup">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[dbo].[Dim_Manufacturer]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\SRC - Bảng Stg_KhangNghiData">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\SRC - Bảng Stg_PurchaseHistory">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\DST - Bảng Dim_Manufacturer">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>

@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{8ED7D060-F243-4E1F-BC9C-5C2CDFE18B08}">
+  DTS:VersionBuild="5"
+  DTS:VersionGUID="{E3272646-B808-4089-9275-28DEFA7C25A4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -29,7 +29,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAvt6trbAdgud2WaZ5b1VILDNEJEUSaFjDthUuOv9dSgQAAAAAOgAAAAAIAACAAAADDa8+kzYKKObU99C9qmUTcDXIMloL7Gisv2hqANJiEFRAAAAA6k/aZps4d2RdEGBwINgLRQAAAAG1bf4GKlh7ue8Yna+xVuBOsJqU76ft8m2QRTo0pvtA4TEB2xuuSIEYVwyH3IWDavpFMXaaFXqZZDY18jKZw+sw</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADY7Wr1V9uvVqA62VXe31vfEcQMeFFjb62G4TAAz8kL9gAAAAAOgAAAAAIAACAAAADBoApcjLxrjk6tAlG10bsjKiGWB4IueivYU8VX3F8BVxAAAADz/2uwZAcw+sJ6dadbUeR9QAAAAKHxq0sJ3tDoKTWQts1CuXpboY04VQlHGlnNmjrLyX5pt1bomshquUYhj0nCCgh2WpEYia9keUuDHbsXy1IGGUQ</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -50,7 +50,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{0F63AD35-333E-41B8-9BA7-712208D8B375}"
-          SQLTask:SqlStatementSource="-- Dọn dẹp dữ liệu cũ (nếu có)&#xA;DELETE FROM Dim_Time;&#xA;DBCC CHECKIDENT ('Dim_Time', RESEED, 0);&#xA;&#xA;-- Thiết lập mốc thời gian (Ví dụ sinh ra 5 năm liên tục: 2022 - 2026)&#xA;DECLARE @StartDate DATE = '2010-01-01'; &#xA;DECLARE @EndDate DATE = '2026-12-31';   &#xA;DECLARE @CurrentDate DATE = @StartDate;&#xA;&#xA;-- Bắt đầu vòng lặp tự động đẻ ra các ngày&#xA;WHILE @CurrentDate &lt;= @EndDate&#xA;BEGIN&#xA;    INSERT INTO Dim_Time (&#xA;        FullDate, &#xA;        [Day], &#xA;        [Month], &#xA;        [Quarter], &#xA;        [Year], &#xA;        SourceSystem, &#xA;        CreatedDate, &#xA;        UpdatedDate&#xA;    )&#xA;    VALUES (&#xA;        @CurrentDate,&#xA;        DAY(@CurrentDate),&#xA;        MONTH(@CurrentDate),&#xA;        DATEPART(QUARTER, @CurrentDate), -- Hàm tự động tính ra Quý&#xA;        YEAR(@CurrentDate),&#xA;        'SSIS_ETL',&#xA;        GETDATE(),&#xA;        GETDATE()&#xA;    );&#xA;    &#xA;    -- Cộng thêm 1 ngày để lặp tiếp&#xA;    SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="DECLARE @StartDate DATE = '2010-01-01'; &#xA;DECLARE @EndDate DATE = '2026-12-31';   &#xA;DECLARE @CurrentDate DATE = @StartDate;&#xA;&#xA;WHILE @CurrentDate &lt;= @EndDate&#xA;BEGIN&#xA;    -- TƯỜNG LỬA: Chỉ Insert khi ngày này CHƯA TỒN TẠI trong bảng Dim_Time&#xA;    IF NOT EXISTS (SELECT 1 FROM dbo.Dim_Time WHERE FullDate = @CurrentDate)&#xA;    BEGIN&#xA;        INSERT INTO dbo.Dim_Time (&#xA;            FullDate, [Day], [Month], [Quarter], [Year], &#xA;            SourceSystem, CreatedDate, UpdatedDate&#xA;        )&#xA;        VALUES (&#xA;            @CurrentDate, DAY(@CurrentDate), MONTH(@CurrentDate), &#xA;            DATEPART(QUARTER, @CurrentDate), YEAR(@CurrentDate),&#xA;            'SSIS_ETL', GETDATE(), GETDATE()&#xA;        );&#xA;    END&#xA;    &#xA;    -- Tiến tới ngày tiếp theo&#xA;    SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);&#xA;END" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>

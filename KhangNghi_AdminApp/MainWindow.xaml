@@ -1,0 +1,121 @@
+﻿<Window x:Class="KhangNghi_AdminApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hệ Thống Quản Trị Data Warehouse - Khang Nghi" Height="680" Width="1050"
+        WindowStartupLocation="CenterScreen" Background="#F5F6FA">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Dòng 0: Tiêu đề -->
+            <RowDefinition Height="Auto"/>
+            <!-- Dòng 1: Các nút bấm -->
+            <RowDefinition Height="*"/>
+            <!-- Dòng 2: Màn hình Log và Bảng Dữ liệu -->
+        </Grid.RowDefinitions>
+
+        <!-- PHẦN 1: TIÊU ĐỀ DASHBOARD -->
+        <TextBlock Grid.Row="0" Text="TRUNG TÂM ĐIỀU HÀNH VÀ TRÌNH DIỄN HỆ THỐNG DWH" 
+                   FontSize="24" FontWeight="Bold" Foreground="#2F3640" 
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <!-- PHẦN 2: BẢNG ĐIỀU KHIỂN (CÁC NÚT BẤM KỊCH BẢN) -->
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+            <Border.Effect>
+                <DropShadowEffect Color="#DCDDE1" BlurRadius="10" ShadowDepth="2" Opacity="0.5"/>
+            </Border.Effect>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <!-- Nút 1: Nạp lần đầu -->
+                <Button x:Name="btnInitialLoad" Click="btnInitialLoad_Click" 
+                        Width="180" Height="45" Margin="0,0,15,0"
+                        Background="#8c7ae6" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <TextBlock Text="1. NẠP LẦN ĐẦU (FULL)" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                </Button>
+
+                <!-- Nút 2: Giả lập dữ liệu -->
+                <Button x:Name="btnSimulateData" Click="btnSimulateData_Click" 
+                        Width="220" Height="45" Margin="0,0,15,0"
+                        Background="#e1b12c" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <TextBlock Text="2. BƠM DỮ LIỆU MỚI (GIẢ LẬP)" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                </Button>
+
+                <!-- Nút 3: Nạp gia tăng -->
+                <Button x:Name="btnIncrementalLoad" Click="btnIncrementalLoad_Click" 
+                        Width="220" Height="45" Margin="0,0,15,0"
+                        Background="#0097E6" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <TextBlock Text="3. NẠP GIA TĂNG LẦN: 1" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                </Button>
+
+                <!-- Nút 4: Xem báo cáo Cube -->
+                <Button x:Name="btnViewReport" Click="btnViewReport_Click" 
+                        Width="180" Height="45"
+                        Background="#44BD32" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <TextBlock Text="4. XEM BÁO CÁO CUBE" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- PHẦN 3: KHU VỰC HIỂN THỊ LOG & REPORT -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4.5*"/>
+                <!-- Chiếm 45% chiều rộng cho Màn hình Log -->
+                <ColumnDefinition Width="5.5*"/>
+                <!-- Chiếm 55% chiều rộng cho Bảng báo cáo -->
+            </Grid.ColumnDefinitions>
+
+            <!-- 3.1 Màn hình Console Log (Bên trái) -->
+            <Border Grid.Column="0" Background="#2f3640" CornerRadius="8" Padding="15" Margin="0,0,15,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="NHẬT KÝ HỆ THỐNG (SYSTEM LOG)" 
+                               Foreground="#f5f6fa" FontWeight="Bold" Margin="0,0,0,10" FontSize="14"/>
+
+                    <ScrollViewer x:Name="LogScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="txtLog" Foreground="#4cd137" FontFamily="Consolas" FontSize="13" TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- 3.2 Bảng báo cáo SSAS (Bên phải) -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="15">
+                <Border.Effect>
+                    <DropShadowEffect Color="#DCDDE1" BlurRadius="10" ShadowDepth="2" Opacity="0.5"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="KẾT QUẢ TRUY VẤN (TỪ CUBE SSAS)" 
+                               FontSize="14" FontWeight="Bold" Foreground="#718093" Margin="0,0,0,10"/>
+
+                    <DataGrid x:Name="dgReport" Grid.Row="1" 
+                              AutoGenerateColumns="True" 
+                              CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                              AlternatingRowBackground="#F5F6FA" RowHeaderWidth="0" 
+                              BorderBrush="#DCDDE1" BorderThickness="1"
+                              HorizontalGridLinesBrush="#DCDDE1" VerticalGridLinesBrush="Transparent">
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#353B48"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Padding" Value="10,8"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
