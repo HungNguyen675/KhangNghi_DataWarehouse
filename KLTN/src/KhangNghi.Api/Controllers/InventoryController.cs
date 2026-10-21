@@ -25,7 +25,7 @@ namespace KhangNghi.Api.Controllers
 
         // Q28: Sản phẩm có QuantityOnHand thấp hơn ReorderLevel và cần nhập thêm (Cảnh báo Red/Yellow/Green)
         [HttpGet("alerts")]
-        public async Task<IActionResult> GetReorderAlerts() => Ok(await _repo.Q28_ReorderLevelAlertsAsync());
+        public async Task<IActionResult> GetReorderAlerts([FromQuery] int top = 50) => Ok(await _repo.Q28_ReorderLevelAlertsAsync(top));
 
         // Q29: Khu vực đang lưu trữ lượng tồn kho lớn nhất
         [HttpGet("by-region")]

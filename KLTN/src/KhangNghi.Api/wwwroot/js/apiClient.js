@@ -71,12 +71,20 @@ window.KhangNghiApiClient = (function () {
       clearTimeout(timeoutId);
 
       if (response.status === 401) {
-        console.warn("[ApiClient] 401 Unauthorized - Invalid or expired JWT token");
-        clearToken();
-        if (window.location.hash !== "#/login") {
-          window.location.hash = "#/login";
+        if (!url.includes("/auth/login")) {
+          console.warn("[ApiClient] 401 Unauthorized - Invalid or expired JWT token");
+          clearToken();
+          if (window.location.hash !== "#/login") {
+            window.location.hash = "#/login";
+          }
         }
-        return { success: false, status: 401, error: "Unauthorized (401)" };
+        const errorData = await response.json().catch(() => null);
+        return { 
+          success: false, 
+          status: 401, 
+          error: errorData?.message || "Unauthorized (401)",
+          data: errorData
+        };
       }
 
       if (response.status === 403) {
@@ -86,11 +94,15 @@ window.KhangNghiApiClient = (function () {
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
+        let parsedError = null;
+        try { parsedError = JSON.parse(errorText); } catch {}
         console.error(`[ApiClient] HTTP ${response.status} Error:`, errorText);
         return {
           success: false,
           status: response.status,
-          error: `HTTP Error ${response.status}: ${errorText || response.statusText}`
+          error: parsedError?.message || `HTTP Error ${response.status}: ${errorText || response.statusText}`,
+          message: parsedError?.message || errorText,
+          data: parsedError
         };
       }
 

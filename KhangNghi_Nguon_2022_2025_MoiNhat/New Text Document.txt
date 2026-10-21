@@ -1,0 +1,19 @@
+BỘ DỮ LIỆU NGUỒN KHANG NGHỊ 2022–2025
+
+Gồm hai database:
+1. KhangNghi_OLTP_VN_DRAFT: nguồn bán hàng.
+2. KhangNghi_Purchasing_OLTP_VN_DRAFT: nguồn nhập hàng.
+
+Dữ liệu phục vụ đồ án, đã bổ sung các chính sách
+Service, Promotion và PaymentMethod.
+
+Khôi phục bằng SSMS:
+Databases → Restore Database → Device → chọn file .bak.
+
+Yêu cầu SQL Server 2022 hoặc phiên bản mới hơn.
+
+Lưu ý:
+- Khôi phục với tên database VN_DRAFT như trên.
+- Không ghi đè database đang dùng nếu chưa sao lưu.
+- Bộ này chỉ gồm dữ liệu nguồn, chưa gồm kho dữ liệu
+  và các package ETL.

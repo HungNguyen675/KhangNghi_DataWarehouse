@@ -7,6 +7,7 @@ namespace KhangNghi.Core.DTOs
     public class LoginRequest
     {
         public string Username { get; set; } = string.Empty;
+        public string? Email { get; set; }
         public string Password { get; set; } = string.Empty;
     }
 
@@ -15,6 +16,7 @@ namespace KhangNghi.Core.DTOs
         public bool Success { get; set; }
         public string Token { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public string? Email { get; set; }
         public string FullName { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
@@ -137,4 +139,69 @@ namespace KhangNghi.Core.DTOs
         public TimeSpan Duration { get; set; }
         public DateTime CompletedAt { get; set; }
     }
+
+    // === PURCHASE ANALYTICS DTOs ===
+    public class PurchaseOrderSummaryDto
+    {
+        public string PurchaseOrderID { get; set; } = string.Empty;
+        public string OrderDate { get; set; } = string.Empty;
+        public int SupplierKey { get; set; }
+        public string SupplierName { get; set; } = string.Empty;
+        public int WarehouseKey { get; set; }
+        public string WarehouseName { get; set; } = string.Empty;
+        public int LineItemCount { get; set; }
+        public int TotalQuantity { get; set; }
+        public double TotalCost { get; set; }
+        public double AvgUnitCost { get; set; }
+    }
+
+    public class PurchaseOrderDetailDto
+    {
+        public string PurchaseOrderID { get; set; } = string.Empty;
+        public string OrderDate { get; set; } = string.Empty;
+        public string SupplierName { get; set; } = string.Empty;
+        public string WarehouseName { get; set; } = string.Empty;
+        public string ProductID { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string SubCategory { get; set; } = string.Empty;
+        public int PurchaseQuantity { get; set; }
+        public double UnitCost { get; set; }
+        public double TotalCost { get; set; }
+    }
+
+    public class PurchaseCategorySpendDto
+    {
+        public string Category { get; set; } = string.Empty;
+        public double TotalCost { get; set; }
+        public int TotalQuantity { get; set; }
+    }
+
+    // === SSAS OLAP & MDX DTOs ===
+    public class SsasSystemStatusDto
+    {
+        public bool IsServerConnected { get; set; }
+        public string ServerInstance { get; set; } = string.Empty;
+        public string CatalogName { get; set; } = string.Empty;
+        public bool CatalogExists { get; set; }
+        public string CubeName { get; set; } = "KhangNghi_Cube";
+        public string CubeStatus { get; set; } = string.Empty; // "OPERATIONAL", "METADATA_MISMATCH", "UNAVAILABLE"
+        public string? ErrorMessage { get; set; }
+        public string? ActionRequired { get; set; }
+        public DateTime CheckedAt { get; set; } = DateTime.UtcNow;
+    }
+
+    public class MdxCatalogItemDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public int OrderNumber { get; set; }
+        public string Section { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string BusinessPurpose { get; set; } = string.Empty;
+        public string OperationType { get; set; } = string.Empty;
+        public string MdxQuery { get; set; } = string.Empty;
+        public string VerificationStatus { get; set; } = string.Empty; // "VERIFIED" vs "DESIGN_TEMPLATE"
+        public string SourceFactTable { get; set; } = string.Empty;
+    }
 }
+

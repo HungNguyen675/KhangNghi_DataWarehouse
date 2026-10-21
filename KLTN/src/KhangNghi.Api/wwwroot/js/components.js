@@ -18,11 +18,32 @@ window.KhangNghiComponents = (function () {
     return num.toLocaleString();
   }
 
+  function renderStatusBadge(status) {
+    const s = String(status || "").toUpperCase();
+    if (s === "HEALTHY" || s === "AVAILABLE" || s === "ACTIVE" || s === "OK" || s === "DWH ACTIVE") {
+      return `<span class="badge badge-healthy" style="background:rgba(37,162,68,0.15); color:#25a244; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Healthy'}</span>`;
+    }
+    if (s === "WARNING" || s === "LOW" || s === "WARN") {
+      return `<span class="badge badge-warning" style="background:rgba(243,156,18,0.15); color:#f39c12; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Warning'}</span>`;
+    }
+    if (s === "CRITICAL" || s === "DANGER" || s === "ERROR" || s === "NO DATA") {
+      return `<span class="badge badge-danger" style="background:rgba(231,76,60,0.15); color:#e74c3c; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Critical'}</span>`;
+    }
+    return `<span class="badge badge-secondary" style="background:rgba(149,165,166,0.15); color:#95a5a6; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'N/A'}</span>`;
+  }
+
   function renderKpiCard({ id, label, value, changePct, priorLabel = "vs kỳ trước", icon, isCurrency = true, unit = "" }) {
     const valText = isCurrency ? formatCurrency(value) : formatNumber(value) + unit;
-    const isPositive = changePct >= 0;
-    const tagClass = isPositive ? "positive" : "negative";
-    const arrow = isPositive ? "↑" : "↓";
+    
+    // Phòng chống NaN%, null, undefined, Infinity
+    const numChange = (changePct !== undefined && changePct !== null && !Number.isNaN(Number(changePct)) && Number.isFinite(Number(changePct)))
+      ? Number(changePct)
+      : null;
+
+    const isPositive = numChange !== null ? numChange >= 0 : true;
+    const tagClass = numChange !== null ? (isPositive ? "positive" : "negative") : "neutral";
+    const arrow = numChange !== null ? (isPositive ? "↑" : "↓") : "";
+    const changeTagText = numChange !== null ? `${arrow} ${Math.abs(numChange).toFixed(1)}%` : "--";
 
     return `
       <div class="glass-card kpi-card" id="card-${id}">
@@ -32,7 +53,7 @@ window.KhangNghiComponents = (function () {
         </div>
         <div class="kpi-value-row">
           <span class="kpi-main-value">${valText}</span>
-          <span class="kpi-change-tag ${tagClass}">${arrow} ${Math.abs(changePct)}%</span>
+          <span class="kpi-change-tag ${tagClass}">${changeTagText}</span>
         </div>
         <div class="kpi-bottom-row">
           <span>${priorLabel}</span>
@@ -395,6 +416,7 @@ window.KhangNghiComponents = (function () {
   return {
     formatCurrency,
     formatNumber,
+    renderStatusBadge,
     renderKpiCard,
     renderChartCard,
     renderNoDataBanner,

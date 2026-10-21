@@ -3,7 +3,28 @@
    Breakpoints for Desktop, Tablet, and Mobile
    ========================================================================== */
 
-/* Large Screens & Desktop */
+/* Large Screens & Desktop (<= 1280px) */
+@media (max-width: 1280px) {
+  #breadcrumb-category {
+    max-width: 130px;
+  }
+  #breadcrumb-current {
+    max-width: 160px;
+  }
+  .global-search-wrapper {
+    width: 160px;
+  }
+  .data-status-indicator span:last-child {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+/* Medium Desktop (<= 1200px) */
 @media (max-width: 1200px) {
   .grid-charts-3 {
     grid-template-columns: repeat(2, 1fr);
@@ -23,7 +44,7 @@
   .brand-title,
   .nav-text,
   .nav-badge,
-  .menu-category-title,
+  .menu-group-header,
   .user-info {
     display: none !important;
   }
@@ -57,7 +78,7 @@
 @media (max-width: 768px) {
   #sidebar {
     transform: translateX(-100%);
-    width: 260px;
+    width: 275px;
   }
 
   #sidebar.mobile-open {
@@ -67,7 +88,7 @@
   .brand-title,
   .nav-text,
   .nav-badge,
-  .menu-category-title,
+  .menu-group-header,
   .user-info {
     display: flex !important;
   }
@@ -109,6 +130,16 @@
     right: 16px;
     padding: 10px 16px;
     font-size: 12px;
+  }
+
+  .explorer-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .explorer-filter-select {
+    width: 100%;
   }
 }
 

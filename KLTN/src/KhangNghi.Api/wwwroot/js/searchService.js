@@ -36,7 +36,7 @@ window.KhangNghiSearch = (function () {
     });
 
     // 4. Categories & Subcategories Match
-    const categoriesList = ["Thiết bị Văn phòng", "Nội thất Văn phòng", "Đồ dùng Văn phòng", "Máy in", "Ghế công thái học", "Giấy in A4"];
+    const categoriesList = ["Tự động hóa", "Truyền động", "Thiết bị đóng cắt", "PLC & Module", "Biến tần", "Động cơ điện", "Contactor", "Aptomat"];
     categoriesList.filter(c => c.toLowerCase().includes(q)).forEach(c => {
       list.push({ type: "category", title: c, subtitle: "Danh mục / Nhóm sản phẩm", value: c });
     });
@@ -57,7 +57,7 @@ window.KhangNghiSearch = (function () {
       suppliers: (dwh.suppliers || []).filter(s => s.name.toLowerCase().includes(q)),
       products: (dwh.products || []).filter(p => p.name.toLowerCase().includes(q)),
       purchaseOrders: (dwh.purchaseOrders || []).filter(po => po.id.toLowerCase().includes(q)),
-      categories: ["Thiết bị Văn phòng", "Nội thất Văn phòng", "Đồ dùng Văn phòng"].filter(c => c.toLowerCase().includes(q)),
+      categories: ["Tự động hóa", "Truyền động", "Thiết bị đóng cắt"].filter(c => c.toLowerCase().includes(q)),
       recent: recentSearches.filter(s => s.toLowerCase().includes(q))
     };
   }

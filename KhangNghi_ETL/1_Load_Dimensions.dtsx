@@ -23,7 +23,7 @@
       DTS:ObjectName="Dim_Customer.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Customer.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Customer.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -33,7 +33,7 @@
       DTS:ObjectName="Dim_Employee.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Employee.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Employee.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -43,7 +43,7 @@
       DTS:ObjectName="Dim_Location.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Location.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Location.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -53,7 +53,7 @@
       DTS:ObjectName="Dim_Manufacturer.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Manufacturer.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Manufacturer.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -63,7 +63,7 @@
       DTS:ObjectName="Dim_PaymentMethod.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_PaymentMethod.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_PaymentMethod.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -73,7 +73,7 @@
       DTS:ObjectName="Dim_Product.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Product.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Product.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -83,7 +83,7 @@
       DTS:ObjectName="Dim_Promotion.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Promotion.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Promotion.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -93,7 +93,7 @@
       DTS:ObjectName="Dim_SalesChannel.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_SalesChannel.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_SalesChannel.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -103,7 +103,7 @@
       DTS:ObjectName="Dim_Service.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Service.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Service.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -113,7 +113,7 @@
       DTS:ObjectName="Dim_Shipper.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Shipper.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Shipper.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -123,7 +123,7 @@
       DTS:ObjectName="Dim_Supplier.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Supplier.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Supplier.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -133,7 +133,7 @@
       DTS:ObjectName="Dim_Time.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Time.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Time.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -143,7 +143,7 @@
       DTS:ObjectName="Dim_Warehouse.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Warehouse.dtsx" />
+          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Dim_Warehouse.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -155,7 +155,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{2B0512E4-C349-4B29-9161-3EF873059CC9}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{2B0512E4-C349-4B29-9161-3EF873059CC9}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -172,7 +172,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_OLTP;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{335A30D2-1FA6-45DD-AEBE-4703A7A0D79D}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_OLTP;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{335A30D2-1FA6-45DD-AEBE-4703A7A0D79D}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"

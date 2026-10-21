@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -74,10 +74,42 @@ namespace KhangNghi.Infrastructure.Services
                 progress?.Report("INFO: Bắt đầu kích hoạt quy trình ETL thông qua SSIS...");
                 
                 progress?.Report("INFO: Đang chạy SSIS Package (0_Nap_Staging.dtsx) để trích xuất dữ liệu...");
+                
+                // Tự động dò tìm đường dẫn SSIS Package hợp lệ trong solution
+                var packageCandidates = new[]
+                {
+                    Path.Combine(AppContext.BaseDirectory, "SSIS_Project", "0_Nap_Staging.dtsx"),
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "SSIS_Project", "0_Nap_Staging.dtsx"),
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "KLTN", "SSIS_Project", "0_Nap_Staging.dtsx"),
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "KhangNghi_ETL", "0_Nap_Staging.dtsx"),
+                    @"D:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KLTN\SSIS_Project\0_Nap_Staging.dtsx",
+                    @"D:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\0_Nap_Staging.dtsx"
+                };
+
+                string? ssisPackagePath = packageCandidates
+                    .Select(p => Path.GetFullPath(p))
+                    .FirstOrDefault(File.Exists);
+
+                if (string.IsNullOrEmpty(ssisPackagePath))
+                {
+                    throw new FileNotFoundException("Không tìm thấy SSIS Package 0_Nap_Staging.dtsx trong thư mục dự án!");
+                }
+
+                // Tự động dò tìm DTExec (ưu tiên 64-bit hoặc 32-bit tùy môi trường)
+                var dtexecCandidates = new[]
+                {
+                    @"C:\Program Files\Microsoft SQL Server\170\DTS\Binn\DTExec.exe",
+                    @"C:\Program Files (x86)\Microsoft SQL Server\170\DTS\Binn\DTExec.exe",
+                    @"C:\Program Files\Microsoft SQL Server\160\DTS\Binn\DTExec.exe",
+                    @"C:\Program Files (x86)\Microsoft SQL Server\160\DTS\Binn\DTExec.exe"
+                };
+                string dtexecPath = dtexecCandidates.FirstOrDefault(File.Exists) 
+                    ?? @"C:\Program Files\Microsoft SQL Server\170\DTS\Binn\DTExec.exe";
+
                 var processInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = @"C:\Program Files\Microsoft SQL Server\170\DTS\Binn\DTExec.exe",
-                    Arguments = @"/F ""D:\VS_source\KLTN\SSIS_Project\0_Nap_Staging.dtsx""",
+                    FileName = dtexecPath,
+                    Arguments = $"/F \"{ssisPackagePath}\"",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true

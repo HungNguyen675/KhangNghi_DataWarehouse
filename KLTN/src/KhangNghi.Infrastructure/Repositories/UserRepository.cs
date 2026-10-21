@@ -11,6 +11,7 @@ namespace KhangNghi.Infrastructure.Repositories
     public interface IUserRepository
     {
         Task<SysUser?> GetByUsernameAsync(string username);
+        Task<SysUser?> GetByUsernameOrEmailAsync(string identifier);
         Task<SysUser?> GetByIdAsync(int userId);
         Task<IEnumerable<SysUser>> GetAllAsync();
         Task<int> CreateUserAsync(SysUser user, string plainPassword);
@@ -33,6 +34,16 @@ namespace KhangNghi.Infrastructure.Repositories
             using var db = _connectionFactory.CreateConnection();
             const string sql = "SELECT * FROM dbo.Sys_User WHERE Username = @Username";
             return await db.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username = username });
+        }
+
+        public async Task<SysUser?> GetByUsernameOrEmailAsync(string identifier)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT TOP 1 * FROM dbo.Sys_User 
+                WHERE Username = @Identifier OR Email = @Identifier
+                ORDER BY CASE WHEN Username = @Identifier THEN 1 ELSE 2 END";
+            return await db.QueryFirstOrDefaultAsync<SysUser>(sql, new { Identifier = identifier });
         }
 
         public async Task<SysUser?> GetByIdAsync(int userId)

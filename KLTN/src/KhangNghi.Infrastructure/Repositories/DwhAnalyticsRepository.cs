@@ -44,11 +44,14 @@ namespace KhangNghi.Infrastructure.Repositories
         Task<IEnumerable<dynamic>> Q23_TopPurchasedProductsAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q24_PurchasePriceTrendAsync(string? productName = null);
         Task<IEnumerable<dynamic>> Q25_ImportValueByRegionAsync();
+        Task<IEnumerable<PurchaseOrderSummaryDto>> GetPurchaseOrdersSummaryAsync(int? year = null);
+        Task<IEnumerable<PurchaseOrderDetailDto>> GetPurchaseOrderDetailAsync(string orderId, int top = 50);
+        Task<IEnumerable<PurchaseCategorySpendDto>> GetPurchaseCategorySpendAsync(int? year = null);
 
         // Nhóm 3: Tồn kho (Q26 - Q30)
         Task<IEnumerable<dynamic>> Q26_HighestStockProductsAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q27_LowestStockProductsAsync(int top = 10);
-        Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync();
+        Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync(int top = 50);
         Task<IEnumerable<dynamic>> Q29_StockByRegionAsync();
         Task<IEnumerable<dynamic>> Q30_InventoryMovementOverTimeAsync();
 
@@ -404,12 +407,16 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             string sql = $@"
-                SELECT TOP ({top}) pr.ProductName, pr.Category, 
-                                   ROUND(SUM(p.TotalCost), 2) AS TotalPurchaseAmount,
-                                   SUM(p.PurchaseQuantity) AS TotalQuantity
+                SELECT TOP ({top}) 
+                    pr.ProductName,
+                    ISNULL(pr.Category, N'Vật tư thiết bị') AS Category,
+                    ROUND(SUM(p.TotalCost), 2) AS TotalPurchaseAmount,
+                    SUM(p.PurchaseQuantity) AS TotalQuantity
                 FROM dbo.Fact_Purchase p
                 JOIN dbo.Dim_Product pr ON p.ProductKey = pr.ProductKey
-                GROUP BY pr.ProductName, pr.Category ORDER BY TotalPurchaseAmount DESC";
+                WHERE pr.ProductName IS NOT NULL
+                GROUP BY pr.ProductName, pr.Category
+                ORDER BY TotalPurchaseAmount DESC";
             return await db.QueryAsync(sql);
         }
 
@@ -417,13 +424,17 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT TOP 30 pr.ProductName, CONCAT(t.Month, '/', t.Year) AS Period, t.Year, t.Month,
-                              ROUND(AVG(p.UnitCost), 2) AS AvgUnitCost
+                SELECT TOP 30 
+                    pr.ProductName,
+                    CONCAT(t.Month, '/', t.Year) AS Period, t.Year, t.Month,
+                    ROUND(AVG(p.UnitCost), 2) AS AvgUnitCost
                 FROM dbo.Fact_Purchase p
                 JOIN dbo.Dim_Product pr ON p.ProductKey = pr.ProductKey
                 JOIN dbo.Dim_Time t ON p.TimeKey = t.TimeKey
-                WHERE (@ProductName IS NULL OR pr.ProductName LIKE '%' + @ProductName + '%')
-                GROUP BY pr.ProductName, t.Year, t.Month ORDER BY t.Year, t.Month";
+                WHERE pr.ProductName IS NOT NULL
+                  AND (@ProductName IS NULL OR pr.ProductName LIKE '%' + @ProductName + '%')
+                GROUP BY pr.ProductName, t.Year, t.Month 
+                ORDER BY t.Year, t.Month";
             return await db.QueryAsync(sql, new { ProductName = productName });
         }
 
@@ -431,13 +442,89 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT l.Region, ROUND(SUM(p.TotalCost), 2) AS TotalImportValue,
-                       SUM(p.PurchaseQuantity) AS TotalQuantity
+                SELECT 
+                    w.WarehouseName,
+                    w.WarehouseName AS Region,
+                    ROUND(SUM(p.TotalCost), 2) AS TotalImportValue,
+                    SUM(p.PurchaseQuantity) AS TotalQuantity
                 FROM dbo.Fact_Purchase p
-                JOIN dbo.Dim_Location l ON p.LocationKey = l.LocationKey
-                GROUP BY l.Region ORDER BY TotalImportValue DESC";
+                JOIN dbo.Dim_Warehouse w ON p.WarehouseKey = w.WarehouseKey
+                GROUP BY w.WarehouseName 
+                ORDER BY TotalImportValue DESC";
             return await db.QueryAsync(sql);
         }
+
+        public async Task<IEnumerable<PurchaseOrderSummaryDto>> GetPurchaseOrdersSummaryAsync(int? year = null)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT
+                    p.PurchaseOrderID,
+                    CONVERT(varchar(10), MIN(t.FullDate), 120) AS OrderDate,
+                    s.SupplierKey,
+                    s.SupplierName,
+                    w.WarehouseKey,
+                    w.WarehouseName,
+                    COUNT(*) AS LineItemCount,
+                    SUM(p.PurchaseQuantity) AS TotalQuantity,
+                    ROUND(SUM(p.TotalCost), 2) AS TotalCost,
+                    ROUND(AVG(p.UnitCost), 2) AS AvgUnitCost
+                FROM dbo.Fact_Purchase p
+                JOIN dbo.Dim_Supplier s ON p.SupplierKey = s.SupplierKey
+                JOIN dbo.Dim_Warehouse w ON p.WarehouseKey = w.WarehouseKey
+                JOIN dbo.Dim_Time t ON p.TimeKey = t.TimeKey
+                WHERE (@Year IS NULL OR t.Year = @Year)
+                GROUP BY p.PurchaseOrderID, s.SupplierKey, s.SupplierName, w.WarehouseKey, w.WarehouseName
+                ORDER BY TotalCost DESC";
+            return await db.QueryAsync<PurchaseOrderSummaryDto>(sql, new { Year = year });
+        }
+
+        public async Task<IEnumerable<PurchaseOrderDetailDto>> GetPurchaseOrderDetailAsync(string orderId, int top = 50)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            string sql = $@"
+                SELECT TOP ({top})
+                    p.PurchaseOrderID,
+                    CONVERT(varchar(10), t.FullDate, 120) AS OrderDate,
+                    s.SupplierName,
+                    w.WarehouseName,
+                    pr.ProductID,
+                    COALESCE(pr.ProductName, pr_ref.ProductName, pr.ProductID) AS ProductName,
+                    COALESCE(pr.Category, pr_ref.Category, N'Vật tư thiết bị') AS Category,
+                    COALESCE(pr.SubCategory, pr_ref.SubCategory, N'Khác') AS SubCategory,
+                    p.PurchaseQuantity,
+                    ROUND(p.UnitCost, 2) AS UnitCost,
+                    ROUND(p.TotalCost, 2) AS TotalCost
+                FROM dbo.Fact_Purchase p
+                JOIN dbo.Dim_Supplier s ON p.SupplierKey = s.SupplierKey
+                JOIN dbo.Dim_Warehouse w ON p.WarehouseKey = w.WarehouseKey
+                JOIN dbo.Dim_Time t ON p.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Product pr ON p.ProductKey = pr.ProductKey
+                LEFT JOIN dbo.Dim_Product pr_ref 
+                    ON REPLACE(pr.ProductID, 'PUR_', '') = pr_ref.ProductID 
+                    AND pr_ref.ProductName IS NOT NULL
+                WHERE p.PurchaseOrderID = @OrderId
+                ORDER BY p.TotalCost DESC";
+            return await db.QueryAsync<PurchaseOrderDetailDto>(sql, new { OrderId = orderId });
+        }
+
+        public async Task<IEnumerable<PurchaseCategorySpendDto>> GetPurchaseCategorySpendAsync(int? year = null)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT 
+                    COALESCE(pr.Category, N'Vật tư thiết bị') AS Category,
+                    ROUND(SUM(p.TotalCost), 2) AS TotalCost,
+                    SUM(p.PurchaseQuantity) AS TotalQuantity
+                FROM dbo.Fact_Purchase p
+                JOIN dbo.Dim_Product pr ON p.ProductKey = pr.ProductKey
+                JOIN dbo.Dim_Time t ON p.TimeKey = t.TimeKey
+                WHERE (@Year IS NULL OR t.Year = @Year)
+                GROUP BY COALESCE(pr.Category, N'Vật tư thiết bị')
+                ORDER BY TotalCost DESC";
+            return await db.QueryAsync<PurchaseCategorySpendDto>(sql, new { Year = year });
+        }
+
 
         // ==================== NHÓM 3: TỒN KHO ====================
         public async Task<IEnumerable<dynamic>> Q26_HighestStockProductsAsync(int top = 10)
@@ -464,11 +551,11 @@ namespace KhangNghi.Infrastructure.Repositories
             return await db.QueryAsync(sql);
         }
 
-        public async Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync()
+        public async Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync(int top = 50)
         {
             using var db = _connectionFactory.CreateConnection();
-            const string sql = @"
-                SELECT 
+            string sql = $@"
+                SELECT TOP ({top})
                     pr.ProductKey, 
                     pr.ProductName, 
                     pr.Category, 

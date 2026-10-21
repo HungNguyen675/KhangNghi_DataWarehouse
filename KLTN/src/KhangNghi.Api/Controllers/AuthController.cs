@@ -29,10 +29,11 @@ namespace KhangNghi.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest(new LoginResponse { Success = false, Message = "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!" });
+            string identifier = !string.IsNullOrWhiteSpace(request.Username) ? request.Username.Trim() : (request.Email ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(identifier) || string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest(new LoginResponse { Success = false, Message = "Vui lòng nhập đầy đủ tên đăng nhập/email và mật khẩu!" });
 
-            var user = await _userRepo.GetByUsernameAsync(request.Username);
+            var user = await _userRepo.GetByUsernameOrEmailAsync(identifier);
             if (user == null || !user.IsActive)
                 return Unauthorized(new LoginResponse { Success = false, Message = "Tài khoản không tồn tại hoặc đã bị khóa!" });
 
@@ -52,6 +53,7 @@ namespace KhangNghi.Api.Controllers
                     new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.GivenName, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                     new Claim(ClaimTypes.Role, user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
@@ -66,9 +68,34 @@ namespace KhangNghi.Api.Controllers
                 Success = true,
                 Token = tokenString,
                 Username = user.Username,
+                Email = user.Email,
                 FullName = user.FullName,
                 Role = user.Role,
                 Message = "Đăng nhập thành công!"
+            });
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+                return Unauthorized(new { Success = false, Message = "Phiên đăng nhập không hợp lệ!" });
+
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null || !user.IsActive)
+                return Unauthorized(new { Success = false, Message = "Tài khoản không tồn tại hoặc đã bị khóa!" });
+
+            return Ok(new UserDto
+            {
+                UserID = user.UserID,
+                Username = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role,
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt
             });
         }
 

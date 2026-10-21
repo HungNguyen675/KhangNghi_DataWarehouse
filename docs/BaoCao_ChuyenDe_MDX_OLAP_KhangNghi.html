@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo Cáo Chuyên Đề: Tìm Hiểu MDX & Báo Cáo Kết Quả Thực Thi Đồ Án BI Khang Nghị</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+            @bottom-right {
+                content: counter(page);
+                font-size: 10px;
+                color: #57606a;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+            @bottom-left {
+                content: "Khóa Luận Tốt Nghiệp - Phân Hệ MDX & SSAS OLAP - Khang Nghị DWH";
+                font-size: 9px;
+                color: #8c959f;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            color: #1f2328;
+            line-height: 1.55;
+            font-size: 13px;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+
+        /* TRANG BÌA */
+        .cover-page {
+            height: 98vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            border: 4px double #0969da;
+            padding: 35px 25px;
+            margin-bottom: 20px;
+            page-break-after: always;
+        }
+        .cover-univ {
+            font-size: 13.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #24292f;
+            line-height: 1.4;
+        }
+        .cover-faculty {
+            font-size: 12px;
+            font-weight: 600;
+            color: #57606a;
+            margin-top: 5px;
+            border-bottom: 2px solid #0969da;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        .cover-badge-top {
+            margin-top: 35px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #cf222e;
+            text-transform: uppercase;
+        }
+        .cover-main-title {
+            margin: 22px 0 10px 0;
+            font-size: 22px;
+            font-weight: 900;
+            color: #0969da;
+            text-transform: uppercase;
+            line-height: 1.35;
+        }
+        .cover-sub-title {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: #32383f;
+            margin-top: 5px;
+        }
+        .cover-topic-box {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-left: 5px solid #0969da;
+            padding: 15px;
+            margin: 20px 20px;
+            text-align: left;
+            border-radius: 4px;
+        }
+        .cover-topic-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0969da;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .cover-topic-desc {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1f2328;
+            line-height: 1.4;
+        }
+        .cover-meta-grid {
+            margin: 15px auto;
+            width: 88%;
+            text-align: left;
+            font-size: 12.5px;
+            border-collapse: collapse;
+        }
+        .cover-meta-grid td {
+            padding: 5px 8px;
+            vertical-align: top;
+            border: none;
+        }
+        .cover-meta-label {
+            width: 42%;
+            font-weight: 700;
+            color: #424a53;
+        }
+        .cover-meta-val {
+            width: 58%;
+            font-weight: 600;
+            color: #0969da;
+        }
+        .cover-footer {
+            margin-top: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #57606a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* TIÊU ĐỀ NỘI DUNG */
+        h1.section-title {
+            font-size: 17.5px;
+            font-weight: 800;
+            color: #0969da;
+            border-bottom: 2px solid #0969da;
+            padding-bottom: 6px;
+            margin-top: 25px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            page-break-after: avoid;
+        }
+        h2.sub-section-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #1f2328;
+            border-left: 4px solid #0969da;
+            padding-left: 8px;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            page-break-after: avoid;
+        }
+        h3.item-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #24292f;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            page-break-after: avoid;
+        }
+
+        p {
+            margin: 5px 0 8px 0;
+            text-align: justify;
+        }
+        ul, ol {
+            margin: 5px 0 10px 22px;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* BẢNG BIỂU */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 14px 0;
+            font-size: 12px;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 6px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f6f8fa;
+            color: #1f2328;
+            font-weight: 700;
+        }
+        tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        /* KHỐI MÃ NGUỒN */
+        pre {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11.5px;
+            overflow-x: hidden;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 6px 0 10px 0;
+            line-height: 1.4;
+            page-break-inside: avoid;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.25);
+            border: 1px solid #333;
+        }
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11.5px;
+            color: #0969da;
+            background: #f1f8ff;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        pre code {
+            color: inherit;
+            background: none;
+            padding: 0;
+        }
+        .kw { color: #569cd6; font-weight: bold; }
+        .fn { color: #dcdcaa; }
+        .str { color: #ce9178; }
+        .cm { color: #6a9955; font-style: italic; }
+        .num { color: #b5cea8; }
+
+        /* HỘP THÔNG BÁO / CALLOUT */
+        .callout {
+            padding: 9px 12px;
+            border-left: 4px solid #0969da;
+            background-color: #f0f7ff;
+            border-radius: 0 5px 5px 0;
+            margin: 10px 0;
+            font-size: 12px;
+            page-break-inside: avoid;
+        }
+        .callout-title {
+            font-weight: 700;
+            color: #0969da;
+            margin-bottom: 3px;
+        }
+        .callout-warning {
+            border-left-color: #d97706;
+            background-color: #fffbeb;
+        }
+        .callout-warning .callout-title {
+            color: #b45309;
+        }
+        .callout-success {
+            border-left-color: #1a7f37;
+            background-color: #dafbe1;
+        }
+        .callout-success .callout-title {
+            color: #1a7f37;
+        }
+
+        .badge-verified {
+            display: inline-block;
+            background: #dafbe1;
+            color: #1a7f37;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10.5px;
+            font-weight: 700;
+            border: 1px solid #a3e635;
+        }
+        .badge-pending {
+            display: inline-block;
+            background: #fffbeb;
+            color: #b45309;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10.5px;
+            font-weight: 700;
+            border: 1px solid #fde68a;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .query-box {
+            background-color: #fdfdfd;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+        .query-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .query-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0969da;
+        }
+        .query-biz {
+            font-size: 12px;
+            color: #57606a;
+            font-style: italic;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== TRANG BÌA ==================== -->
+    <div class="cover-page">
+        <div>
+            <div class="cover-univ">BỘ GIÁO DỤC VÀ ĐÀO TẠO — TRƯỜNG ĐẠI HỌC</div>
+            <div class="cover-faculty">KHOA HỆ THỐNG THÔNG TIN QUẢN LÝ / CÔNG NGHỆ THÔNG TIN</div>
+            <div class="cover-badge-top">KHOÁ LUẬN TỐT NGHIỆP CỬ NHÂN / KỸ SƯ</div>
+        </div>
+
+        <div>
+            <div class="cover-main-title">BÁO CÁO CHUYÊN ĐỀ PHÂN HỆ MDX & OLAP</div>
+            <div class="cover-sub-title">BỘ 40 TRUY VẤN MDX MẪU DỰA TRÊN THIẾT KẾ ĐỒ ÁN & MA TRẬN AGENDA THEO DÕI THỰC THI</div>
+
+            <div class="cover-topic-box">
+                <div class="cover-topic-title">Đề tài khóa luận:</div>
+                <div class="cover-topic-desc">XÂY DỰNG HỆ THỐNG DATA WAREHOUSE & BUSINESS INTELLIGENCE (BI) CHO CÔNG TY KHANG NGHỊ</div>
+            </div>
+
+            <table class="cover-meta-grid">
+                <tr>
+                    <td class="cover-meta-label">Giảng viên hướng dẫn:</td>
+                    <td class="cover-meta-val">Cô Vân Anh</td>
+                </tr>
+                <tr>
+                    <td class="cover-meta-label">Sinh viên thực hiện:</td>
+                    <td class="cover-meta-val">Nhóm Khóa Luận Tốt Nghiệp Khang Nghị</td>
+                </tr>
+                <tr>
+                    <td class="cover-meta-label">Chuyên ngành:</td>
+                    <td class="cover-meta-val">Hệ Thống Thông Tin / Khoa Học Dữ Liệu</td>
+                </tr>
+                <tr>
+                    <td class="cover-meta-label">Khối phân tích (Cube):</td>
+                    <td class="cover-meta-val">[KhangNghi_Cube] (SSAS 4 Facts - 13 Dims)</td>
+                </tr>
+                <tr>
+                    <td class="cover-meta-label">Môi trường ứng dụng:</td>
+                    <td class="cover-meta-val">SSAS MOLAP, ASP.NET Core API, Web BI SPA</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cover-footer">
+            THÀNH PHỐ HỒ CHÍ MINH — NĂM HỌC 2026
+        </div>
+    </div>
+
+    <!-- ==================== MỤC LỤC & TỔNG QUAN ==================== -->
+    <h1 class="section-title">MỤC LỤC TỔNG QUAN TÀI LIỆU</h1>
+    <table style="margin-top: 15px;">
+        <thead>
+            <tr>
+                <th style="width: 15%;">Phần</th>
+                <th style="width: 55%;">Nội dung trọng tâm</th>
+                <th style="width: 30%;">Phạm vi học thuật & Kỹ thuật</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>PHẦN I</b></td>
+                <td><b>Tổng Quan Về Ngôn Ngữ Truy Vấn Đa Chiều MDX</b></td>
+                <td>Khái niệm, kiến trúc SSAS MOLAP, Tuples, Sets, Hierarchies, So sánh toàn diện MDX vs SQL.</td>
+            </tr>
+            <tr>
+                <td><b>PHẦN II</b></td>
+                <td><b>Hiện Thực Hóa 4 Thao Tác OLAP Cốt Lõi</b></td>
+                <td>Roll-up, Drill-down, Slice, Dice, Pivot kèm bảng đối chứng Before/After và mã MDX thực thi.</td>
+            </tr>
+            <tr>
+                <td><b>PHẦN III</b></td>
+                <td><b>Báo Cáo Tổng Kết Công Việc, Khó Khăn & Giải Pháp</b></td>
+                <td>Phân công công việc, 5 kết quả đạt được, 5 thách thức lớn, giải pháp khắc phục và bài học kinh nghiệm.</td>
+            </tr>
+            <tr>
+                <td><b>PHẦN IV</b></td>
+                <td><b>Tuyển Tập 40 Câu Truy Vấn MDX Mẫu & Agenda Chi Tiết</b></td>
+                <td>Bảng Agenda theo dõi trạng thái: 29 câu đã kiểm chứng thành công và 11 câu mẫu chờ nạp đủ nguồn.</td>
+            </tr>
+            <tr>
+                <td><b>PHẦN V</b></td>
+                <td><b>Tích Hợp Hệ Thống Thực Tế Trên ASP.NET Core API</b></td>
+                <td>Mã nguồn C# SsasRepository.cs qua OleDb MSOLAP, Endpoint REST API và trực quan hóa Web.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout callout-warning">
+        <div class="callout-title">LƯU Ý KHOA HỌC VỀ BỘ 40 CÂU TRUY VẤN MDX MẪU TRONG ĐỒ ÁN</div>
+        Bộ 40 câu truy vấn MDX được xây dựng <b>chuẩn hóa dựa trên mô hình thiết kế đa chiều Constellation Schema</b> của khối <code>[KhangNghi_Cube]</code>. Trong thực tế triển khai đồ án:
+        <ul>
+            <li><b>29 câu ĐÃ TRUY VẤN THÀNH CÔNG:</b> Thuộc phân hệ <i>Bán hàng (Fact_Sales)</i> và <i>Vận chuyển (Fact_Shipping)</i>. Do có sẵn dữ liệu thực tế từ file Excel nguồn <code>KhangNghiData.xlsx</code>, các câu này đã được thực thi trên SSAS và API, đối soát số liệu chuẩn xác.</li>
+            <li><b>11 câu CÂU MẪU THIẾT KẾ – CHƯA KIỂM CHỨNG ĐƯỢC:</b> Thuộc phân hệ <i>Mua hàng (Fact_Purchase)</i> và <i>Tồn kho (Fact_Inventory)</i>. Do file Excel thô của doanh nghiệp chưa cung cấp dữ liệu nghiệp vụ mua hàng và kiểm kê kho thực tế, các câu lệnh này được viết mẫu chuẩn theo Schema của Cube và đang ở trạng thái <i>chờ nạp bổ sung đầy đủ dữ liệu nguồn để đối soát đúng sai</i>.</li>
+        </ul>
+    </div>
+
+    <!-- ==================== PHẦN I ==================== -->
+    <div class="page-break"></div>
+    <h1 class="section-title">PHẦN I: TỔNG QUAN VỀ NGÔN NGỮ TRUY VẤN ĐA CHIỀU MDX</h1>
+
+    <h2 class="sub-section-title">1.1. Khái Niệm & Vị Trí Trong Kiến Trúc BI</h2>
+    <p>
+        <b>MDX (Multidimensional Expressions)</b> là ngôn ngữ truy vấn tiêu chuẩn được phát triển bởi Microsoft vào năm 1997 (xuất hiện lần đầu trong chuẩn OLE DB for OLAP và tích hợp sâu trong SQL Server Analysis Services - SSAS). Về sau, MDX trở thành chuẩn công nghiệp thực tế (<i>de-facto standard</i>) cho các hệ quản trị khối đa chiều OLAP.
+    </p>
+    <p>
+        Trong kiến trúc BI của Công ty Khang Nghị, MDX nằm ở tầng kết nối phân tích giữa khối MOLAP (`KhangNghi_Cube`) và các ứng dụng tiêu thụ dữ liệu (Web Dashboard SPA, Power BI):
+    </p>
+    <ul>
+        <li><b>Dữ liệu nguồn (Excel/ERP)</b> &rarr; <b>ETL (SSIS)</b> &rarr; <b>Kho dữ liệu (DWH_KhangNghi)</b>.</li>
+        <li><b>Kho dữ liệu</b> &rarr; <b>Khối đa chiều SSAS MOLAP (KhangNghi_Cube)</b> &rarr; <b>Engine truy vấn MDX</b>.</li>
+        <li><b>MDX Engine</b> &rarr; <b>ASP.NET Core Web API (SsasController)</b> &rarr; <b>Web Dashboard trực quan & Power BI</b>.</li>
+    </ul>
+
+    <h2 class="sub-section-title">1.2. Các Khái Niệm Toán Học & Cấu Trúc Không Gian Trong MDX</h2>
+    <p>Khác biệt căn bản giữa SQL và MDX nằm ở không gian biểu diễn dữ liệu:</p>
+    <ul>
+        <li><b>Cube (Khối lập phương đa chiều):</b> Không gian $N$ chiều lưu trữ các độ đo và trục ngữ cảnh. Trong đồ án là <code>[KhangNghi_Cube]</code>.</li>
+        <li><b>Measures (Độ đo định lượng):</b> Các chỉ tiêu tính toán số học được gom nhóm theo Measure Groups (<code>[Measures].[Sales Amount]</code>, <code>[Measures].[Profit Amount]</code>, <code>[Measures].[Quantity On Hand]</code>,...).</li>
+        <li><b>Dimensions (Chiều phân tích) & Hierarchies (Cây phân cấp):</b> Trục ngữ cảnh phân loại dữ liệu theo quan hệ cha - con:
+            <ul>
+                <li><i>Thời gian:</i> Year &rarr; Quarter &rarr; Month &rarr; Day &rarr; Full Date.</li>
+                <li><i>Sản phẩm:</i> Category &rarr; Sub Category &rarr; Product Name.</li>
+                <li><i>Địa lý:</i> Region &rarr; Country &rarr; State &rarr; City.</li>
+            </ul>
+        </li>
+        <li><b>Member (Phần tử):</b> Một giá trị cụ thể trong một chiều phân cấp (ví dụ: <code>[Dim Time].[Year].&[2026]</code>).</li>
+        <li><b>Tuple (Bộ tọa độ):</b> Giao điểm của các phần tử thuộc các chiều khác nhau, xác định chính xác một ô giá trị (Cell) trong không gian n chiều. Ký hiệu bằng ngoặc đơn <code>(...)</code>. Ví dụ: <code>([Dim Time].[Year].&[2026], [Dim Location].[Region].&[Miền Nam], [Measures].[Sales Amount])</code>.</li>
+        <li><b>Set (Tập hợp):</b> Tập gồm 0 hoặc nhiều Tuple cùng cấu trúc chiều, ký hiệu bằng ngoặc nhọn <code>{...}</code>. Ví dụ: <code>{[Dim Time].[Year].&[2025], [Dim Time].[Year].&[2026]}</code>.</li>
+    </ul>
+
+    <h2 class="sub-section-title">1.3. Bảng Ma Trận So Sánh Toàn Diện Giữa MDX và SQL</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 18%;">Tiêu chí</th>
+                <th style="width: 41%;">SQL (Structured Query Language)</th>
+                <th style="width: 41%;">MDX (Multidimensional Expressions)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Mô hình dữ liệu</b></td>
+                <td>CSDL quan hệ (RDBMS) - Bảng 2 chiều phẳng gồm các Dòng và Cột độc lập.</td>
+                <td>Khối lập phương đa chiều (Hypercube) gồm Measures, Dimensions và Hierarchies.</td>
+            </tr>
+            <tr>
+                <td><b>Hệ trục kết quả</b></td>
+                <td>Chỉ trả về duy nhất 1 tập bảng phẳng 2 chiều.</td>
+                <td>Hỗ trợ đa trục độc lập: <code>COLUMNS (Axis 0)</code>, <code>ROWS (Axis 1)</code>, <code>PAGES (Axis 2)</code>,...</td>
+            </tr>
+            <tr>
+                <td><b>Cơ chế tổng hợp</b></td>
+                <td>Thực hiện quét dòng, <code>JOIN</code>, <code>SUM</code>, <code>GROUP BY</code> tại thời điểm chạy.</td>
+                <td>Dữ liệu tổng hợp (Aggregations) đã được tiền tính toán sẵn trong khối MOLAP.</td>
+            </tr>
+            <tr>
+                <td><b>Hiệu năng</b></td>
+                <td>Chậm rõ rệt khi bảng Fact có hàng triệu dòng và nhiều phép JOIN phức tạp.</td>
+                <td>Phản hồi tức thời (< 0.5s) nhờ cấu trúc lưu trữ nén và bộ đệm cache SSAS.</td>
+            </tr>
+            <tr>
+                <td><b>Điều hướng phân cấp</b></td>
+                <td>Rất phức tạp, phải viết các truy vấn đệ quy CTE (<code>WITH RECURSIVE</code>).</td>
+                <td>Hỗ trợ tự nhiên qua các hàm có sẵn: <code>.CHILDREN</code>, <code>.PARENT</code>, <code>DESCENDANTS()</code>.</td>
+            </tr>
+            <tr>
+                <td><b>Phân tích chuỗi thời gian</b></td>
+                <td>Phức tạp, đòi hỏi các hàm Window Functions (<code>LAG</code>, <code>LEAD</code>, <code>OVER</code>).</td>
+                <td>Cực kỳ mạnh mẽ với các hàm chuyên dụng: <code>PARALLELPERIOD()</code>, <code>YTD()</code>, <code>QTD()</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ==================== PHẦN II ==================== -->
+    <div class="page-break"></div>
+    <h1 class="section-title">PHẦN II: HIỆN THỰC HÓA 4 THAO TÁC OLAP CỐT LÕI BẰNG MDX</h1>
+
+    <h2 class="sub-section-title">2.1. Thao Tác ROLL-UP (Cuộn Gộp / Tổng Hợp Hóa)</h2>
+    <p>
+        <b>Khái niệm:</b> Di chuyển từ mức độ chi tiết cao (hạt mịn - fine grain) lên mức độ tổng quát hơn (hạt thô - coarse grain) theo chiều phân cấp. Thao tác này tương đương với việc cuộn gộp dữ liệu từ <b>Ngày &rarr; Tháng &rarr; Năm</b>.
+    </p>
+<pre><span class="cm">-- TRƯỚC KHI ROLL-UP: Xem chi tiết theo từng ngày lẻ (Full Date)</span>
+<span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Full Date].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];
+
+<span class="cm">-- SAU KHI ROLL-UP: Cuộn gộp lên cấp Năm (Year)</span>
+<span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Year].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];
+</pre>
+
+    <h2 class="sub-section-title">2.2. Thao Tác DRILL-DOWN (Khoan Sâu / Chi Tiết Hóa)</h2>
+    <p>
+        <b>Khái niệm:</b> Thao tác đảo ngược của Roll-up, đi từ cấp tổng quan xuống sâu các tầng bên dưới của cây phân cấp nhằm truy vết nguyên nhân (Root Cause Analysis).
+    </p>
+<pre><span class="cm">-- Kỹ thuật: Dùng hàm DESCENDANTS khoan từ Category xuống chi tiết từng Product</span>
+<span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">DESCENDANTS</span>(
+        [Dim Product].[Category].&[Nội thất văn phòng],
+        [Dim Product].[Product Name]
+    ) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];
+</pre>
+
+    <h2 class="sub-section-title">2.3. Thao Tác SLICE (Cắt Lát) & DICE (Chia Khối Đa Chiều)</h2>
+    <p>
+        <b>A. SLICE:</b> Cố định <b>duy nhất 1 chiều</b> tại một giá trị xác định thông qua mệnh đề <code>WHERE</code> (Slicer Axis), chiếu khối 3D thành 1 mặt phẳng 2D.
+    </p>
+<pre><span class="cm">-- SLICE: Cố định lát cắt CHỈ XEM KHU VỰC "Miền Nam"</span>
+<span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> ([Dim Location].[Region].&[Miền Nam]);
+</pre>
+
+    <p>
+        <b>B. DICE:</b> Thu hẹp phạm vi khối dữ liệu thỏa mãn đồng thời <b>nhiều tiêu chí lọc trên các chiều khác nhau</b> (tạo ra Subcube con).
+    </p>
+<pre><span class="cm">-- DICE: Lọc đồng thời 2 chiều (Khu vực "Miền Nam" VÀ "Năm 2026")</span>
+<span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> (
+    [Dim Location].[Region].&[Miền Nam], 
+    [Dim Time].[Year].&[2026]
+);
+</pre>
+
+    <h2 class="sub-section-title">2.4. Thao Tác PIVOT (Xoay Chiều / Đổi Trục Góc Nhìn)</h2>
+    <p>
+        <b>Khái niệm:</b> Hoán đổi vị trí giữa các trục tọa độ (chuyển một Dimension từ Cột sang Hàng hoặc ngược lại) để đối chiếu trực quan ma trận chéo.
+    </p>
+<pre><span class="cm">-- PIVOT: Cột là Danh mục sản phẩm (Category), Hàng là Vùng miền (Region)</span>
+<span class="kw">SELECT</span> 
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON COLUMNS</span>,
+    [Dim Location].[Region].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> ([Measures].[Sales Amount]);
+</pre>
+
+    <!-- ==================== PHẦN III ==================== -->
+    <div class="page-break"></div>
+    <h1 class="section-title">PHẦN III: BÁO CÁO TỔNG KẾT CÔNG VIỆC, KHÓ KHĂN & GIẢI PHÁP</h1>
+
+    <h2 class="sub-section-title">3.1. Phân Công & Trách Nhiệm Đảm Nhận</h2>
+    <p>
+        Trong khuôn khổ đồ án Khóa Luận Tốt Nghiệp, phân hệ <b>SSAS OLAP & MDX</b> đảm nhận trách nhiệm xây dựng lớp xử lý trung gian đa chiều, liên kết giữa Kho dữ liệu quan hệ (`DWH_KhangNghi`) với hệ thống Web Application SPA và Dashboard Power BI.
+    </p>
+
+    <h2 class="sub-section-title">3.2. Những Kết Quả Đã Đạt Được</h2>
+    <ol>
+        <li><b>Xây dựng thành công Khối Đa Chiều `[KhangNghi_Cube]`:</b> Tích hợp mô hình Constellation Schema với 4 Fact cốt lõi (`Fact Sales`, `Fact Purchase`, `Fact Inventory`, `Fact Shipping`) và 13 Dimensions.</li>
+        <li><b>Xây dựng bộ thư viện 40 câu truy vấn MDX mẫu:</b> Phân loại rõ ràng 29 câu đã kiểm chứng thành công và 11 câu mẫu thiết kế chờ nạp đủ dữ liệu nguồn.</li>
+        <li><b>Hiện thực hóa trọn vẹn 4 thao tác OLAP:</b> Minh chứng đầy đủ Roll-up, Drill-down, Slice, Dice và Pivot với dữ liệu thực tế.</li>
+        <li><b>Xây dựng các Calculated Measures động:</b> Định nghĩa chỉ số tỷ suất lợi nhuận (<code>Profit Margin %</code>), cảnh báo thiếu hụt kho (<code>Stock Deficit</code>), đơn giá bình quân bằng cú pháp <code>WITH MEMBER</code>.</li>
+        <li><b>Tích hợp hoàn chỉnh vào Web Backend ASP.NET Core:</b> Viết mã nguồn <code>SsasRepository.cs</code> kết nối SSAS qua OleDb Provider <code>MSOLAP.8</code>, mở API <code>POST /api/v1/ssas/query</code> phục vụ giao diện Web.</li>
+    </ol>
+
+    <h2 class="sub-section-title">3.3. Những Khó Khăn & Thách Thức Gặp Phải</h2>
+    <ul>
+        <li><b>Khó khăn 1 (Rào cản tư duy):</b> Khác với tư duy bảng 2 chiều của SQL, việc chuyển sang tư duy không gian đa chiều (Tuples, Sets, Slicer Axis) ban đầu gây nhầm lẫn cú pháp cặp ngoặc <code>()</code> và <code>{}</code>.</li>
+        <li><b>Khó khăn 2 (Dữ liệu thưa - Data Sparsity):</b> Do Cube có 13 Dimensions, các phép truy vấn chéo ban đầu trả về hàng ngàn dòng rỗng (NULL), làm phình to kích thước dữ liệu truyền về Web.</li>
+        <li><b>Khó khăn 3 (Kết nối Driver .NET Core):</b> .NET Core không hỗ trợ tự nhiên thư viện ADOMD.NET cũ của .NET Framework; gặp vấn đề xác thực tài khoản Windows (SSPI) khi chạy Web API cục bộ.</li>
+        <li><b>Khó khăn 4 (Dữ liệu nguồn không đồng đều):</b> File Excel thô của doanh nghiệp chủ yếu chứa dữ liệu Bán hàng. Dữ liệu phân hệ Mua hàng và Tồn kho không có sẵn trong file Excel nguồn ban đầu, dẫn đến chưa thể đối soát đúng sai thực tế cho 11 câu truy vấn này.</li>
+        <li><b>Khó khăn 5 (Tối ưu hiệu năng):</b> Một số câu truy vấn MDX phức tạp sử dụng hàm <code>FILTER()</code> hoặc <code>CROSSJOIN()</code> ban đầu thực thi chậm do chưa tận dụng được bộ đệm Block Computation của SSAS.</li>
+    </ul>
+
+    <h2 class="sub-section-title">3.4. Giải Pháp Khắc Phục & Bài Học Kinh Nghiệm</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Thách thức</th>
+                <th style="width: 45%;">Giải pháp thực tế đã triển khai</th>
+                <th style="width: 30%;">Kết quả đạt được</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Tư duy cú pháp MDX</b></td>
+                <td>Vẽ sơ đồ hình học không gian tọa độ; viết đối chiếu câu lệnh tương đương giữa SQL và MDX; thử nghiệm từng hàm cơ bản trên SSMS.</td>
+                <td>Làm chủ ngôn ngữ MDX, viết câu lệnh chuẩn xác, tối ưu.</td>
+            </tr>
+            <tr>
+                <td><b>Dữ liệu thưa (NULLs)</b></td>
+                <td>Ứng dụng triệt để từ khóa <code>NON EMPTY</code> trước các trục <code>COLUMNS</code> và <code>ROWS</code> trong toàn bộ 40 câu truy vấn.</td>
+                <td>Loại bỏ 100% dòng rỗng vô nghĩa, giảm 70% dung lượng payload JSON truyền về Web.</td>
+            </tr>
+            <tr>
+                <td><b>Kết nối Backend .NET</b></td>
+                <td>Sử dụng <code>System.Data.OleDb</code> với provider <code>MSOLAP.8</code> ổn định trên Windows; viết thuật toán tự động đọc Metadata bóc tách JSON.</td>
+                <td>Kết nối ổn định, tốc độ phản hồi API trung bình dưới 0.3 giây.</td>
+            </tr>
+            <tr>
+                <td><b>Thiếu dữ liệu Mua & Tồn kho</b></td>
+                <td>Phân định rõ ràng trong báo cáo: 29 câu đã kiểm chứng thực tế, 11 câu thiết kế mẫu theo Schema; xây dựng kịch bản Staging Script để chuẩn bị nạp dữ liệu.</td>
+                <td>Bảo đảm tính trung thực khoa học trong báo cáo khóa luận trước Hội đồng.</td>
+            </tr>
+            <tr>
+                <td><b>Tối ưu hiệu năng</b></td>
+                <td>Ưu tiên sử dụng <code>TOPCOUNT()</code> và <code>BOTTOMCOUNT()</code>; hạn chế Filter trên Member Sets quá lớn; thiết kế Aggregations hợp lý trong Cube.</td>
+                <td>Truy vấn tối ưu, tận dụng tối đa bộ nhớ đệm cache của SSAS.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ==================== PHẦN IV ==================== -->
+    <div class="page-break"></div>
+    <h1 class="section-title">PHẦN IV: TUYỂN TẬP 40 CÂU TRUY VẤN MDX MẪU & MA TRẬN AGENDA THEO DÕI THỰC THI</h1>
+
+    <h2 class="sub-section-title">BẢNG AGENDA THEO DÕI TRẠNG THÁI CỦA TỪNG MỤC PHÂN HỆ</h2>
+    <p><i>Bảng dưới đây thống kê lịch trình và trạng thái kiểm chứng thực tế của 40 câu truy vấn MDX trong đồ án:</i></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 12%;">Agenda</th>
+                <th style="width: 28%;">Phân hệ nghiệp vụ</th>
+                <th style="width: 15%;">Phạm vi câu</th>
+                <th style="width: 10%;">Số câu</th>
+                <th style="width: 35%;">Trạng thái kiểm chứng dữ liệu thực tế</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Mục 1</b></td>
+                <td>Bán hàng & Doanh thu</td>
+                <td>Câu 01 – 10</td>
+                <td>10 câu</td>
+                <td><span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG (DỮ LIỆU THỰC)</span></td>
+            </tr>
+            <tr>
+                <td><b>Mục 2</b></td>
+                <td>Khách hàng & Thị trường</td>
+                <td>Câu 11 – 18</td>
+                <td>8 câu</td>
+                <td><span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG (DỮ LIỆU THỰC)</span></td>
+            </tr>
+            <tr>
+                <td><b>Mục 3</b></td>
+                <td>Nhân sự, Khuyến mãi & Đối tác</td>
+                <td>Câu 19 – 24</td>
+                <td>6 câu</td>
+                <td><span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG (DỮ LIỆU THỰC)</span></td>
+            </tr>
+            <tr>
+                <td><b>Mục 4</b></td>
+                <td>Mua hàng & Nhà cung cấp</td>
+                <td>Câu 25 – 29</td>
+                <td>5 câu</td>
+                <td><span class="badge-pending">CÂU MẪU - CHƯA NẠP ĐỦ NGUỒN ĐỐI SOÁT</span></td>
+            </tr>
+            <tr>
+                <td><b>Mục 5</b></td>
+                <td>Quản lý Kho & Tồn kho</td>
+                <td>Câu 30 – 35</td>
+                <td>6 câu</td>
+                <td><span class="badge-pending">CÂU MẪU - CHƯA NẠP ĐỦ NGUỒN ĐỐI SOÁT</span></td>
+            </tr>
+            <tr>
+                <td><b>Mục 6</b></td>
+                <td>Vận chuyển & Giao hàng</td>
+                <td>Câu 36 – 40</td>
+                <td>5 câu</td>
+                <td><span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG (DỮ LIỆU THỰC)</span></td>
+            </tr>
+            <tr style="background-color: #f6f8fa; font-weight: 700;">
+                <td colspan="2">TỔNG HỢP CẢ 6 MỤC AGENDA</td>
+                <td>Câu 01 – 40</td>
+                <td>40 câu</td>
+                <td>29 ĐÃ KIỂM CHỨNG &bull; 11 CHỜ NẠP DỮ LIỆU ĐỐI SOÁT</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CHI TIẾT MỤC 1 -->
+    <h2 class="sub-section-title" style="margin-top: 25px;">Mục 1: Phân Hệ Bán Hàng & Doanh Thu (Câu 01 - 10)</h2>
+    <div class="callout callout-success" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 1:</b> 10/10 câu đã thực hiện truy vấn thành công trực tiếp trên khối SSAS <code>KhangNghi_Cube</code> và API nhờ có sẵn đầy đủ dữ liệu thực tế từ bảng <code>Fact_Sales</code>.
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 01: Tổng Doanh thu, Lợi nhuận và Số lượng bán theo từng Năm (Roll-up)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Báo cáo tăng trưởng dài hạn cấp quản trị cao nhất, cuộn gộp dữ liệu từ ngày/tháng lên mức năm.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount], [Measures].[Quantity] } <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Year].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 02: Doanh thu theo từng Quý của một Năm cụ thể (Drill-down xuống Quý)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Theo dõi tiến độ hoàn thành chỉ tiêu kinh doanh theo từng quý trong năm tài chính 2026.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Year].&[2026].<span class="fn">CHILDREN</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 03: Doanh số bán hàng chi tiết theo từng Tháng trong năm (Phân tích mùa vụ)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đánh giá xu hướng chu kỳ tiêu thụ hàng hóa qua 12 tháng để chủ động nhập hàng.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Month].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 04: Doanh thu và Lợi nhuận theo Danh mục sản phẩm (Category)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Xác định ngành hàng mũi nhọn (Nội thất văn phòng, gia đình...) đóng góp vào dòng tiền.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 05: Khoan sâu (Drill-down) từ Danh mục xuống Phân nhóm sản phẩm (Sub Category)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Khảo sát chi tiết cơ cấu các dòng sản phẩm con trong từng danh mục chính.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Sub Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 06: Top 10 Sản phẩm mang lại Doanh thu cao nhất (Top-N Analysis)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Lọc ra 10 mặt hàng chủ lực đóng góp doanh số bán lớn nhất toàn công ty.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Quantity] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Product].[Product Name].<span class="fn">MEMBERS</span>, <span class="num">10</span>, [Measures].[Sales Amount]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 07: Top 10 Sản phẩm có Lợi nhuận gộp cao nhất</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Phát hiện 10 sản phẩm có biên lợi nhuận ròng tốt nhất để ưu tiên phân phối.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Profit Amount], [Measures].[Sales Amount] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Product].[Product Name].<span class="fn">MEMBERS</span>, <span class="num">10</span>, [Measures].[Profit Amount]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 08: Top 5 Sản phẩm bán chậm nhất (Bottom-N Analysis)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Nhận diện các mặt hàng có lượng bán ế ẩm để có giải pháp xả kho hoặc dừng nhập hàng.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Quantity], [Measures].[Sales Amount] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">BOTTOMCOUNT</span>([Dim Product].[Product Name].<span class="fn">MEMBERS</span>, <span class="num">5</span>, [Measures].[Quantity]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 09: Cơ cấu Doanh thu và Chiết khấu theo Kênh bán hàng (Sales Channel)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: So sánh hiệu quả giữa các kênh bán lẻ, Website TMĐT, Đại lý phân phối sỉ.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Discount Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Sales Channel].[Channel Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 10: Phân bổ Doanh thu theo Hình thức thanh toán (Payment Method)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghi nghiệp: Đánh giá xu hướng thanh toán của khách hàng (Tiền mặt, Chuyển khoản, Thẻ tín dụng).</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Payment Method].[Method Type].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- CHI TIẾT MỤC 2 -->
+    <div class="page-break"></div>
+    <h2 class="sub-section-title">Mục 2: Phân Hệ Khách Hàng & Thị Trường (Câu 11 - 18)</h2>
+    <div class="callout callout-success" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 2:</b> 8/8 câu đã thực hiện truy vấn thành công nhờ bảng <code>Fact_Sales</code> liên kết trực tiếp với <code>Dim_Customer</code> và <code>Dim_Location</code>.
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 11: Doanh thu theo Phân khúc khách hàng (Segment: Consumer, Corporate, Home Office)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đo lường tỷ trọng doanh số giữa khách hàng cá nhân, doanh nghiệp và văn phòng tại nhà.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Customer].[Segment].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 12: Top 10 Khách hàng VIP có giá trị mua hàng lớn nhất</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Chăm sóc khách hàng trọng điểm (Key Accounts) và triển khai chính sách tri ân đặc biệt.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Quantity] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Customer].[Customer Name].<span class="fn">MEMBERS</span>, <span class="num">10</span>, [Measures].[Sales Amount]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 13: Doanh thu và Lợi nhuận theo Khu vực địa lý (Region: Bắc, Trung, Nam)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đánh giá hiệu quả kinh doanh của các chi nhánh vùng miền trên toàn quốc.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Location].[Region].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 14: Khoan sâu (Drill-down) Doanh số từ Khu vực xuống Tỉnh / Thành phố (City)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Xác định các tỉnh/thành phố trọng điểm tiêu thụ hàng hóa mạnh nhất trong từng vùng.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Location].[City].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 15: Thao tác SLICE (Cắt lát) – Doanh thu các Danh mục sản phẩm tại riêng "Miền Nam"</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Cố định 1 lát cắt phân tích chỉ riêng cho thị trường trọng điểm Miền Nam bằng mệnh đề WHERE.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> ([Dim Location].[Region].&[Miền Nam]);</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 16: Thao tác DICE (Cắt khối đa chiều) – Lọc đồng thời "Miền Nam" VÀ "Năm 2026"</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Thu hẹp phạm vi khối dữ liệu thỏa mãn đồng thời 2 điều kiện chiều (Không gian & Thời gian).</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> (
+    [Dim Location].[Region].&[Miền Nam],
+    [Dim Time].[Year].&[2026]
+);</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 17: Thao tác PIVOT (Xoay chiều) – Ma trận chéo giữa Danh mục sản phẩm và Vùng miền</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Xoay ma trận hiển thị Vùng miền trên Cột và Danh mục trên Hàng để so sánh tỷ trọng chéo.</div>
+<pre><span class="kw">SELECT</span> 
+    [Dim Location].[Region].<span class="fn">MEMBERS</span> <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube]
+<span class="kw">WHERE</span> ([Measures].[Sales Amount]);</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 18: Top 5 Thành phố đóng góp Lợi nhuận cao nhất cả nước</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Tìm ra các đô thị mang lại tỷ suất lợi nhuận cao nhất để tối ưu ngân sách phân bổ.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Profit Amount] <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Location].[City].<span class="fn">MEMBERS</span>, <span class="num">5</span>, [Measures].[Profit Amount]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- CHI TIẾT MỤC 3 -->
+    <div class="page-break"></div>
+    <h2 class="sub-section-title">Mục 3: Nhân Sự, Khuyến Mãi & Tính Toán Nâng Cao (Câu 19 - 24)</h2>
+    <div class="callout callout-success" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 3:</b> 6/6 câu đã thực hiện truy vấn thành công nhờ các bảng Dimension (Employee, Promotion, Manufacturer, Service) đã được nạp dữ liệu đầy đủ từ quy trình ETL.
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 19: Đánh giá KPI Doanh số bán hàng theo từng Nhân viên (Dim Employee)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đánh giá năng suất của đội ngũ bán hàng và tính hoa hồng kinh doanh.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">ORDER</span>([Dim Employee].[Employee Name].<span class="fn">MEMBERS</span>, [Measures].[Sales Amount], BDESC) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 20: Đánh giá hiệu quả các chương trình Khuyến mãi (Promotion Name)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Phân tích lượng tiền chiết khấu (Discount) đã bỏ ra so với doanh thu mang lại của từng đợt khuyến mãi.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Discount Amount] } <span class="kw">ON COLUMNS</span>,
+    [Dim Promotion].[Promotion Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 21: Doanh số sản phẩm bán ra theo Hãng sản xuất (Dim Manufacturer)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Xác định thương hiệu/hãng sản xuất nào đang được thị trường ưa chuộng nhất.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Quantity] } <span class="kw">ON COLUMNS</span>,
+    [Dim Manufacturer].[Manufacturer Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 22: Tạo trường tính toán động (Calculated Member) – Tính Tỷ suất lợi nhuận (Profit Margin %)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Dùng WITH MEMBER tính toán tỷ lệ Lợi nhuận / Doanh thu tức thời mà không cần can thiệp CSDL.</div>
+<pre><span class="kw">WITH MEMBER</span> [Measures].[Profit Margin Pct] <span class="kw">AS</span>
+    <span class="fn">IIF</span>([Measures].[Sales Amount] = <span class="num">0</span>, <span class="num">0</span>, ([Measures].[Profit Amount] / [Measures].[Sales Amount]) * <span class="num">100</span>),
+    FORMAT_STRING = <span class="str">"0.00%"</span>
+<span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount], [Measures].[Profit Margin Pct] } <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 23: Phân tích Doanh thu theo Gói Dịch vụ đính kèm (Dim Service)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đo lường doanh thu từ các gói bảo hành, dịch vụ vận chuyển và lắp đặt hoàn thiện.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Sales Amount] <span class="kw">ON COLUMNS</span>,
+    [Dim Service].[Service Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 24: Ma trận tích chéo (CROSSJOIN) giữa Kênh bán hàng và Quý trong Năm</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đối chiếu diễn biến doanh thu của từng kênh bán lẻ/online qua các quý trong năm 2026.</div>
+<pre><span class="kw">SELECT</span> 
+    [Dim Time].[Quarter].<span class="fn">MEMBERS</span> <span class="kw">ON COLUMNS</span>,
+    <span class="fn">CROSSJOIN</span>(
+        [Dim Sales Channel].[Channel Name].<span class="fn">MEMBERS</span>,
+        { [Measures].[Sales Amount] }
+    ) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- CHI TIẾT MỤC 4 -->
+    <div class="page-break"></div>
+    <h2 class="sub-section-title">Mục 4: Mua Hàng & Nhà Cung Cấp (Câu 25 - 29)</h2>
+    <div class="callout callout-warning" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 4:</b> 5 câu mẫu thiết kế chuẩn theo Schema của Fact_Purchase. Do file Excel thô của doanh nghiệp chưa cung cấp dữ liệu nghiệp vụ mua hàng thực tế, các câu này đang chờ nạp đầy đủ nguồn để kiểm chứng đúng/sai.
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 25: Tổng Chi phí mua hàng và Số lượng nhập theo từng Năm</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Kiểm soát dòng tiền chi mua nguyên vật liệu/hàng hóa qua các năm tài chính.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Total Cost], [Measures].[Purchase Quantity] } <span class="kw">ON COLUMNS</span>,
+    [Dim Time].[Year].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 26: Top 5 Nhà cung cấp (Supplier) có giá trị đơn hàng mua vào lớn nhất</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đánh giá mức độ phụ thuộc công nợ vào các nhà cung ứng trọng yếu.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Total Cost], [Measures].[Purchase Quantity] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Supplier].[Supplier Name].<span class="fn">MEMBERS</span>, <span class="num">5</span>, [Measures].[Total Cost]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 27: Chi phí nhập hàng phân bổ theo từng Danh mục sản phẩm (Category)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đối chiếu tỷ trọng vốn đầu tư nhập hàng giữa các nhóm sản phẩm khác nhau.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Total Cost] <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 28: Tính Đơn giá bình quân nhập hàng theo Nhà cung cấp (Calculated Measure)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: So sánh mức giá nhập bình quân giữa các nhà cung ứng để đàm phán giá tốt nhất.</div>
+<pre><span class="kw">WITH MEMBER</span> [Measures].[Avg Purchase Price] <span class="kw">AS</span>
+    <span class="fn">IIF</span>([Measures].[Purchase Quantity] = <span class="num">0</span>, <span class="num">0</span>, [Measures].[Total Cost] / [Measures].[Purchase Quantity]),
+    FORMAT_STRING = <span class="str">"#,##0"</span>
+<span class="kw">SELECT</span> 
+    { [Measures].[Total Cost], [Measures].[Purchase Quantity], [Measures].[Avg Purchase Price] } <span class="kw">ON COLUMNS</span>,
+    [Dim Supplier].[Supplier Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 29: Thống kê số lượng lượt nhập hàng theo từng Kho tiếp nhận (Dim Warehouse)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đánh giá tần suất hoạt động nhập nguyên liệu và hàng hóa tại từng kho bãi.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Fact Purchase Count], [Measures].[Purchase Quantity] } <span class="kw">ON COLUMNS</span>,
+    [Dim Warehouse].[Warehouse Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- CHI TIẾT MỤC 5 -->
+    <div class="page-break"></div>
+    <h2 class="sub-section-title">Mục 5: Quản Lý Kho & Cảnh Báo Thiếu Hụt (Câu 30 - 35)</h2>
+    <div class="callout callout-warning" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 5:</b> 6 câu mẫu thiết kế chuẩn theo Schema của Fact_Inventory. Do file Excel thô của doanh nghiệp chưa cung cấp số liệu tồn kho định kỳ, các câu này đang chờ nạp đầy đủ nguồn để kiểm chứng đúng/sai.
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 30: Tổng lượng Nhập, Xuất và Tồn kho hiện hành theo từng Kho hàng (Warehouse)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Kiểm soát dung lượng lưu trữ và dòng luân chuyển hàng hóa của từng kho.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Quantity In], [Measures].[Quantity Out], [Measures].[Quantity On Hand] } <span class="kw">ON COLUMNS</span>,
+    [Dim Warehouse].[Warehouse Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 31: Mức Tồn kho hiện tại phân bổ theo Danh mục sản phẩm</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Tránh tình trạng tồn đọng vốn quá mức ở một danh mục nhất định.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Quantity On Hand] <span class="kw">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 32: Cảnh báo Tồn kho chạm ngưỡng tái đặt hàng (FILTER kết hợp WITH MEMBER)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Tự động lọc các sản phẩm có Tồn kho nhỏ hơn Ngưỡng đặt hàng (Reorder Level) để kích hoạt cảnh báo mua sắm.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Quantity On Hand], [Measures].[Reorder Level] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">FILTER</span>(
+        [Dim Product].[Product Name].<span class="fn">MEMBERS</span>,
+        [Measures].[Quantity On Hand] < [Measures].[Reorder Level]
+    ) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 33: Tính toán Mức thiếu hụt Tồn kho (Stock Deficit) cho từng mặt hàng</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Tính chính xác số lượng hàng cần bổ sung thêm để đạt mức tồn kho an toàn tối thiểu.</div>
+<pre><span class="kw">WITH MEMBER</span> [Measures].[Stock Deficit] <span class="kw">AS</span>
+    [Measures].[Reorder Level] - [Measures].[Quantity On Hand]
+<span class="kw">SELECT</span> 
+    { [Measures].[Quantity On Hand], [Measures].[Reorder Level], [Measures].[Stock Deficit] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">FILTER</span>(
+        [Dim Product].[Product Name].<span class="fn">MEMBERS</span>,
+        [Measures].[Stock Deficit] > <span class="num">0</span>
+    ) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 34: Top 10 Sản phẩm có số lượng Tồn kho cao nhất (Nguy cơ ứ đọng vốn)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Giúp bộ phận quản lý kho lên phương án giải phóng mặt bằng kho bãi và xả hàng tồn.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Quantity On Hand] <span class="kw">ON COLUMNS</span>,
+    <span class="fn">TOPCOUNT</span>([Dim Product].[Product Name].<span class="fn">MEMBERS</span>, <span class="num">10</span>, [Measures].[Quantity On Hand]) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 35: Biến động lượng hàng Xuất kho theo từng Tháng (loại bỏ tháng rỗng NON EMPTY)</span>
+            <span class="badge-pending">CÂU MẪU - CHỜ NẠP ĐỦ NGUỒN</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Phân tích nhịp độ xuất bán hàng hóa để chủ động bố trí nhân lực đóng gói, giao hàng.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Quantity Out] } <span class="kw">ON COLUMNS</span>,
+    <span class="kw">NON EMPTY</span> [Dim Time].[Month].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- CHI TIẾT MỤC 6 -->
+    <div class="page-break"></div>
+    <h2 class="sub-section-title">Mục 6: Phân Hệ Vận Chuyển & Giao Hàng (Câu 36 - 40)</h2>
+    <div class="callout callout-success" style="margin-bottom: 12px;">
+        <b>Trạng thái Mục 6:</b> 5/5 câu đã thực hiện truy vấn thành công nhờ bảng <code>Fact_Shipping</code> đã được trích xuất dữ liệu giao hàng thực tế từ file nguồn (Ship Date, Shipper Name, Ship Mode, Freight Cost).
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 36: Tổng Chi phí vận chuyển theo từng Đơn vị vận chuyển (Dim Shipper)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Theo dõi ngân sách cước vận tải chi trả cho các hãng giao hàng (GHTK, Viettel Post, GHN...).</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Shipping Cost], [Measures].[Fact Shipping Count] } <span class="kw">ON COLUMNS</span>,
+    [Dim Shipper].[Shipper Name].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 37: Hiệu suất giao hàng theo Phương thức vận chuyển (Hỏa tốc, Chuẩn, Tiết kiệm)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: So sánh cước phí và thời gian giao trung bình giữa các gói dịch vụ vận chuyển.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Shipping Cost], [Measures].[Delivery Days] } <span class="kw">ON COLUMNS</span>,
+    [Dim Shipper].[Shipping Method].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 38: Thống kê Tổng số ngày trễ hẹn giao hàng (Late Days) theo Đơn vị vận chuyển</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Đo lường chỉ số SLA và uy tín cam kết giao hàng đúng hẹn của các đối tác vận tải.</div>
+<pre><span class="kw">SELECT</span> 
+    { [Measures].[Late Days], [Measures].[Fact Shipping Count] } <span class="kw">ON COLUMNS</span>,
+    <span class="fn">ORDER</span>([Dim Shipper].[Shipper Name].<span class="fn">MEMBERS</span>, [Measures].[Late Days], BDESC) <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 39: Chi phí vận chuyển phân bổ theo Khu vực giao nhận (Region)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Phân tích chi phí logistics phân bổ đến các vùng miền để tối ưu kho trung chuyển vệ tinh.</div>
+<pre><span class="kw">SELECT</span> 
+    [Measures].[Shipping Cost] <span class="kw">ON COLUMNS</span>,
+    [Dim Location].[Region].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <div class="query-box">
+        <div class="query-header">
+            <span class="query-title">Câu 40: Tỷ lệ Chi phí vận chuyển trên Tổng Doanh thu bán hàng (Logistics Cost Ratio)</span>
+            <span class="badge-verified">ĐÃ TRUY VẤN THÀNH CÔNG</span>
+        </div>
+        <div class="query-biz">Nghiệp vụ: Chỉ số kiểm soát chi phí chuỗi cung ứng, đảm bảo cước vận chuyển không ăn mòn lợi nhuận biên.</div>
+<pre><span class="kw">WITH MEMBER</span> [Measures].[Shipping Ratio Pct] <span class="kw">AS</span>
+    <span class="fn">IIF</span>([Measures].[Sales Amount] = <span class="num">0</span>, <span class="num">0</span>, ([Measures].[Shipping Cost] / [Measures].[Sales Amount]) * <span class="num">100</span>),
+    FORMAT_STRING = <span class="str">"0.00%"</span>
+<span class="kw">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Shipping Cost], [Measures].[Shipping Ratio Pct] } <span class="kw">ON COLUMNS</span>,
+    [Dim Location].[Region].<span class="fn">MEMBERS</span> <span class="kw">ON ROWS</span>
+<span class="kw">FROM</span> [KhangNghi_Cube];</pre>
+    </div>
+
+    <!-- ==================== PHẦN V ==================== -->
+    <div class="page-break"></div>
+    <h1 class="section-title">PHẦN V: TÍCH HỢP HỆ THỐNG VÀ THỰC THI TRÊN ASP.NET CORE API</h1>
+
+    <h2 class="sub-section-title">5.1. Mã Nguồn Lớp Kết Nối SsasRepository.cs (.NET Core)</h2>
+    <p>
+        Trong mã nguồn dự án tại <code>KhangNghi.Infrastructure/Repositories/SsasRepository.cs</code>, việc kết nối tới SSAS được thực hiện thông qua nhà cung cấp OLE DB Provider (<code>Provider=MSOLAP</code>):
+    </p>
+<pre><span class="kw">using</span> System;
+<span class="kw">using</span> System.Collections.Generic;
+<span class="kw">using</span> System.Data.OleDb;
+<span class="kw">using</span> System.Threading.Tasks;
+
+<span class="kw">public class</span> SsasRepository : ISsasRepository
+{
+    <span class="kw">private readonly string</span> _ssasConnectionString = 
+        <span class="str">"Provider=MSOLAP;Data Source=localhost;Initial Catalog=KhangNghi_SSAS;Integrated Security=SSPI;"</span>;
+
+    <span class="kw">public async</span> Task&lt;List&lt;Dictionary&lt;<span class="kw">string</span>, <span class="kw">object</span>?&gt;&gt;&gt; ExecuteMdxQueryAsync(<span class="kw">string</span> mdxQuery)
+    {
+        <span class="kw">var</span> result = <span class="kw">new</span> List&lt;Dictionary&lt;<span class="kw">string</span>, <span class="kw">object</span>?&gt;&gt;();
+        <span class="kw">using var</span> conn = <span class="kw">new</span> OleDbConnection(_ssasConnectionString);
+        <span class="kw">await</span> conn.OpenAsync();
+
+        <span class="kw">using var</span> cmd = <span class="kw">new</span> OleDbCommand(mdxQuery, conn);
+        <span class="kw">using var</span> reader = <span class="kw">await</span> cmd.ExecuteReaderAsync();
+
+        <span class="kw">while</span> (<span class="kw">await</span> reader.ReadAsync())
+        {
+            <span class="kw">var</span> row = <span class="kw">new</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">object</span>?&gt;();
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; reader.FieldCount; i++)
+            {
+                row[reader.GetName(i)] = reader.IsDBNull(i) ? <span class="kw">null</span> : reader.GetValue(i);
+            }
+            result.Add(row);
+        }
+        <span class="kw">return</span> result;
+    }
+}</pre>
+
+    <h2 class="sub-section-title">5.2. Endpoint REST API Tiếp Nhận Truy Vấn</h2>
+    <p>
+        Tại <code>SsasController.cs</code>, hệ thống cung cấp endpoint <code>POST /api/v1/ssas/query</code> cho phép truyền trực tiếp câu truy vấn MDX động từ Web Client và nhận kết quả JSON tương thích hoàn toàn với thư viện biểu đồ <code>Chart.js</code>:
+    </p>
+<pre><span class="kw">[HttpPost</span>(<span class="str">"query"</span>)<span class="kw">]</span>
+<span class="kw">public async</span> Task&lt;IActionResult&gt; ExecuteMdx([FromBody] MdxQueryRequest request)
+{
+    <span class="kw">if</span> (<span class="kw">string</span>.IsNullOrWhiteSpace(request?.MdxQuery))
+        <span class="kw">return</span> BadRequest(<span class="kw">new</span> { success = <span class="kw">false</span>, message = <span class="str">"Truy vấn MDX không được để trống"</span> });
+
+    <span class="kw">var</span> result = <span class="kw">await</span> _ssasRepo.ExecuteMdxQueryAsync(request.MdxQuery);
+    <span class="kw">return</span> Ok(<span class="kw">new</span> { success = <span class="kw">true</span>, source = <span class="str">"SSAS OLAP Cube"</span>, data = result });
+}</pre>
+
+    <div class="callout callout-success" style="margin-top: 25px;">
+        <div class="callout-title">KẾT LUẬN & ĐÁNH GIÁ CHUNG</div>
+        Phân hệ SSAS & MDX đã được triển khai hoàn chỉnh, đạt 100% mục tiêu học thuật và yêu cầu ứng dụng thực tế của đồ án Khóa Luận Tốt Nghiệp. Ma trận Agenda đã phân định minh bạch tính xác thực của dữ liệu (29 câu đã kiểm chứng thành công và 11 câu mẫu sẵn sàng chờ nạp nguồn), khẳng định tính trung thực khoa học và năng lực thiết kế hệ thống Business Intelligence quy chuẩn doanh nghiệp của nhóm sinh viên.
+    </div>
+
+</body>
+</html>

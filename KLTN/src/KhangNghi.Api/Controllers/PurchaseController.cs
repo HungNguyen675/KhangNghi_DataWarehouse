@@ -31,8 +31,23 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("price-trend")]
         public async Task<IActionResult> GetPriceTrend([FromQuery] string? productName = null) => Ok(await _repo.Q24_PurchasePriceTrendAsync(productName));
 
-        // Q25: Khu vực có tổng giá trị nhập hàng cao nhất
+        // Q25: Khu vực có tổng giá trị nhập hàng cao nhất (theo Kho / Vùng)
         [HttpGet("by-region")]
         public async Task<IActionResult> GetImportValueByRegion() => Ok(await _repo.Q25_ImportValueByRegionAsync());
+
+        // Tổng hợp đơn mua hàng PO (Fact_Purchase + Dim_Supplier + Dim_Warehouse)
+        [HttpGet("orders-summary")]
+        public async Task<IActionResult> GetPurchaseOrdersSummary([FromQuery] int? year = null) 
+            => Ok(await _repo.GetPurchaseOrdersSummaryAsync(year));
+
+        // Chi tiết mặt hàng trong đơn mua hàng PO
+        [HttpGet("order-detail/{orderId}")]
+        public async Task<IActionResult> GetPurchaseOrderDetail(string orderId, [FromQuery] int top = 50) 
+            => Ok(await _repo.GetPurchaseOrderDetailAsync(orderId, top));
+
+        // Chi phí mua hàng theo danh mục sản phẩm
+        [HttpGet("by-category")]
+        public async Task<IActionResult> GetPurchaseCategorySpend([FromQuery] int? year = null) 
+            => Ok(await _repo.GetPurchaseCategorySpendAsync(year));
     }
 }

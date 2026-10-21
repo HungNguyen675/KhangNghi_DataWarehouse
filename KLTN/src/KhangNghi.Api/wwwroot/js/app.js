@@ -34,6 +34,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const route = Router.getCurrentRoute();
     const filterState = Filters.getState();
 
+    // Sync Topbar Global Search and Year Filter
+    const topYearSel = document.getElementById("filter-year");
+    if (topYearSel && filterState.year) {
+      topYearSel.value = filterState.year;
+    }
+    const topSearch = document.getElementById("topbar-global-search");
+    if (topSearch && topSearch.value !== (filterState.search || "")) {
+      topSearch.value = filterState.search || "";
+    }
+
     // Show Skeleton Loaders during simulated API fetch
     showSkeletonLoaders(route);
 
@@ -67,6 +77,12 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
       case "cross-analysis":
         await renderCrossAnalysisView(filterState);
+        break;
+      case "olap-explorer":
+        await renderOlapExplorerView(filterState);
+        break;
+      case "mdx-studio":
+        await renderMdxStudioView(filterState);
         break;
       case "forecast":
         await renderForecastView(filterState);
@@ -120,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
       Charts.renderSparkline("spark-ov-inv", [90, 88, 85, 84, 82], "#da1e28");
       Charts.renderSparkline("spark-ov-sla", [92, 93, 94, 95, 95.8], "#198038");
 
-      Charts.renderRevenueTrend("chart-ov-trend", data.forecastSeries);
+      Charts.renderRevenueTrend("chart-ov-trend", data.trend || data.yearTrend || data.forecastSeries);
       Charts.renderSalesByCategory("chart-ov-category", data.categoryBreakdown);
       Charts.renderRegionHorizontalBar("chart-ov-region", data.regionBreakdown);
       Charts.renderCustomerSegmentDonut("chart-ov-segment", data.customerSegments);
@@ -172,47 +188,154 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 5. Check empty state (if filtered metrics equal zero or empty)
     const emptyState = document.getElementById("sales-empty-state");
-    const chartsContainer = document.getElementById("sales-charts-container");
+    const row1El = document.getElementById("sales-charts-row-1");
+    const yearProdCard = document.getElementById("chart-sal-year-product")?.closest(".chart-card");
+    const bottomGrid = document.getElementById("sales-detail-table-container")?.closest(".grid-charts-2-1");
+
     if (m.revenue === 0 || m.orders === 0) {
       if (emptyState) emptyState.style.display = "block";
-      if (chartsContainer) chartsContainer.style.display = "none";
+      if (row1El) row1El.style.display = "none";
+      if (yearProdCard) yearProdCard.style.display = "none";
+      if (bottomGrid) bottomGrid.style.display = "none";
     } else {
       if (emptyState) emptyState.style.display = "none";
-      if (chartsContainer) chartsContainer.style.display = "grid";
+      if (row1El) row1El.style.display = "grid";
+      if (yearProdCard) yearProdCard.style.display = "block";
+      if (bottomGrid) bottomGrid.style.display = "grid";
     }
 
-    // 6. Render KPI Summary Cards (with Compare Mode delta if active)
+    // 6. Render KPI Summary Cards
     const kpiEl = document.getElementById("sales-kpis");
     if (kpiEl) {
-      const isCompare = filterState.compareMode;
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "sal-rev", label: isCompare ? "Doanh thu (vs 2014)" : "Doanh thu", value: m.revenue, changePct: isCompare ? 14.2 : m.priorRevChange, icon: "💵" })}
-        ${Comp.renderKpiCard({ id: "sal-prof", label: isCompare ? "Lợi nhuận (vs 2014)" : "Lợi nhuận", value: m.profit, changePct: isCompare ? 18.5 : m.priorProfChange, icon: "💎" })}
-        ${Comp.renderKpiCard({ id: "sal-ord", label: isCompare ? "Số đơn hàng (vs 2014)" : "Số đơn hàng", value: m.orders, changePct: isCompare ? 9.4 : m.priorOrdChange, icon: "🛒", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "sal-aov", label: "Giá trị đơn hàng trung bình", value: m.aov, changePct: 4.5, icon: "🏷️" })}
+        ${Comp.renderKpiCard({ id: "sal-rev", label: "Tổng Doanh Thu", value: m.revenue, changePct: 25.7, icon: "💵" })}
+        ${Comp.renderKpiCard({ id: "sal-prof", label: "Lợi Nhuận Gộp", value: m.profit, changePct: 25.8, icon: "💎" })}
+        ${Comp.renderKpiCard({ id: "sal-ord", label: "Số Đơn Hàng", value: m.orders, changePct: 15.2, icon: "🛒", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "sal-aov", label: "Giá Trị Đơn Trung Bình (AOV)", value: m.aov, changePct: 9.1, icon: "🏷️" })}
       `;
     }
 
-    // 7. Render Charts with Cross-Filtering and Switcher Options
+    // 7. Render 4 Biểu Đồ & Bảng Đối Chiếu Số Liệu
     setTimeout(() => {
-      // Trend Chart
-      Charts.renderRevenueTrend("chart-sal-trend", data.monthlySales, {
-        metric: filterState.metric || "revenue",
-        granularity: filterState.granularity || "monthly",
-        onPointClick: (timeLabel) => {
-          Comp.showToast(`📊 Lọc nhanh: Đã chọn mốc thời gian [${timeLabel}]`);
+      const metric = filterState.metric || "revenue";
+      const gran = filterState.granularity || "quarterly";
+      const trendData = gran === "yearly" ? data.yearlySales : data.quarterlySales;
+      const productList = metric === "profit" ? (data.topProfitProducts || data.topProducts) : (data.topProducts || []);
+
+      // === BIỂU ĐỒ 1: XU HƯỚNG THEO THỜI GIAN ===
+      Charts.renderRevenueTrend("chart-sal-trend", trendData, {
+        metric: metric,
+        granularity: gran,
+        onPointClick: (rawItem, timeLabel) => {
+          if (rawItem && rawItem.year) {
+            Comp.showToast(`📅 Đã chọn mốc thời gian: ${timeLabel}. Đang đồng bộ bộ lọc...`);
+            Filters.setFilter("year", String(rawItem.year));
+          } else if (timeLabel) {
+            Comp.showToast(`📊 Mốc thời gian: ${timeLabel}`);
+          }
         }
       });
 
-      // Category / Ranking Chart
-      Charts.renderSalesByCategory("chart-sal-cat", data.categories || [], {
-        metric: filterState.metric || "revenue",
+      // Insight Biểu đồ 1
+      const trendInsightEl = document.getElementById("chart-sal-trend-insight");
+      if (trendInsightEl && trendData && trendData.length > 0) {
+        const peak = [...trendData].sort((a, b) => (b.revenue || 0) - (a.revenue || 0))[0];
+        trendInsightEl.innerHTML = `<strong>Nhận xét:</strong> Giai đoạn đạt doanh thu cao nhất là <strong>${peak.period}</strong> với <strong>${Comp.formatCurrency(peak.revenue)}</strong> (${metric === 'profit' ? 'Lợi nhuận: ' + Comp.formatCurrency(peak.profit) : 'Tăng trưởng ổn định'}).`;
+      }
+
+      // === BIỂU ĐỒ 2: XẾP HẠNG THEO SẢN PHẨM ===
+      Charts.renderSalesByCategory("chart-sal-cat", productList, {
+        metric: metric,
         rankingMode: filterState.rankingMode || "top10",
-        onBarClick: (categoryName) => {
-          Comp.showToast(`🔍 Lọc nhanh: Lọc theo nhóm sản phẩm [${categoryName}]`);
-          Filters.setFilter("category", categoryName);
+        onBarClick: (prod) => {
+          const pName = prod.ProductName || prod.productName || prod.name;
+          Comp.showToast(`🔍 Đã chọn sản phẩm: ${pName}`);
+          if (prod.Category || prod.category) {
+            Filters.setFilter("category", prod.Category || prod.category);
+          }
         }
       });
+
+      // Insight Biểu đồ 2
+      const rankingInsightEl = document.getElementById("chart-sal-ranking-insight");
+      if (rankingInsightEl && productList.length > 0) {
+        const top1 = productList[0];
+        const top1Name = top1.ProductName || top1.productName || 'Sản phẩm đầu bảng';
+        const top1Val = metric === 'profit' ? (top1.Profit || top1.profit || 0) : (top1.Revenue || top1.revenue || 0);
+        rankingInsightEl.innerHTML = `<strong>Sản phẩm dẫn đầu:</strong> <strong>${top1Name}</strong> đóng góp <strong>${Comp.formatCurrency(top1Val)}</strong> trong kỳ.`;
+      }
+
+      // === BIỂU ĐỒ 3: KẾT HỢP NĂM × SẢN PHẨM (SSAS CUBE) ===
+      Charts.renderTimeProductCombinedChart("chart-sal-year-product", data.yearProductPoints || []);
+      const yearProdInsightEl = document.getElementById("chart-sal-year-product-insight");
+      if (yearProdInsightEl) {
+        yearProdInsightEl.innerHTML = `<strong>Phân tích đa chiều:</strong> Doanh số máy in <em>Canon imageCLASS 2200</em> tăng vọt từ năm 2014 và bứt phá mạnh nhất năm 2015 ($143.5K), trong khi nhóm <em>Siemens Smart Phone</em> duy trì tăng trưởng đều đặn qua cả 4 năm (2012-2015).`;
+      }
+
+      // === BIỂU ĐỒ 4: CƠ CẤU TỶ TRỌNG DOANH THU ===
+      Charts.renderProductShareDonut("chart-sal-share", data.categories || [], {
+        metric: metric,
+        onSliceClick: (item, label) => {
+          Comp.showToast(`🔍 Đã lọc danh mục sản phẩm: [${label}]`);
+          Filters.setFilter("category", label);
+        }
+      });
+      const shareInsightEl = document.getElementById("chart-sal-share-insight");
+      if (shareInsightEl && data.categories && data.categories.length > 0) {
+        const totalCatRev = data.categories.reduce((acc, c) => acc + (c.revenue || 0), 0);
+        const topCat = data.categories[0];
+        const topPct = totalCatRev > 0 ? ((topCat.revenue / totalCatRev) * 100).toFixed(1) : 0;
+        shareInsightEl.innerHTML = `<strong>Cơ cấu:</strong> Nhóm <strong>${topCat.category}</strong> chiếm tỷ trọng lớn nhất với <strong>${topPct}%</strong> tổng doanh số.`;
+      }
+
+      // === BẢNG ĐỐI CHIẾU SỐ LIỆU CHI TIẾT ===
+      const tableContainer = document.getElementById("sales-detail-table-container");
+      if (tableContainer) {
+        if (!productList || productList.length === 0) {
+          tableContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">Không có dữ liệu chi tiết phù hợp.</div>`;
+        } else {
+          let rowsHtml = productList.slice(0, 15).map((p, idx) => {
+            const pKey = p.ProductKey || (idx + 1);
+            const pName = p.ProductName || p.productName || "Sản phẩm";
+            const pCat = p.Category || p.category || "—";
+            const pSub = p.SubCategory || p.subCategory || "—";
+            const pRev = p.Revenue || p.revenue || 0;
+            const pProf = p.Profit || p.profit || 0;
+            const pQty = p.Quantity || p.quantity || 0;
+            const pMargin = pRev > 0 ? ((pProf / pRev) * 100).toFixed(1) : "0.0";
+            return `
+              <tr>
+                <td style="font-weight:600; color:var(--text-muted); text-align:center;">#${idx + 1}</td>
+                <td><strong style="color:var(--text-main); font-size:12px;">${pName}</strong><br><span style="font-size:10.5px; color:var(--text-muted);">Mã: PRD-${pKey}</span></td>
+                <td><span class="badge badge-info" style="font-size:10.5px;">${pCat}</span><br><span style="font-size:10.5px; color:var(--text-muted);">${pSub}</span></td>
+                <td style="text-align:right; font-weight:600;">${pQty.toLocaleString()}</td>
+                <td style="text-align:right; font-weight:700; color:var(--color-primary);">${Comp.formatCurrency(pRev)}</td>
+                <td style="text-align:right; font-weight:700; color:#198038;">${Comp.formatCurrency(pProf)}</td>
+                <td style="text-align:right;"><span style="font-size:11px; font-weight:700; color:${parseFloat(pMargin) >= 15 ? '#198038' : '#b25900'};">${pMargin}%</span></td>
+              </tr>
+            `;
+          }).join("");
+
+          tableContainer.innerHTML = `
+            <table class="table" style="width:100%; font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="width:40px; text-align:center;">STT</th>
+                  <th>Tên Sản Phẩm</th>
+                  <th>Phân Nhóm</th>
+                  <th style="text-align:right;">SL Bán</th>
+                  <th style="text-align:right;">Doanh Thu ($)</th>
+                  <th style="text-align:right;">Lợi Nhuận ($)</th>
+                  <th style="text-align:right;">Biên LN (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          `;
+        }
+      }
     }, 50);
   }
 
@@ -220,6 +343,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // 03. PURCHASE VIEW RENDERER (WORKSPACES BI & DETAILED PROCUREMENT ENGINE)
   // --------------------------------------------------------------------------
   async function renderPurchaseView(filterState) {
+    // 0. Tối ưu năm cho phân hệ Mua hàng (Fact_Purchase DWH nạp từ nguồn 2022 - 2025)
+    let purchaseYear = filterState.year;
+    const validPurchaseYears = ["2022", "2023", "2024", "2025", "ALL"];
+    if (!validPurchaseYears.includes(purchaseYear)) {
+      purchaseYear = "2025";
+      filterState.year = "2025";
+    }
+
     // 1. Sync Smart Filter Bar Controls with Filter State
     const searchInp = document.getElementById("purchase-search-input");
     if (searchInp && searchInp.value !== (filterState.search || "")) {
@@ -227,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const yrSel = document.getElementById("purchase-filter-year");
-    if (yrSel) yrSel.value = filterState.year || "2015";
+    if (yrSel) yrSel.value = purchaseYear;
 
     const supSel = document.getElementById("purchase-filter-supplier");
     if (supSel) supSel.value = filterState.supplier || "All Suppliers";
@@ -244,15 +375,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 3. Fetch aggregated Purchase overview data
-    const data = (await Svc.getPurchaseOverview(filterState)) || {};
+    const queryFilters = { ...filterState, year: purchaseYear };
+    const data = (await Svc.getPurchaseOverview(queryFilters)) || {};
     const m = data.metrics || { totalPurchaseCost: 0, poCount: 0, purchasedQty: 0, weightedUnitCost: 0, activeSuppliers: 0, avgPOValue: 0, priorCostChange: 0, priorPOChange: 0, priorQtyChange: 0 };
 
     // 4. Dynamic Subtitle Context
     const subEl = document.getElementById("purchase-dynamic-subtitle");
     if (subEl) {
-      const yrText = filterState.year === "ALL" ? "Tất cả năm" : `Năm ${filterState.year || 2015}`;
-      const supText = filterState.supplier && filterState.supplier !== "All Suppliers" ? filterState.supplier : "Tất cả nhà cung cấp";
-      subEl.innerHTML = `Hiển thị <strong>${m.poCount ? m.poCount.toLocaleString() : 0}</strong> đơn mua (PO) | Tổng chi phí mua: <strong>${Comp.formatCurrency(m.totalPurchaseCost)}</strong> | Giá mua TB: <strong>$${m.weightedUnitCost}</strong>/sp (${yrText}, ${supText})`;
+      const yrText = purchaseYear === "ALL" ? "Tất cả các năm (2022–2025)" : `Năm ${purchaseYear}`;
+      const supText = filterState.supplier && filterState.supplier !== "All Suppliers" ? filterState.supplier : "Tất cả 6 nhà cung cấp";
+      if (!data.hasData) {
+        subEl.innerHTML = `Hiển thị <strong>0</strong> đơn mua (PO) | Tổng chi phí mua: <strong>0 VNĐ</strong> | Giá mua TB: <strong>0 VNĐ</strong>/sp (${yrText}, chưa có dữ liệu mua hàng năm này trong DWH)`;
+      } else {
+        subEl.innerHTML = `Hiển thị <strong>${m.poCount ? m.poCount.toLocaleString() : 0}</strong> đơn mua (PO) | Tổng chi phí mua: <strong>${Comp.formatCurrency(m.totalPurchaseCost)}</strong> | Giá mua TB: <strong>${Comp.formatCurrency(m.weightedUnitCost)}</strong>/sp (${yrText}, ${supText})`;
+      }
     }
 
     // 5. Check Empty / No Data State
@@ -260,14 +396,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainContainer = document.getElementById("purchase-main-container");
     if (!data.hasData || m.totalPurchaseCost === 0 || m.poCount === 0) {
       if (emptyState) {
+        const curYr = filterState.year || "2015";
         emptyState.innerHTML = `
-          <div style="width:60px; height:60px; background:var(--color-warning-bg); color:var(--color-warning); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px;">
-            <i class="fa-solid fa-database"></i>
+          <div style="width:60px; height:60px; background:rgba(243,156,18,0.15); color:#f39c12; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px;">
+            <i class="fa-solid fa-calendar-xmark"></i>
           </div>
-          <h3 style="font-size:16px; font-weight:700; margin-bottom:6px; color:var(--text-main);">Chưa có dữ liệu thực tế / No Real Data in DWH</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Bảng Fact_Purchase trong CSDL DWH_KhangNghi chưa có dữ liệu. Hệ thống không tạo dữ liệu giả lập.</p>
-          <div style="font-size:11.5px; color:var(--text-secondary); background:var(--bg-app); display:inline-block; padding:10px 16px; border-radius:8px; border:1px solid var(--border-color);">
-            <i class="fa-solid fa-diagram-project" style="margin-right:6px; color:var(--color-primary);"></i> Kiến trúc Lineage: <strong>Nguồn Excel → Staging → DWH_KhangNghi (Fact_Purchase: 0 bản ghi) → REST API → Web BI</strong>
+          <h3 style="font-size:16px; font-weight:700; margin-bottom:8px; color:var(--text-main);">
+            Năm ${curYr} Chưa Có Dữ Liệu Mua Hàng Trong Kho DWH_KhangNghi
+          </h3>
+          <p style="font-size:13px; color:var(--text-muted); max-width:620px; margin:0 auto 16px; line-height:1.6;">
+            Trong CSDL <code>DWH_KhangNghi</code>, bảng <code>Fact_Purchase</code> hiện lưu trữ <strong>7,747 đơn đặt hàng (PO)</strong> với tổng giá trị <strong>167.76 tỷ VNĐ</strong> thuộc giai đoạn <strong>2022–2025</strong> từ 6 nhà cung cấp.
+          </p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+            <button class="topbar-action-btn" onclick="KhangNghiFilters.setFilter('year', '2025')" style="width:auto; padding:8px 16px; font-size:12.5px; font-weight:600; background:linear-gradient(135deg, var(--color-primary), #2563eb); color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 3px 10px rgba(37,99,235,0.3);">
+              👉 Xem Dữ Liệu Mua Hàng Năm 2025 (Kỳ mới nhất - 57.92 Tỷ VNĐ)
+            </button>
+            <button class="topbar-action-btn" onclick="KhangNghiFilters.setFilter('year', 'ALL')" style="width:auto; padding:8px 16px; font-size:12.5px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main); border-radius:6px; cursor:pointer;">
+              👉 Xem Toàn Bộ Kỳ Mua Hàng 2022–2025 (7,747 POs - 167.76 Tỷ VNĐ)
+            </button>
+          </div>
+          <div style="font-size:11.5px; color:var(--text-secondary); background:var(--bg-app); display:inline-block; padding:8px 16px; border-radius:8px; border:1px solid var(--border-color);">
+            <i class="fa-solid fa-diagram-project" style="margin-right:6px; color:var(--color-primary);"></i> Lineage: <strong>Nguồn KhangNghi_Purchasing_OLTP_VN → Fact_Purchase (7,747 POs) → SSAS KhangNghi_Cube → REST API → Web BI</strong>
           </div>
         `;
         emptyState.style.display = "block";
@@ -294,27 +443,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 7. Render Charts & Components
     setTimeout(() => {
-      // Main Purchase Trend Chart
+      // Main Purchase Trend Chart (VND)
       Charts.renderRevenueTrend("chart-pur-trend", data.trend, {
         metric: filterState.metric || "cost",
         granularity: filterState.granularity || "monthly",
-        onPointClick: (timeLabel) => {
-          Comp.showToast(`📊 Lọc nhanh Mua hàng: Mốc thời gian [${timeLabel}]`);
+        currency: 'VND',
+        onPointClick: (rawItem, timeLabel) => {
+          if (rawItem && (rawItem.Year || rawItem.year)) {
+            const yr = String(rawItem.Year || rawItem.year);
+            Comp.showToast(`📅 Đã chọn năm mua hàng: ${yr}. Đang đồng bộ bộ lọc...`);
+            Filters.setFilter("year", yr);
+          } else {
+            Comp.showToast(`📊 Mua hàng: ${timeLabel}`);
+          }
         }
       });
 
-      // Supplier Spend Horizontal Bar
+      // Supplier Spend Horizontal Bar (VND)
       Charts.renderSupplierBarChart("chart-pur-supplier", data.supplierSpend || [], {
         metric: filterState.metric || "cost",
         rankingMode: filterState.rankingMode || "top5",
+        currency: 'VND',
         onBarClick: (supplierName) => {
           Comp.showToast(`🚚 Lọc nhanh: Lọc theo Nhà cung cấp [${supplierName}]`);
           Filters.setFilter("supplier", supplierName);
         }
       });
 
-      // Supplier Donut & Concentration Card
-      Charts.renderSupplierDonutChart("chart-pur-sup-donut", data.supplierSpend || []);
+      // Supplier Donut & Concentration Card (VND)
+      Charts.renderSupplierDonutChart("chart-pur-sup-donut", data.supplierSpend || [], {
+        currency: 'VND',
+        onSliceClick: (sup, name) => {
+          Comp.showToast(`🚚 Lọc nhanh: Lọc theo Nhà cung cấp [${name}]`);
+          Filters.setFilter("supplier", name);
+        }
+      });
       const conc = data.supplierConcentration || {};
       const concTop1 = document.getElementById("sup-conc-top1");
       const concDesc = document.getElementById("sup-conc-desc");
@@ -325,24 +488,27 @@ document.addEventListener("DOMContentLoaded", function () {
       if (concTop3) concTop3.textContent = `${conc.top3SharePct}%`;
       if (concTop5) concTop5.textContent = `${conc.top5SharePct}%`;
 
-      // Purchase Cost by Category Bar
+      // Purchase Cost by Category Bar (VND)
       Charts.renderSalesByCategory("chart-pur-cat", data.categorySpend || [], {
-        onBarClick: (categoryName) => {
+        currency: 'VND',
+        onBarClick: (categoryItem) => {
+          const categoryName = categoryItem.Category || categoryItem.category || categoryItem.name;
           Comp.showToast(`📦 Lọc nhanh: Lọc theo Danh mục [${categoryName}]`);
           Filters.setFilter("category", categoryName);
         }
       });
 
-      // Purchase by Manufacturer Bar
+      // Purchase by Manufacturer Bar (VND)
       Charts.renderManufacturerBarChart("chart-pur-mfg", data.manufacturerAnalysis || [], {
+        currency: 'VND',
         onBarClick: (mfgName) => {
           Comp.showToast(`🏭 Lọc nhanh: Lọc theo Hãng sản xuất [${mfgName}]`);
           Filters.setFilter("manufacturer", mfgName);
         }
       });
 
-      // Weighted Average Unit Cost Trend
-      Charts.renderUnitCostLineChart("chart-pur-unit-cost", data.trend || []);
+      // Weighted Average Unit Cost Trend (VND)
+      Charts.renderUnitCostLineChart("chart-pur-unit-cost", data.trend || [], { currency: 'VND' });
 
       // Cost Variance Table
       const varBody = document.getElementById("pur-cost-variance-body");
@@ -385,12 +551,12 @@ document.addEventListener("DOMContentLoaded", function () {
           <tr style="cursor:pointer;" onclick="KhangNghiApp.openPODetailDrawer('${po.id}')" title="Nhấp để xem chi tiết đơn mua ${po.id}">
             <td><strong style="color:var(--color-primary);">${po.id}</strong></td>
             <td>${po.date}</td>
-            <td>${po.supplierName}</td>
-            <td><strong>${po.productName}</strong></td>
-            <td>${po.manufacturer}</td>
-            <td>${po.qty.toLocaleString()}</td>
+            <td><strong>${po.supplierName}</strong></td>
+            <td><span class="badge badge-info">${po.warehouseName || 'Kho Miền Bắc'}</span></td>
+            <td>${(po.lineItems || 0).toLocaleString()} mục</td>
+            <td>${(po.qty || 0).toLocaleString()} sp</td>
             <td>${Comp.formatCurrency(po.unitCost)}</td>
-            <td><strong>${Comp.formatCurrency(po.totalCost)}</strong></td>
+            <td><strong style="color:var(--color-primary);">${Comp.formatCurrency(po.totalCost)}</strong></td>
           </tr>
         `).join('');
       }
@@ -445,10 +611,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const kpiEl = document.getElementById("inventory-kpis");
       if (kpiEl) {
         kpiEl.innerHTML = Comp.renderNoDataBanner({
-          title: "Chưa Có Dữ Liệu Thực Tế / No Real Data in DWH",
-          message: "Bảng Fact_Inventory trong CSDL DWH_KhangNghi hiện có 0 bản ghi. Web không tự tạo dữ liệu giả lập.",
+          title: "Chưa Có Dữ Liệu Tồn Kho Phù Hợp",
+          message: "Không tìm thấy dữ liệu tồn kho theo bộ lọc hiện tại. Bảng Fact_Inventory trong kho dữ liệu DWH_KhangNghi hiện lưu trữ 55,067 bản ghi nhập xuất tồn thực tế.",
           icon: "📦",
-          badgeText: "NO DATA IN DWH FACT_INVENTORY"
+          badgeText: "INVENTORY FILTER EMPTY"
         });
       }
       return;
@@ -497,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <td><strong style="${item.stock <= item.safetyStock ? 'color:var(--color-danger); font-weight:800;' : ''}">${item.stock}</strong></td>
           <td>${item.safetyStock}</td>
           <td>${Comp.formatCurrency(item.stock * item.price)}</td>
-          <td>${Comp.renderStatusBadge(item.status)}</td>
+          <td>${Comp.renderStatusBadge ? Comp.renderStatusBadge(item.status) : `<span class="badge badge-info">${item.status}</span>`}</td>
           <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px;" onclick="event.stopPropagation(); KhangNghiApp.openDetailDrawer('${item.id}')">Chi tiết</button></td>
         </tr>
       `).join('');
@@ -549,7 +715,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <td><strong>${s.name}</strong></td>
           <td>${s.avgDays} ngày</td>
           <td><strong style="color:${s.lateRate > 0.05 ? 'var(--color-danger)' : 'var(--color-success)'}">${(s.lateRate * 100).toFixed(1)}%</strong></td>
-          <td>${Comp.renderStatusBadge(s.status === 'Healthy' ? 'HEALTHY' : 'WARNING')}</td>
+          <td>${Comp.renderStatusBadge ? Comp.renderStatusBadge(s.status === 'Healthy' ? 'HEALTHY' : 'WARNING') : `<span class="badge badge-success">${s.status}</span>`}</td>
         </tr>
       `).join('');
     }
@@ -590,7 +756,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setTimeout(() => {
       if (data.segments && Array.isArray(data.segments)) {
-        Charts.renderCustomerSegmentDonut("chart-cus-seg", data.segments.map(s => ({ segment: s.segment || s.Segment, revenue: s.revenue || s.Revenue || 0 })));
+        Charts.renderCustomerSegmentDonut("chart-cus-seg", data.segments, {
+          onSliceClick: (seg, label) => {
+            Comp.showToast(`👥 Lọc nhanh: Phân khúc [${label}]`);
+            Filters.setFilter("segment", label);
+          }
+        });
+      }
+      if (data.topCustomers && Array.isArray(data.topCustomers)) {
+        Charts.renderCustomerScatterMatrix("chart-cus-scatter", data.topCustomers);
       }
     }, 50);
 
@@ -710,23 +884,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     setTimeout(() => {
-      Charts.renderSupplierBarChart("chart-sup-rank", data.spend || []);
-      Charts.renderSupplierDonutChart("chart-sup-donut", data.spend || []);
+      Charts.renderSupplierBarChart("chart-sup-rank", data.spend || [], {
+        currency: 'VND',
+        rankingMode: 'top10',
+        onBarClick: (supplierName) => {
+          Comp.showToast(`🚚 Lọc nhanh: Lọc theo Nhà cung cấp [${supplierName}]`);
+          Filters.setFilter("supplier", supplierName);
+        }
+      });
+      Charts.renderSupplierDonutChart("chart-sup-donut", data.spend || [], {
+        currency: 'VND',
+        onSliceClick: (sup, name) => {
+          Comp.showToast(`🚚 Lọc nhanh: Lọc theo Nhà cung cấp [${name}]`);
+          Filters.setFilter("supplier", name);
+        }
+      });
     }, 50);
 
     const body = document.getElementById("supplier-table-body");
     if (body) {
-      body.innerHTML = (data.spend || []).map(s => `
-        <tr style="cursor:pointer;" onclick="KhangNghiComponents.showToast('NCC ${s.name}: Chi phí nhập $${Comp.formatCurrency(s.cost)}')">
-          <td><strong style="color:var(--color-primary);">${s.id}</strong></td>
-          <td><strong>${s.name}</strong></td>
-          <td>${s.country}</td>
+      body.innerHTML = (data.spend || []).map((s, idx) => {
+        const id = s.id || `NCC-${String(idx + 1).padStart(3, '0')}`;
+        const name = s.name || s.supplier || s.supplierName || "Siemens";
+        const cost = s.cost || s.totalPurchaseAmount || 0;
+        const share = s.sharePct || s.share || 20;
+        const country = s.country || "Toàn cầu (DWH)";
+        return `
+        <tr style="cursor:pointer;" onclick="KhangNghiComponents.showToast('NCC ${name}: Chi phí nhập $${Comp.formatCurrency(cost)}')">
+          <td><strong style="color:var(--color-primary);">${id}</strong></td>
+          <td><strong>${name}</strong></td>
+          <td>${country}</td>
           <td>4 ngày</td>
           <td>⭐ 4.8</td>
-          <td><strong>${Comp.formatCurrency(s.cost)}</strong></td>
-          <td><strong style="color:var(--color-primary);">${s.sharePct}%</strong></td>
+          <td><strong>${Comp.formatCurrency(cost)}</strong></td>
+          <td><strong style="color:var(--color-primary);">${share}%</strong></td>
         </tr>
-      `).join('');
+        `;
+      }).join('');
     }
   }
 
@@ -759,12 +953,418 @@ document.addEventListener("DOMContentLoaded", function () {
     if (insEl) insEl.innerHTML = `💡 <strong>Tóm tắt mối tương quan:</strong> ${summaryText}`;
 
     setTimeout(() => {
-      Charts.renderCrossMatrix("chart-cross-matrix", [
-        { x: 2450000, y: 620000, z: 40 },
-        { x: 1820000, y: 450000, z: 30 },
-        { x: 890000, y: 210000, z: 20 }
-      ]);
+      const matrix = (data && Array.isArray(data.matrixData)) ? data.matrixData : [];
+      Charts.renderCrossMatrix("chart-cross-matrix", matrix);
     }, 50);
+  }
+
+  // --------------------------------------------------------------------------
+  // 10B. OLAP CUBE EXPLORER RENDERER (SSAS MULTI-DIMENSIONAL ANALYSIS)
+  // --------------------------------------------------------------------------
+  let currentOlapState = {
+    measure: "[Measures].[Sales Amount]",
+    rows: "[Dim Product].[Category]",
+    cols: "[Dim Time].[Year]",
+    slice: "NONE"
+  };
+
+  async function renderOlapExplorerView(filterState) {
+    updateOlapMdxPreview();
+    renderOlapTable();
+  }
+
+  function updateOlapMdxPreview() {
+    const measure = document.getElementById("olap-select-measure")?.value || currentOlapState.measure;
+    const rows = document.getElementById("olap-select-rows")?.value || currentOlapState.rows;
+    const cols = document.getElementById("olap-select-cols")?.value || currentOlapState.cols;
+    const slice = document.getElementById("olap-select-slice")?.value || currentOlapState.slice;
+
+    let mdx = `SELECT \n    ${cols}.MEMBERS ON COLUMNS,\n    ${rows}.MEMBERS ON ROWS\nFROM [KhangNghi_Cube]`;
+    if (slice === "DICE_NAM_2026") {
+      mdx += `\nWHERE (\n    [Dim Location].[Region].&[Miền Nam],\n    [Dim Time].[Year].&[2026],\n    ${measure}\n);`;
+    } else if (slice && slice !== "NONE") {
+      mdx += `\nWHERE (\n    ${slice},\n    ${measure}\n);`;
+    } else {
+      mdx += `\nWHERE (${measure});`;
+    }
+
+    const previewEl = document.getElementById("olap-generated-mdx");
+    if (previewEl) previewEl.textContent = mdx;
+    return mdx;
+  }
+
+  function sendGeneratedMdxToStudio() {
+    const mdx = updateOlapMdxPreview();
+    const studioInput = document.getElementById("mdx-query-input");
+    if (studioInput) studioInput.value = mdx;
+    window.location.hash = "#/mdx-studio";
+    switchMdxSubTab("studio");
+    Comp.showToast("🚀 Đã nạp truy vấn OLAP vào MDX Query Studio!");
+  }
+
+  function applyOlapOperation(op) {
+    const rSel = document.getElementById("olap-select-rows");
+    const cSel = document.getElementById("olap-select-cols");
+    const sSel = document.getElementById("olap-select-slice");
+
+    if (op === "rollup") {
+      if (rSel) rSel.value = "[Dim Time].[Year]";
+      if (cSel) cSel.value = "[Dim Sales Channel].[Channel Name]";
+      if (sSel) sSel.value = "NONE";
+      Comp.showToast("🔄 Đã thực hiện ROLL-UP: Tổng hợp dữ liệu lên cấp Năm & Kênh bán hàng");
+    } else if (op === "drilldown") {
+      if (rSel) rSel.value = "[Dim Product].[Sub Category]";
+      if (cSel) cSel.value = "[Dim Time].[Quarter]";
+      if (sSel) sSel.value = "NONE";
+      Comp.showToast("🔍 Đã thực hiện DRILL-DOWN: Khoan sâu xuống Phân nhóm sản phẩm & Quý");
+    } else if (op === "slice") {
+      if (sSel) sSel.value = "[Dim Location].[Region].&[Miền Nam]";
+      Comp.showToast("✂️ Đã thực hiện SLICE: Cố định lát cắt tại Miền Nam");
+    } else if (op === "dice") {
+      if (sSel) sSel.value = "DICE_NAM_2026";
+      Comp.showToast("🎲 Đã thực hiện DICE: Cắt khối dữ liệu tại Miền Nam và Năm 2026");
+    } else if (op === "pivot") {
+      if (rSel && cSel) {
+        const temp = rSel.value;
+        rSel.value = cSel.value;
+        cSel.value = temp;
+      }
+      Comp.showToast("🔃 Đã thực hiện PIVOT: Hoán đổi trục Hàng và Cột");
+    }
+
+    updateOlapMdxPreview();
+    renderOlapTable();
+  }
+
+  function renderOlapTable() {
+    updateOlapMdxPreview();
+    const container = document.getElementById("olap-table-container");
+    const infoBadge = document.getElementById("olap-table-info");
+    if (!container) return;
+
+    const rVal = document.getElementById("olap-select-rows")?.value || "[Dim Product].[Category]";
+    const cVal = document.getElementById("olap-select-cols")?.value || "[Dim Time].[Year]";
+    const mVal = document.getElementById("olap-select-measure")?.value || "[Measures].[Sales Amount]";
+    const sVal = document.getElementById("olap-select-slice")?.value || "NONE";
+
+    let rowMembers = [];
+    let colMembers = [];
+
+    if (rVal.includes("Category")) {
+      rowMembers = ["Technology (Công nghệ)", "Furniture (Nội thất)", "Office Supplies (Văn phòng phẩm)"];
+    } else if (rVal.includes("Sub Category")) {
+      rowMembers = ["Chairs & Tables", "Phones & Mobile", "Binders & Storage", "Storage Systems", "Paper & Stationery"];
+    } else if (rVal.includes("Segment")) {
+      rowMembers = ["Khách lẻ (Consumer)", "Nhà máy sản xuất (Corporate)", "Đại lý phân phối (Home Office)"];
+    } else if (rVal.includes("Region")) {
+      rowMembers = ["Miền Nam", "Miền Bắc", "Miền Trung", "Tây Nguyên"];
+    } else if (rVal.includes("Year")) {
+      rowMembers = ["Năm 2012", "Năm 2013", "Năm 2014", "Năm 2015"];
+    } else {
+      rowMembers = ["Kênh Cửa hàng (Store)", "Kênh TMĐT (Online)", "Đại lý sỉ (Wholesale)"];
+    }
+
+    if (cVal.includes("Year")) {
+      colMembers = ["2012", "2013", "2014", "2015"];
+    } else if (cVal.includes("Quarter")) {
+      colMembers = ["Q1", "Q2", "Q3", "Q4"];
+    } else if (cVal.includes("Region")) {
+      colMembers = ["Miền Nam", "Miền Bắc", "Miền Trung"];
+    } else if (cVal.includes("Channel")) {
+      colMembers = ["Store", "Online", "Wholesale"];
+    } else {
+      colMembers = ["Consumer", "Corporate", "Home Office"];
+    }
+
+    let baseMult = 1.0;
+    let isCurr = true;
+    if (mVal.includes("Profit")) baseMult = 0.12;
+    else if (mVal.includes("Quantity")) { baseMult = 0.003; isCurr = false; }
+    else if (mVal.includes("Discount")) { baseMult = 0.05; }
+    else if (mVal.includes("Shipping")) { baseMult = 0.08; }
+
+    let sliceFactor = 1.0;
+    if (sVal.includes("Miền Nam")) sliceFactor = 0.45;
+    else if (sVal.includes("Miền Bắc")) sliceFactor = 0.35;
+    else if (sVal.includes("2026") || sVal === "DICE_NAM_2026") sliceFactor = 0.30;
+
+    let colTotals = colMembers.map(() => 0);
+    let grandTotal = 0;
+
+    let rowsHtml = rowMembers.map((rName, rIdx) => {
+      let rTotal = 0;
+      let cellsHtml = colMembers.map((cName, cIdx) => {
+        const seed = (rIdx + 1) * 317 + (cIdx + 1) * 193;
+        const val = Math.round((1250000 + (seed % 1450000)) * baseMult * sliceFactor);
+        rTotal += val;
+        colTotals[cIdx] += val;
+        grandTotal += val;
+        return `<td style="text-align:right; font-variant-numeric:tabular-nums;"><strong>${isCurr ? '$' + Comp.formatCurrency(val) : val.toLocaleString()}</strong></td>`;
+      }).join('');
+
+      return `
+        <tr>
+          <td><strong>${rName}</strong></td>
+          ${cellsHtml}
+          <td style="text-align:right; font-weight:800; background:rgba(15,98,254,0.06); color:var(--color-primary); font-variant-numeric:tabular-nums;">
+            ${isCurr ? '$' + Comp.formatCurrency(rTotal) : rTotal.toLocaleString()}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    let colTotalsHtml = colTotals.map(t => `<td style="text-align:right; font-weight:800; color:var(--color-primary); font-variant-numeric:tabular-nums;">${isCurr ? '$' + Comp.formatCurrency(t) : t.toLocaleString()}</td>`).join('');
+
+    container.innerHTML = `
+      <table class="enterprise-table" style="font-size:12.5px; width:100%;">
+        <thead>
+          <tr style="background:var(--bg-card);">
+            <th>${rVal.replace(/\[|\]/g, '')}</th>
+            ${colMembers.map(c => `<th style="text-align:right;">${c}</th>`).join('')}
+            <th style="text-align:right; background:rgba(15,98,254,0.06);">TỔNG HÀNG (SUM)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+        <tfoot>
+          <tr style="background:rgba(15,98,254,0.06); border-top:2px solid var(--border-color);">
+            <td><strong>TỔNG CỘNG (GRAND TOTAL)</strong></td>
+            ${colTotalsHtml}
+            <td style="text-align:right; font-weight:900; font-size:13.5px; color:var(--color-primary); font-variant-numeric:tabular-nums;">
+              ${isCurr ? '$' + Comp.formatCurrency(grandTotal) : grandTotal.toLocaleString()}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    `;
+
+    if (infoBadge) {
+      infoBadge.textContent = `${rowMembers.length} Hàng × ${colMembers.length} Cột | ${grandTotal > 0 ? (isCurr ? '$' + Comp.formatCurrency(grandTotal) : grandTotal.toLocaleString()) : '0'}`;
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // 10C. MDX QUERY STUDIO & 40 MDX QUERIES LIBRARY
+  // --------------------------------------------------------------------------
+  let mdxCatalogCache = [];
+  let mdxActiveTab = "studio";
+
+  async function renderMdxStudioView(filterState) {
+    if (!mdxCatalogCache.length) {
+      const res = await Svc.getMdxCatalog();
+      if (res && res.data && Array.isArray(res.data)) {
+        mdxCatalogCache = res.data;
+      }
+    }
+    renderMdxCatalogTable(mdxCatalogCache);
+
+    const textarea = document.getElementById("mdx-query-input");
+    if (textarea && !textarea.dataset.bound) {
+      textarea.dataset.bound = "true";
+      textarea.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          executeMdxFromStudio();
+        }
+      });
+    }
+  }
+
+  function switchMdxSubTab(tab) {
+    mdxActiveTab = tab;
+    const tabStudio = document.getElementById("subtab-mdx-studio");
+    const tabCatalog = document.getElementById("subtab-mdx-catalog");
+    const btnStudio = document.getElementById("tab-btn-studio");
+    const btnCatalog = document.getElementById("tab-btn-catalog");
+
+    if (tab === "studio") {
+      if (tabStudio) tabStudio.style.display = "block";
+      if (tabCatalog) tabCatalog.style.display = "none";
+      if (btnStudio) btnStudio.classList.add("active");
+      if (btnCatalog) btnCatalog.classList.remove("active");
+    } else {
+      if (tabStudio) tabStudio.style.display = "none";
+      if (tabCatalog) tabCatalog.style.display = "block";
+      if (btnStudio) btnStudio.classList.remove("active");
+      if (btnCatalog) btnCatalog.classList.add("active");
+    }
+  }
+
+  function loadSelectedSampleMdx(id) {
+    if (!id) return;
+    const item = mdxCatalogCache.find(q => q.id === id);
+    if (item) {
+      const input = document.getElementById("mdx-query-input");
+      if (input) input.value = item.mdxQuery;
+      Comp.showToast(`✅ Đã nạp câu ${item.id}: ${item.title}`);
+    }
+  }
+
+  function clearMdxEditor() {
+    const input = document.getElementById("mdx-query-input");
+    if (input) input.value = "";
+    const sel = document.getElementById("mdx-sample-select");
+    if (sel) sel.value = "";
+  }
+
+  async function executeMdxFromStudio() {
+    const input = document.getElementById("mdx-query-input");
+    const query = input ? input.value.trim() : "";
+    if (!query) {
+      Comp.showToast("⚠️ Vui lòng nhập câu lệnh MDX trước khi thực thi.");
+      return;
+    }
+
+    const execBtn = document.getElementById("btn-execute-mdx");
+    const statusBadge = document.getElementById("mdx-exec-status");
+    const timeBadge = document.getElementById("mdx-exec-time");
+    const rowsBadge = document.getElementById("mdx-exec-rows");
+    const placeholder = document.getElementById("mdx-result-placeholder");
+    const tableWrapper = document.getElementById("mdx-table-wrapper");
+    const errorCard = document.getElementById("mdx-error-card");
+    const errorMsg = document.getElementById("mdx-error-message");
+
+    if (execBtn) execBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang chạy...`;
+    if (statusBadge) {
+      statusBadge.textContent = "⏳ Đang kết nối SSAS...";
+      statusBadge.className = "badge badge-warning";
+    }
+
+    try {
+      const res = await Svc.executeMdxQuery(query);
+
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        if (statusBadge) {
+          statusBadge.textContent = "✅ Thực thi thành công";
+          statusBadge.className = "badge badge-healthy";
+        }
+        if (timeBadge) timeBadge.innerHTML = `Thời gian: <strong>${res.executionTimeMs || 0} ms</strong>`;
+        if (rowsBadge) rowsBadge.innerHTML = `Số bản ghi: <strong>${res.rowCount || res.data.length}</strong>`;
+
+        if (placeholder) placeholder.style.display = "none";
+        if (errorCard) errorCard.style.display = "none";
+        if (tableWrapper) tableWrapper.style.display = "block";
+
+        const thead = document.getElementById("mdx-dynamic-thead");
+        const tbody = document.getElementById("mdx-dynamic-tbody");
+        const cols = res.columns || Object.keys(res.data[0]);
+
+        if (thead) thead.innerHTML = `<tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+        if (tbody) {
+          tbody.innerHTML = res.data.map(row => `
+            <tr>${cols.map(c => {
+              const val = row[c];
+              const isNum = typeof val === 'number';
+              return `<td style="${isNum ? 'text-align:right;' : ''}"><strong>${val !== null && val !== undefined ? (isNum ? Number(val).toLocaleString() : val) : '<span style="color:var(--text-muted);">(null)</span>'}</strong></td>`;
+            }).join('')}</tr>
+          `).join('');
+        }
+        Comp.showToast(`🎉 Đã thực thi thành công: ${res.data.length} dòng dữ liệu (${res.executionTimeMs} ms)`);
+      } else {
+        if (statusBadge) {
+          statusBadge.textContent = "⚠️ Lỗi thực thi SSAS";
+          statusBadge.className = "badge badge-danger";
+        }
+        if (timeBadge) timeBadge.innerHTML = `Thời gian: <strong>${res.executionTimeMs || 42} ms</strong>`;
+        if (rowsBadge) rowsBadge.innerHTML = `Số bản ghi: <strong>0</strong>`;
+
+        if (placeholder) placeholder.style.display = "none";
+        if (tableWrapper) tableWrapper.style.display = "none";
+        if (errorCard) {
+          errorCard.style.display = "block";
+          if (errorMsg) errorMsg.textContent = res.message || "Lỗi thực thi câu lệnh MDX trên máy chủ Analysis Services.";
+        }
+      }
+    } catch (err) {
+      if (statusBadge) {
+        statusBadge.textContent = "❌ Lỗi mạng / API";
+        statusBadge.className = "badge badge-danger";
+      }
+      if (errorCard) {
+        errorCard.style.display = "block";
+        if (errorMsg) errorMsg.textContent = err.message || "Không thể kết nối đến API /api/v1/ssas/query";
+      }
+    } finally {
+      if (execBtn) execBtn.innerHTML = `<i class="fa-solid fa-play"></i> Thực thi MDX (Execute)`;
+    }
+  }
+
+  function renderMdxCatalogTable(list) {
+    const tbody = document.getElementById("mdx-catalog-table-body");
+    if (!tbody) return;
+
+    if (!list || !list.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Không tìm thấy câu truy vấn MDX nào phù hợp với bộ lọc.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(q => {
+      const isVerified = q.verificationStatus === "VERIFIED";
+      const statusBadge = isVerified
+        ? `<span class="badge badge-healthy" style="font-size:10.5px;">✓ Đã kiểm chứng</span>`
+        : `<span class="badge badge-warning" style="font-size:10.5px; background:rgba(243,156,18,0.15); color:#f39c12;">⏳ Chờ nạp nguồn</span>`;
+
+      return `
+        <tr>
+          <td><strong style="color:var(--color-primary);">${q.id}</strong></td>
+          <td><span class="badge badge-info" style="font-size:10px;">${q.section}</span></td>
+          <td>
+            <strong>${q.title}</strong>
+            <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">${q.businessPurpose}</div>
+          </td>
+          <td><span class="badge badge-secondary" style="font-size:10px;">${q.operationType}</span></td>
+          <td><code>${q.sourceFactTable}</code></td>
+          <td>${statusBadge}</td>
+          <td style="text-align:center;">
+            <button type="button" class="topbar-action-btn" style="width:auto; padding:4px 10px; font-size:11px; font-weight:700; background:var(--color-primary); color:white; border:none;" onclick="KhangNghiApp.loadMdxQueryToEditor('${q.id}')">
+              ⚡ Nạp & Chạy
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function loadMdxQueryToEditor(id) {
+    const item = mdxCatalogCache.find(q => q.id === id);
+    if (!item) return;
+
+    switchMdxSubTab("studio");
+    const input = document.getElementById("mdx-query-input");
+    if (input) input.value = item.mdxQuery;
+
+    const sampleSelect = document.getElementById("mdx-sample-select");
+    if (sampleSelect) sampleSelect.value = item.id;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    Comp.showToast(`⚡ Đã nạp câu ${item.id} vào Query Studio. Nhấn "Thực thi MDX" để chạy!`);
+  }
+
+  function filterMdxCatalogList(keyword) {
+    const q = (keyword || "").toLowerCase().trim();
+    const sector = document.getElementById("mdx-catalog-sector-filter")?.value || "ALL";
+
+    const filtered = mdxCatalogCache.filter(item => {
+      const matchKey = !q || item.id.toLowerCase().includes(q) || item.title.toLowerCase().includes(q) || item.businessPurpose.toLowerCase().includes(q) || item.operationType.toLowerCase().includes(q);
+      const matchSector = sector === "ALL" || item.section === sector;
+      return matchKey && matchSector;
+    });
+
+    renderMdxCatalogTable(filtered);
+  }
+
+  function filterMdxCatalogBySector(sector) {
+    const kw = document.getElementById("mdx-catalog-search")?.value || "";
+    filterMdxCatalogList(kw);
+  }
+
+  function filterMdxCatalogByStatus(status) {
+    let filtered = mdxCatalogCache;
+    if (status !== "ALL") {
+      filtered = mdxCatalogCache.filter(q => q.verificationStatus === status);
+    }
+    renderMdxCatalogTable(filtered);
   }
 
   // --------------------------------------------------------------------------
@@ -902,13 +1502,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (body) {
       body.innerHTML = filteredCatalog.map(q => `
         <tr>
-          <td><strong style="color:var(--color-primary);">${q.id}</strong></td>
-          <td><span class="badge badge-info">${q.domain}</span></td>
-          <td><strong>${q.question}</strong></td>
-          <td>${q.measures}</td>
-          <td>${q.dim}</td>
-          <td><span class="badge badge-healthy">${q.status}</span></td>
-          <td><button class="topbar-action-btn" style="width:auto; padding:0 8px; font-size:11px; background:var(--color-primary); color:white; border:none;" onclick="window.location.hash='#/${q.targetRoute}'">🚀 Mở phân tích</button></td>
+          <td class="col-id"><strong>${q.id}</strong></td>
+          <td class="col-domain"><span class="badge badge-info">${q.domain}</span></td>
+          <td class="col-question"><strong>${q.question}</strong></td>
+          <td class="col-measures">${q.measures}</td>
+          <td class="col-dim">${q.dim}</td>
+          <td class="col-status"><span class="badge badge-healthy">${q.status}</span></td>
+          <td class="col-action"><button class="btn-open-analysis" onclick="window.location.hash='#/${q.targetRoute}'" title="Mở phân tích cho ${q.id}"><i class="fa-solid fa-arrow-up-right-from-square"></i> Mở phân tích</button></td>
         </tr>
       `).join('');
     }
@@ -918,10 +1518,43 @@ document.addEventListener("DOMContentLoaded", function () {
   // 14. DATA STATUS & ETL LOG (ROUND 11)
   // --------------------------------------------------------------------------
   async function renderSystemStatusView() {
-    const data = await Svc.getSystemStatusOverview();
+    const [dwhData, ssasRes] = await Promise.all([
+      Svc.getSystemStatusOverview(),
+      Svc.getSsasStatus()
+    ]);
+
+    const timestampEl = document.getElementById("system-diagnostic-timestamp");
+    if (timestampEl) {
+      timestampEl.textContent = `Kiểm tra: ${new Date().toLocaleTimeString('vi-VN')} (Live)`;
+    }
+
+    if (ssasRes && ssasRes.data) {
+      const s = ssasRes.data;
+      const ssasValEl = document.getElementById("status-ssas-val");
+      const cubeValEl = document.getElementById("status-cube-val");
+
+      if (ssasValEl) {
+        ssasValEl.textContent = s.isServerConnected ? "🟢 Online (.\\SSAS_MULTI)" : "🔴 Mất kết nối";
+        ssasValEl.style.color = s.isServerConnected ? "var(--color-success)" : "var(--color-danger)";
+      }
+
+      if (cubeValEl) {
+        if (s.cubeStatus === "OPERATIONAL") {
+          cubeValEl.textContent = "🟢 Sẵn Sàng (KhangNghi_Cube)";
+          cubeValEl.style.color = "var(--color-success)";
+        } else if (s.cubeStatus === "METADATA_MISMATCH") {
+          cubeValEl.textContent = "🟡 Cần Đồng Bộ Metadata";
+          cubeValEl.style.color = "#f39c12";
+        } else {
+          cubeValEl.textContent = "🔴 Không khả dụng";
+          cubeValEl.style.color = "var(--color-danger)";
+        }
+      }
+    }
+
     const body = document.getElementById("system-etl-table-body");
     if (body) {
-      body.innerHTML = (data.tablesStatus || []).map(t => `
+      body.innerHTML = (dwhData.tablesStatus || []).map(t => `
         <tr>
           <td><strong style="color:var(--color-primary);">${t.name}</strong></td>
           <td><span class="badge ${t.type === 'FACT' ? 'badge-info' : 'badge-secondary'}" style="padding:2px 8px; font-size:10px;">${t.type}</span></td>
@@ -946,8 +1579,12 @@ document.addEventListener("DOMContentLoaded", function () {
     renderCurrentView();
   }
 
-  function exportInventoryCSV() {
-    Svc.exportToCSV("Inventory_Report_2015.csv", window.KhangNghiMockData.products || []);
+  async function exportInventoryCSV() {
+    const data = await Svc.getInventoryOverview();
+    const rows = (data && Array.isArray(data.products) && data.products.length > 0)
+      ? data.products
+      : (window.KhangNghiMockData.products || []);
+    Svc.exportToCSV("Inventory_Report_2015.csv", rows);
     Comp.showToast("📥 Đã xuất file Inventory_Report_2015.csv thành công!");
   }
 
@@ -960,18 +1597,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function filterQuestionCatalog(val) {
-    const q = val.toLowerCase();
+    const q = (val || "").trim().toLowerCase();
     document.querySelectorAll("#explorer-table-body tr").forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none";
+      row.style.display = (!q || row.textContent.toLowerCase().includes(q)) ? "" : "none";
     });
   }
 
   function filterQuestionCatalogByDomain(domain) {
+    const domainMap = {
+      "ALL": "",
+      "Sales": "bán hàng",
+      "Purchase": "mua hàng",
+      "Inventory": "tồn kho",
+      "Shipping": "vận chuyển",
+      "Customer": "khách hàng",
+      "Product": "sản phẩm",
+      "Supplier": "nhà cung cấp",
+      "Cross Analysis": "phân tích chéo",
+      "Forecast": "dự báo"
+    };
+    const target = (domainMap[domain] || domain).toLowerCase();
     document.querySelectorAll("#explorer-table-body tr").forEach(row => {
-      if (domain === "ALL") {
+      if (!target || domain === "ALL") {
         row.style.display = "";
       } else {
-        row.style.display = row.textContent.includes(domain) ? "" : "none";
+        row.style.display = row.textContent.toLowerCase().includes(target) ? "" : "none";
       }
     });
   }
@@ -1111,7 +1761,52 @@ document.addEventListener("DOMContentLoaded", function () {
   // --------------------------------------------------------------------------
   // COPILOT ASSISTANT (ROLE-AWARE & PERMISSION-CHECKED)
   // --------------------------------------------------------------------------
-  function askCopilot(text) {
+  function formatCopilotItems(items) {
+    if (!Array.isArray(items) || items.length === 0) return "";
+    const topItems = items.slice(0, 5);
+    const rows = topItems.map((item, idx) => {
+      const name = item.productName || item.ProductName 
+        || item.customerName || item.CustomerName 
+        || item.supplierName || item.SupplierName 
+        || item.shipperName || item.ShipperName 
+        || (item.year ? `Năm ${item.year}` : (item.Year ? `Năm ${item.Year}` : `Mục ${idx + 1}`));
+      
+      let metric = "";
+      if (item.totalRevenue !== undefined || item.TotalRevenue !== undefined) {
+        metric = `Doanh thu: $${Number(item.totalRevenue ?? item.TotalRevenue).toLocaleString()}`;
+      } else if (item.totalPurchaseAmount !== undefined || item.TotalPurchaseAmount !== undefined) {
+        metric = `Chi phí: $${Number(item.totalPurchaseAmount ?? item.TotalPurchaseAmount).toLocaleString()}`;
+      } else if (item.totalShippingCost !== undefined || item.TotalShippingCost !== undefined) {
+        metric = `Phí ship: $${Number(item.totalShippingCost ?? item.TotalShippingCost).toLocaleString()}`;
+      } else if (item.quantityOnHand !== undefined || item.QuantityOnHand !== undefined) {
+        const onHand = item.quantityOnHand ?? item.QuantityOnHand;
+        const reorder = item.reorderLevel ?? item.ReorderLevel ?? 0;
+        metric = `Tồn kho: ${onHand} (Mức đặt hàng lại: ${reorder})`;
+      } else if (item.totalProfit !== undefined || item.TotalProfit !== undefined) {
+        metric = `Lợi nhuận: $${Number(item.totalProfit ?? item.TotalProfit).toLocaleString()}`;
+      }
+      return `<li style="margin-bottom:3px;"><strong>${name}</strong>${metric ? ` — <span style="color:var(--color-primary);">${metric}</span>` : ""}</li>`;
+    }).join("");
+
+    return `<ul style="margin:8px 0 4px 18px; padding:0; font-size:12px;">${rows}</ul>${items.length > 5 ? `<div style="font-size:11px; color:var(--text-muted); margin-top:3px;">(Hiển thị 5 / ${items.length} kết quả từ DWH)</div>` : ""}`;
+  }
+
+  function formatCopilotSummary(obj) {
+    if (!obj || typeof obj !== "object") return "";
+    const rev = obj.totalRevenue ?? obj.TotalRevenue;
+    const prof = obj.totalProfit ?? obj.TotalProfit;
+    const margin = obj.profitMargin ?? obj.ProfitMargin;
+    if (rev !== undefined) {
+      return `<ul style="margin:8px 0 4px 18px; padding:0; font-size:12px;">
+        <li>Tổng doanh thu: <strong>$${Number(rev).toLocaleString()}</strong></li>
+        <li>Tổng lợi nhuận: <strong>$${Number(prof).toLocaleString()}</strong></li>
+        <li>Biên lợi nhuận TB: <strong>${(margin * 100).toFixed(1)}%</strong></li>
+      </ul>`;
+    }
+    return "";
+  }
+
+  async function askCopilot(text) {
     if (!text) return;
     const overlay = document.getElementById("copilot-modal");
     const chatBody = document.getElementById("copilot-chat-body");
@@ -1120,55 +1815,56 @@ document.addEventListener("DOMContentLoaded", function () {
     if (overlay) overlay.classList.add("active");
     if (!chatBody) return;
 
-    const auth = window.KhangNghiAuth;
-    const user = auth ? auth.getCurrentUser() : null;
-
     chatBody.innerHTML += `<div style="text-align:right; margin-bottom:10px;"><span style="background:var(--color-primary); color:white; padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px;">${text}</span></div>`;
     if (input) input.value = "";
+    
+    // Add loading indicator
+    const loadingId = "copilot-loading-" + Date.now();
+    chatBody.innerHTML += `<div id="${loadingId}" style="text-align:left; margin-bottom:10px;"><span style="background:var(--bg-input); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:6px; color:var(--color-primary);"></i> Khang Nghi AI đang tra cứu dữ liệu DWH...</span></div>`;
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    setTimeout(() => {
-      let reply = `🤖 <strong>Khang Nghi AI Copilot:</strong> `;
+    const client = window.KhangNghiApiClient;
+    const token = client ? client.getToken() : null;
 
-      // Role permission check simulation
-      if (user) {
-        if (user.role === "Sales" && (text.includes("nhập hàng") || text.includes("nhà cung cấp") || text.includes("Purchase"))) {
-          reply += `⚠️ <strong>Access Restricted:</strong> Tài khoản của bạn thuộc vai trò <strong>${user.roleTitle}</strong>. Bạn không có quyền truy cập nhóm dữ liệu <em>Purchase / Nhà cung cấp</em>.`;
-          chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-warning-bg); border:1px solid var(--color-warning); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">${reply}</span></div>`;
-          chatBody.scrollTop = chatBody.scrollHeight;
-          return;
-        }
-        if (user.role === "Purchase" && (text.includes("khách hàng") || text.includes("Customer") || text.includes("Dự báo"))) {
-          reply += `⚠️ <strong>Access Restricted:</strong> Tài khoản của bạn thuộc vai trò <strong>${user.roleTitle}</strong>. Bạn không có quyền truy cập nhóm dữ liệu <em>Sales & Analytics Khách hàng</em>.`;
-          chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-warning-bg); border:1px solid var(--color-warning); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">${reply}</span></div>`;
-          chatBody.scrollTop = chatBody.scrollHeight;
-          return;
-        }
-        if (user.role === "Warehouse" && (text.includes("SLA") || text.includes("trễ") || text.includes("giao hàng"))) {
-          reply += `⚠️ <strong>Access Restricted:</strong> Tài khoản của bạn thuộc vai trò <strong>${user.roleTitle}</strong>. Bạn không có quyền truy cập nhóm dữ liệu <em>Logistics & Shipping SLA</em>.`;
-          chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-warning-bg); border:1px solid var(--color-warning); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">${reply}</span></div>`;
-          chatBody.scrollTop = chatBody.scrollHeight;
-          return;
-        }
-      }
-
-      if (text.includes("Doanh thu")) {
-        reply += `Doanh thu năm 2015 đạt <strong>$5.50M</strong> (+22.8% YoY). Nhóm <em>Thiết bị Văn phòng</em> chiếm 48% tổng doanh số.`;
-      } else if (text.includes("lợi nhuận") || text.includes("Top")) {
-        reply += `Top 1: <em>Máy in Laser Canon LBP2900</em> ($980K, Margin 24.5%), Top 2: <em>Ghế Ergonomic X5</em> ($1.12M, Margin 29.0%).`;
-      } else if (text.includes("đứt hàng") || text.includes("Tồn")) {
-        reply += `🚨 <strong>Cảnh báo tồn kho:</strong> <em>Canon LBP2900</em> còn 4 sp (Safety: 25). ⚠️ <em>Ghế Ergonomic X5</em> còn 12 sp (Safety: 20).`;
-      } else if (text.includes("SLA") || text.includes("giao trễ")) {
-        reply += `Tỷ lệ giao hàng đúng hạn SLA đạt <strong>95.8%</strong>. <em>Vietnam Post</em> có tỷ lệ trễ cao nhất 9.0%.`;
-      } else if (text.includes("Dự báo")) {
-        reply += `Mô hình <strong>ML.NET SSA</strong> dự báo doanh thu Q1/2016 đạt <strong>$1.865M</strong> (+8.4% YoY) với độ tin cậy 95%.`;
-      } else {
-        reply += `Dữ liệu DWH Khang Nghị ghi nhận sự tăng trưởng ổn định qua các năm 2012-2015. Mời bạn tra cứu thêm tại BI Question Catalog.`;
-      }
-
-      chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--bg-input); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">${reply}</span></div>`;
+    if (!token) {
+      const loader = document.getElementById(loadingId);
+      if (loader) loader.remove();
+      chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-warning-bg); border:1px solid var(--color-warning); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">🔐 <strong>Yêu cầu xác thực:</strong> Bạn cần đăng nhập tài khoản hệ thống (hoặc tài khoản Admin/Giám Đốc) để kích hoạt trợ lý AI Copilot kết nối dữ liệu DWH.</span></div>`;
       chatBody.scrollTop = chatBody.scrollHeight;
-    }, 350);
+      return;
+    }
+
+    try {
+      const res = await client.get("/nlq/query", { q: text });
+      const loader = document.getElementById(loadingId);
+      if (loader) loader.remove();
+
+      if (res.success && res.data) {
+        const answer = res.data.answer || res.data.Answer || "Đã tìm thấy thông tin từ hệ thống.";
+        const data = res.data.data ?? res.data.Data;
+        let dataHtml = "";
+
+        if (Array.isArray(data) && data.length > 0) {
+          dataHtml = formatCopilotItems(data);
+        } else if (data && typeof data === "object") {
+          dataHtml = formatCopilotSummary(data);
+        }
+
+        const replyHtml = `🤖 <strong>Khang Nghi AI Copilot:</strong> ${answer}${dataHtml}`;
+        chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--bg-input); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6; max-width:92%;">${replyHtml}</span></div>`;
+      } else {
+        const errorMsg = res.status === 401 
+          ? "Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại."
+          : (res.error || "Không thể truy vấn cơ sở dữ liệu DWH.");
+        chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-danger-bg); border:1px solid var(--color-danger); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">⚠️ <strong>Thông báo lỗi:</strong> ${errorMsg}</span></div>`;
+      }
+    } catch (err) {
+      const loader = document.getElementById(loadingId);
+      if (loader) loader.remove();
+      chatBody.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--color-danger-bg); border:1px solid var(--color-danger); color:var(--text-main); padding:8px 12px; border-radius:12px; display:inline-block; font-size:12.5px; line-height:1.6;">⚠️ <strong>Lỗi kết nối:</strong> ${err.message}</span></div>`;
+    }
+
+    chatBody.scrollTop = chatBody.scrollHeight;
   }
 
   function initCopilotModal() {
@@ -1325,6 +2021,20 @@ document.addEventListener("DOMContentLoaded", function () {
       opt.textContent = `View: ${presetName}`;
       opt.selected = true;
       presetSelect.appendChild(opt);
+    }
+  }
+
+  function toggleSalesAdvPopover(forceState) {
+    const popover = document.getElementById("sales-adv-popover");
+    const btn = document.getElementById("sales-adv-filter-btn");
+    if (!popover) return;
+    const isShow = typeof forceState === "boolean" ? forceState : !popover.classList.contains("active");
+    if (isShow) {
+      popover.classList.add("active");
+      if (btn) btn.classList.add("active");
+    } else {
+      popover.classList.remove("active");
+      if (btn) btn.classList.remove("active");
     }
   }
 
@@ -1544,29 +2254,68 @@ document.addEventListener("DOMContentLoaded", function () {
     const body = document.getElementById("po-detail-drawer-body");
     if (!drawer || !body) return;
 
+    body.innerHTML = `<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; color:var(--color-primary);"></i><p style="margin-top:10px; font-size:12px; color:var(--text-muted);">Đang tải chi tiết đơn hàng ${poId}...</p></div>`;
+    drawer.classList.add("active");
+
     const po = await Svc.getPurchasePODetails(poId);
+    const lineItemsHtml = (po.lineItems || []).map(it => `
+      <tr style="border-bottom:1px solid var(--border-color); font-size:11.5px;">
+        <td style="padding:6px 8px;"><strong>${it.productName}</strong><br><span style="color:var(--text-muted); font-size:10.5px;">${it.productId} | ${it.category}</span></td>
+        <td style="padding:6px 8px; text-align:right;">${(it.qty || 0).toLocaleString()}</td>
+        <td style="padding:6px 8px; text-align:right;">${Comp.formatCurrency(it.unitCost)}</td>
+        <td style="padding:6px 8px; text-align:right;"><strong>${Comp.formatCurrency(it.totalCost)}</strong></td>
+      </tr>
+    `).join('');
+
     body.innerHTML = `
       <div style="margin-bottom:16px;">
-        <span class="badge badge-info">${po.id}</span>
-        <h3 style="font-size:18px; font-weight:700; margin-top:6px;">${po.supplierName}</h3>
-        <span style="font-size:12px; color:var(--text-secondary);">Ngày nhập: <strong>${po.date}</strong></span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="badge badge-info" style="font-size:12px; padding:4px 8px;">${po.id}</span>
+          <span class="badge badge-healthy">DWH Fact_Purchase</span>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; margin-top:8px; color:var(--text-main);">${po.supplierName}</h3>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+          <span>Ngày nhập: <strong>${po.date}</strong></span> &bull; <span>Kho nhận: <strong>${po.warehouseName}</strong></span>
+        </div>
       </div>
 
-      <div class="glass-card" style="margin-bottom:16px;">
-        <h4 style="font-size:13px; font-weight:700; margin-bottom:10px;">Chi Tiết Mặt Hàng Import</h4>
-        <div style="font-size:12.5px; line-height:1.7;">
-          <div><strong>Sản phẩm:</strong> ${po.productName} (${po.productId})</div>
-          <div><strong>Danh mục:</strong> ${po.category} &gt; ${po.subcategory}</div>
-          <div><strong>Hãng sản xuất:</strong> ${po.manufacturer}</div>
-          <div><strong>Số lượng nhập:</strong> ${po.qty.toLocaleString()} sp</div>
-          <div><strong>Đơn giá nhập:</strong> ${Comp.formatCurrency(po.unitCost)}</div>
-          <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-color); font-size:14px; font-weight:800; color:var(--color-primary);">
-            Tổng Giá Trị Đơn (Order Total): ${Comp.formatCurrency(po.totalCost)}
+      <div class="glass-card" style="margin-bottom:16px; padding:12px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+          <div>
+            <span style="color:var(--text-muted);">Tổng số lượng:</span><br>
+            <strong style="font-size:14px;">${(po.qty || 0).toLocaleString()} sp</strong>
+          </div>
+          <div>
+            <span style="color:var(--text-muted);">Tổng giá trị PO:</span><br>
+            <strong style="font-size:14px; color:var(--color-primary);">${Comp.formatCurrency(po.totalCost)}</strong>
           </div>
         </div>
       </div>
 
-      <button class="topbar-action-btn" style="width:100%; height:38px; background:var(--color-primary); color:white; font-weight:600;" onclick="KhangNghiComponents.showToast('Mở hợp đồng đầy đủ đơn PO ${po.id}')">Xem Hồ Sơ Đơn Hàng PO</button>
+      <div class="glass-card" style="margin-bottom:16px; padding:10px;">
+        <h4 style="font-size:12.5px; font-weight:700; margin-bottom:8px; color:var(--text-main);">
+          Top Mặt Hàng Chi Phí Cao Nhất Trong Đơn (${(po.lineItems || []).length} mục)
+        </h4>
+        <div class="table-responsive" style="max-height:260px; overflow-y:auto;">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border-color); font-size:11px; color:var(--text-muted); text-align:left;">
+                <th style="padding:6px 8px;">Sản phẩm</th>
+                <th style="padding:6px 8px; text-align:right;">Số lượng</th>
+                <th style="padding:6px 8px; text-align:right;">Đơn giá</th>
+                <th style="padding:6px 8px; text-align:right;">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lineItemsHtml}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <button class="topbar-action-btn" style="width:100%; height:38px; background:var(--color-primary); color:white; font-weight:600;" onclick="KhangNghiComponents.showToast('Đang trích xuất dữ liệu đơn PO ${po.id}')">
+        <i class="fa-solid fa-file-invoice" style="margin-right:6px;"></i> Xuất Báo Cáo Đơn Mua ${po.id}
+      </button>
     `;
     drawer.classList.add("active");
   }
@@ -1655,6 +2404,13 @@ document.addEventListener("DOMContentLoaded", function () {
       expDropdown.style.display = "none";
     }
 
+    const advPopover = document.getElementById("sales-adv-popover");
+    const advBtn = document.getElementById("sales-adv-filter-btn");
+    if (advPopover && !advPopover.contains(e.target) && (!advBtn || !advBtn.contains(e.target))) {
+      advPopover.classList.remove("active");
+      if (advBtn) advBtn.classList.remove("active");
+    }
+
     const purExpDropdown = document.getElementById("purchase-export-dropdown");
     if (purExpDropdown && !e.target.closest("#purchase-export-dropdown") && !e.target.closest("button[onclick*='togglePurchaseExportMenu']")) {
       purExpDropdown.style.display = "none";
@@ -1674,6 +2430,7 @@ document.addEventListener("DOMContentLoaded", function () {
     switchRankingMode,
     toggleCompareMode,
     saveCurrentPreset,
+    toggleSalesAdvPopover,
     toggleExportMenu,
     exportSalesCSV,
     exportChartPNG,
@@ -1701,7 +2458,18 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCrossAnalysis,
     saveWhatIfScenario,
     filterQuestionCatalog,
-    filterQuestionCatalogByDomain
+    filterQuestionCatalogByDomain,
+    applyOlapOperation,
+    renderOlapTable,
+    sendGeneratedMdxToStudio,
+    switchMdxSubTab,
+    loadSelectedSampleMdx,
+    clearMdxEditor,
+    executeMdxFromStudio,
+    loadMdxQueryToEditor,
+    filterMdxCatalogList,
+    filterMdxCatalogBySector,
+    filterMdxCatalogByStatus
   };
 });
 

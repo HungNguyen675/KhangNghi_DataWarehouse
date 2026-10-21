@@ -15,6 +15,8 @@ window.KhangNghiRouter = (function () {
     "supplier": "suppliers.view",
     "geography": "geography.view",
     "cross-analysis": "crossAnalysis.view",
+    "olap-explorer": "crossAnalysis.view",
+    "mdx-studio": "crossAnalysis.view",
     "forecast": "forecast.view",
     "what-if": "whatIf.view",
     "question-explorer": "biQuestions.view",
@@ -145,6 +147,8 @@ window.KhangNghiRouter = (function () {
       "supplier": { cat: "Phân tích đối tượng / Master Analysis", title: "Nhà cung cấp / Suppliers" },
       "geography": { cat: "Phân tích đối tượng / Master Analysis", title: "Khu vực / Geography" },
       "cross-analysis": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích chéo / Cross Analysis" },
+      "olap-explorer": { cat: "Mô hình đa chiều / OLAP & MDX", title: "OLAP Cube Explorer / Khám phá Khối Đa Chiều" },
+      "mdx-studio": { cat: "Mô hình đa chiều / OLAP & MDX", title: "MDX Query Studio & Thư Viện 40 Truy Vấn" },
       "forecast": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Dự báo / Forecast" },
       "what-if": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích giả định / What-If" },
       "question-explorer": { cat: "Trí tuệ dữ liệu / Data Intelligence", title: "Câu hỏi BI / BI Questions" },
@@ -179,7 +183,7 @@ window.KhangNghiRouter = (function () {
     roleEls.forEach(el => el.textContent = user.roleTitle);
     deptEls.forEach(el => el.textContent = user.department);
 
-    // Sidebar Items Visibility based on RBAC Permissions
+    // Sidebar Items Visibility based on RBAC Permissions & Status Badges
     document.querySelectorAll("#sidebar .nav-item").forEach(el => {
       const href = el.getAttribute("href") || "";
       const routeKey = href.replace("#/", "");
@@ -189,6 +193,14 @@ window.KhangNghiRouter = (function () {
         el.style.display = "flex";
       } else {
         el.style.display = "none";
+      }
+
+      // Đảm bảo các phân hệ có dữ liệu DWH thực tế (Purchase, Inventory, Shipping, Suppliers) luôn hiển thị LIVE DWH
+      const badge = el.querySelector(".nav-badge");
+      if (badge && (routeKey === "purchase" || routeKey === "inventory" || routeKey === "shipping" || routeKey === "supplier")) {
+        badge.textContent = "LIVE DWH";
+        badge.style.background = "rgba(37,162,68,0.15)";
+        badge.style.color = "#25a244";
       }
     });
 

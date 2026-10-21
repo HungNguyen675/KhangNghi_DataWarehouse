@@ -17,18 +17,18 @@ window.KhangNghiMockData = (function () {
   const categories = [
     {
       id: "CAT-01",
-      name: "Thiết bị Văn phòng",
-      subcategories: ["Máy in", "Máy chiếu", "Máy hủy tài liệu", "Thiết bị mạng"]
+      name: "Tự động hóa",
+      subcategories: ["PLC & Module", "Biến tần", "HMI & SCADA", "Cảm biến công nghiệp"]
     },
     {
       id: "CAT-02",
-      name: "Nội thất Văn phòng",
-      subcategories: ["Bàn làm việc", "Ghế công thái học", "Tủ tài liệu", "Kệ sách"]
+      name: "Truyền động",
+      subcategories: ["Động cơ điện", "Hộp giảm tốc", "Khởi động từ", "Khớp nối"]
     },
     {
       id: "CAT-03",
-      name: "Đồ dùng Văn phòng",
-      subcategories: ["Bìa hồ sơ", "Kẹp giấy", "Giấy in A4", "Bút ký cao cấp"]
+      name: "Thiết bị đóng cắt",
+      subcategories: ["Aptomat MCB/MCCB", "Contactor", "Rơ le nhiệt", "Cầu dao phụ tải"]
     }
   ];
 
@@ -83,28 +83,26 @@ window.KhangNghiMockData = (function () {
   ];
 
   const suppliers = [
-    { id: "SUP-001", name: "Tập đoàn HP Việt Nam", country: "Mỹ", leadTimeDays: 4, rating: 4.8, totalPurchased: 1450000, sharePct: 32.4 },
-    { id: "SUP-002", name: "Canon Asia Marketing Corp", country: "Nhật Bản", leadTimeDays: 7, rating: 4.9, totalPurchased: 1120000, sharePct: 26.0 },
-    { id: "SUP-003", name: "Nội thất Hòa Phát", country: "Việt Nam", leadTimeDays: 2, rating: 4.7, totalPurchased: 890000, sharePct: 20.0 },
-    { id: "SUP-004", name: "Deli Office Supplies Global", country: "Trung Quốc", leadTimeDays: 10, rating: 4.5, totalPurchased: 450000, sharePct: 10.2 },
-    { id: "SUP-005", name: "Panasonic Industry Vietnam", country: "Nhật Bản", leadTimeDays: 5, rating: 4.8, totalPurchased: 380000, sharePct: 7.8 },
-    { id: "SUP-006", name: "Parker Pen International", country: "Mỹ", leadTimeDays: 6, rating: 4.9, totalPurchased: 160000, sharePct: 3.6 }
+    { id: "SUP-001", name: "Siemens AG", country: "Đức", leadTimeDays: 5, rating: 4.9, totalPurchased: 17651000, sharePct: 28.9 },
+    { id: "SUP-002", name: "Cisco Systems Inc", country: "Mỹ", leadTimeDays: 7, rating: 4.8, totalPurchased: 15822000, sharePct: 25.9 },
+    { id: "SUP-003", name: "Schneider Electric SE", country: "Pháp", leadTimeDays: 4, rating: 4.8, totalPurchased: 13560000, sharePct: 22.2 },
+    { id: "SUP-004", name: "ABB Group Ltd", country: "Thụy Sĩ", leadTimeDays: 6, rating: 4.7, totalPurchased: 10421000, sharePct: 17.1 },
+    { id: "SUP-005", name: "Honeywell International Inc", country: "Mỹ", leadTimeDays: 8, rating: 4.6, totalPurchased: 3661000, sharePct: 6.0 }
   ];
 
   const manufacturers = [
-    { id: "MAN-101", name: "Canon Inc", country: "Nhật Bản" },
-    { id: "MAN-102", name: "Ergonomic Corp", country: "Mỹ" },
-    { id: "MAN-103", name: "SmartDesk Furniture Ltd", country: "Việt Nam" },
-    { id: "MAN-104", name: "Double A Paper Group", country: "Thái Lan" },
-    { id: "MAN-105", name: "Panasonic Electric", country: "Nhật Bản" },
-    { id: "MAN-106", name: "Parker Pen International", country: "Mỹ" }
+    { id: "MAN-101", name: "Siemens", country: "Đức" },
+    { id: "MAN-102", name: "Cisco", country: "Mỹ" },
+    { id: "MAN-103", name: "Schneider", country: "Pháp" },
+    { id: "MAN-104", name: "ABB", country: "Thụy Sĩ" },
+    { id: "MAN-105", name: "Honeywell", country: "Mỹ" }
   ];
 
   const shippers = [
-    { id: "SHP-001", name: "Giao Hàng Nhanh (First Class)", avgDays: 1.5, lateRate: 0.03, status: "Healthy" },
-    { id: "SHP-002", name: "Viettel Post (Standard)", avgDays: 3.2, lateRate: 0.06, status: "Healthy" },
-    { id: "SHP-003", name: "DHL Express (Same Day)", avgDays: 0.8, lateRate: 0.01, status: "Healthy" },
-    { id: "SHP-004", name: "Vietnam Post (Second Class)", avgDays: 4.5, lateRate: 0.09, status: "At Risk" }
+    { id: "SHP-001", name: "Standard Class", avgDays: 3.8, lateRate: 0.05, status: "Healthy" },
+    { id: "SHP-002", name: "Second Class", avgDays: 2.6, lateRate: 0.04, status: "Healthy" },
+    { id: "SHP-003", name: "First Class", avgDays: 1.8, lateRate: 0.02, status: "Healthy" },
+    { id: "SHP-004", name: "Same Day", avgDays: 0.5, lateRate: 0.01, status: "Healthy" }
   ];
 
   const purchaseOrders = [

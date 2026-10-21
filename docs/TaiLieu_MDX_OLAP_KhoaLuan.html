@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tài Liệu Hướng Dẫn Truy Vấn MDX & Các Thao Tác OLAP - Khóa Luận Tốt Nghiệp</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 15mm 18mm 15mm;
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #24292f;
+            line-height: 1.6;
+            font-size: 13.5px;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0969da;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .school-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #57606a;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .doc-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0969da;
+            margin: 8px 0;
+            text-transform: uppercase;
+        }
+        .sub-title {
+            font-size: 14px;
+            color: #424a53;
+            font-weight: 600;
+        }
+        .badge-bar {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .badge {
+            display: inline-block;
+            background: #f1f8ff;
+            color: #0550ae;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #d0d7de;
+        }
+        h2 {
+            font-size: 16px;
+            color: #0969da;
+            border-bottom: 1.5px solid #d0d7de;
+            padding-bottom: 6px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        h3 {
+            font-size: 14.5px;
+            color: #1f2328;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+        h4 {
+            font-size: 13.5px;
+            color: #32383f;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+        p {
+            margin: 6px 0 10px 0;
+            text-align: justify;
+        }
+        ul, ol {
+            margin: 6px 0 12px 20px;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 16px 0;
+            font-size: 12.5px;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 7px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f6f8fa;
+            color: #1f2328;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fbfcfd;
+        }
+        pre {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 8px 0 14px 0;
+            line-height: 1.45;
+            page-break-inside: avoid;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            color: #0969da;
+            background: #f6f8fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        pre code {
+            color: inherit;
+            background: none;
+            padding: 0;
+        }
+        .sql-keyword { color: #569cd6; font-weight: bold; }
+        .sql-func { color: #dcdcaa; }
+        .sql-string { color: #ce9178; }
+        .sql-comment { color: #6a9955; font-style: italic; }
+        .sql-ident { color: #4ec9b0; }
+        
+        .alert {
+            padding: 10px 14px;
+            border-left: 4px solid #0969da;
+            background-color: #f0f7ff;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 12.5px;
+            page-break-inside: avoid;
+        }
+        .alert-title {
+            font-weight: 700;
+            color: #0969da;
+            margin-bottom: 4px;
+        }
+        .alert-warning {
+            border-left-color: #bf8700;
+            background-color: #fffbeb;
+        }
+        .alert-warning .alert-title {
+            color: #9a6700;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #8c959f;
+            margin-top: 30px;
+            border-top: 1px dashed #d0d7de;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="school-title">Khóa Luận Tốt Nghiệp - Đại Học Kinh Tế / Công Nghệ Thông Tin</div>
+        <div class="doc-title">Tài Liệu Hướng Dẫn Truy Vấn MDX & Thao Tác OLAP</div>
+        <div class="sub-title">Đề tài: Xây dựng Hệ thống Data Warehouse & Business Intelligence cho Công ty Khang Nghi</div>
+        <div class="badge-bar">
+            <span class="badge">SSAS (Analysis Services)</span>
+            <span class="badge">KhangNghi_Cube</span>
+            <span class="badge">MDX Query Language</span>
+            <span class="badge">ASP.NET Core Web API</span>
+        </div>
+    </div>
+
+    <!-- PHẦN 1 -->
+    <h2>1. Tổng Quan Về MDX (Multidimensional Expressions)</h2>
+    <p>
+        Trong kiến trúc Business Intelligence của Khóa luận, <b>MDX</b> là ngôn ngữ truy vấn tiêu chuẩn được phát triển bởi Microsoft để truy xuất và thao tác trên các <b>khối dữ liệu đa chiều (OLAP Cubes)</b> của <i>SQL Server Analysis Services (SSAS)</i>.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Tiêu chí</th>
+                <th style="width: 40%;">SQL (Structured Query Language)</th>
+                <th style="width: 40%;">MDX (Multidimensional Expressions)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Đối tượng dữ liệu</b></td>
+                <td>Bảng 2 chiều phẳng (Row & Column) trong CSDL quan hệ RDBMS.</td>
+                <td>Khối lập phương đa chiều (Cube) với Measures, Dimensions và Hierarchies.</td>
+            </tr>
+            <tr>
+                <td><b>Hệ trục tọa độ</b></td>
+                <td>Chỉ trả về 1 bảng phẳng duy nhất.</td>
+                <td>Hỗ trợ nhiều trục độc lập: <code>COLUMNS (Axis 0)</code>, <code>ROWS (Axis 1)</code>, <code>PAGES (Axis 2)</code>,...</td>
+            </tr>
+            <tr>
+                <td><b>Hiệu năng tính toán</b></td>
+                <td>Phải quét toàn bảng và thực thi <code>SUM</code>, <code>GROUP BY</code>, <code>JOIN</code> tốn tài nguyên.</td>
+                <td>Dữ liệu tổng hợp (Aggregations) đã được tiền tính toán (Pre-calculated) sẵn trong khối MOLAP, phản hồi dưới 1 giây.</td>
+            </tr>
+            <tr>
+                <td><b>Mục đích ứng dụng</b></td>
+                <td>Giao dịch tác nghiệp (OLTP), trích xuất và biến đổi ETL (SSIS).</td>
+                <td>Báo cáo phân tích chuyên sâu (OLAP), Dashboard Power BI và hỗ trợ ra quyết định.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="alert">
+        <div class="alert-title">Luồng Kiến Trúc Trong Đề Tài Khang Nghi</div>
+        Dữ liệu nguồn (Excel / CSDL nghiệp vụ) &rarr; <b>ETL (SSIS)</b> &rarr; <b>Kho dữ liệu (DWH_KhangNghi)</b> &rarr; <b>Khối đa chiều SSAS (KhangNghi_Cube)</b> &rarr; <b>Truy vấn MDX</b> &rarr; <b>Web API Backend (.NET) & Dashboard Power BI</b>.
+    </div>
+
+    <!-- PHẦN 2 -->
+    <h2>2. Cấu Trúc Khối Dữ Liệu (KhangNghi_Cube) Trong Đề Tài</h2>
+    <p>Khối <b>KhangNghi_Cube</b> được thiết kế theo mô hình Constellation Schema (chòm sao) liên kết nhiều bảng Fact và các Dimension dùng chung:</p>
+
+    <ul>
+        <li><b>Measure Groups (Độ đo định lượng):</b>
+            <ul>
+                <li><code>Fact Sales</code>: <code>[Measures].[Sales Amount]</code> (Doanh thu), <code>[Measures].[Profit Amount]</code> (Lợi nhuận), <code>[Measures].[Quantity]</code> (Số lượng bán), <code>[Measures].[Discount Amount]</code>.</li>
+                <li><code>Fact Purchase</code>: <code>[Measures].[Purchase Quantity]</code>, <code>[Measures].[Unit Cost]</code>, <code>[Measures].[Total Cost]</code>.</li>
+                <li><code>Fact Inventory</code>: <code>[Measures].[Quantity In]</code>, <code>[Measures].[Quantity Out]</code>, <code>[Measures].[Quantity On Hand]</code> (Tồn kho), <code>[Measures].[Reorder Level]</code> (Ngưỡng đặt hàng).</li>
+                <li><code>Fact Shipping</code>: <code>[Measures].[Shipping Cost]</code> (Phí vận chuyển), <code>[Measures].[Delivery Days]</code>, <code>[Measures].[Late Days]</code>.</li>
+            </ul>
+        </li>
+        <li><b>Dimensions (Chiều phân tích & Cây phân cấp Hierarchy):</b>
+            <ul>
+                <li><code>Dim Time</code>: Phân cấp <i>Year &rarr; Quarter &rarr; Month &rarr; Day &rarr; Full Date</i>.</li>
+                <li><code>Dim Product</code>: Phân cấp <i>Category &rarr; Sub Category &rarr; Product Name</i>.</li>
+                <li><code>Dim Location</code>: Phân cấp <i>Region &rarr; Country &rarr; State &rarr; City</i>.</li>
+                <li><code>Dim Customer</code>, <code>Dim Shipper</code>, <code>Dim Supplier</code>, <code>Dim Warehouse</code>, <code>Dim Sales Channel</code>, <code>Dim Payment Method</code>.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <!-- PHẦN 3 -->
+    <h2>3. Hướng Dẫn Chi Tiết 4 Thao Tác OLAP Cốt Lõi Bằng MDX</h2>
+
+    <h3>3.1. ROLL-UP (Cuộn Gộp / Tổng Hợp Hóa)</h3>
+    <p>
+        <b>Khái niệm:</b> Thao tác di chuyển từ mức độ chi tiết cao (hạt mịn - fine grain) lên mức tổng quát hơn (hạt thô - coarse grain) theo chiều phân cấp. Thao tác này tương đương với phép gộp dữ liệu để có cái nhìn toàn cảnh.
+    </p>
+    <p>
+        <b>Ý nghĩa nghiệp vụ:</b> Ban giám đốc Khang Nghi không cần đọc doanh thu từng ngày lẻ tẻ (Full Date) mà muốn cuộn gộp doanh thu từ <b>Ngày &rarr; Tháng &rarr; Năm</b> nhằm theo dõi tổng thể tốc độ tăng trưởng qua các năm tài chính.
+    </p>
+
+    <h4>Câu lệnh MDX minh họa:</h4>
+<pre><span class="sql-comment">-- TRƯỚC KHI ROLL-UP: Xem chi tiết theo từng ngày (Full Date)</span>
+<span class="sql-keyword">SELECT</span> 
+    [Measures].[Sales Amount] <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Time].[Full Date].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+
+<span class="sql-comment">-- SAU KHI ROLL-UP: Cuộn gộp lên cấp Năm (Year)</span>
+<span class="sql-keyword">SELECT</span> 
+    [Measures].[Sales Amount] <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Time].[Year].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+</pre>
+
+    <h4>Đối chiếu kết quả Before & After:</h4>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%;">Trước Roll-up (Mức Ngày - Hạt mịn)</th>
+                <th style="width: 50%;">Sau khi Roll-up (Mức Năm - Hạt thô)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <b>01/01/2026:</b> 15.000.000 đ<br>
+                    <b>02/01/2026:</b> 22.000.000 đ<br>
+                    <b>03/01/2026:</b> 18.500.000 đ<br>
+                    <i>...hàng ngàn dòng ngày lẻ...</i>
+                </td>
+                <td>
+                    <b>Năm 2024:</b> 4.500.000.000 đ<br>
+                    <b>Năm 2025:</b> 5.800.000.000 đ<br>
+                    <b>Năm 2026:</b> 7.200.000.000 đ<br>
+                    <i>(Dữ liệu tự động tổng hợp tức thời)</i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr style="border: none; border-top: 1px dashed #d0d7de; margin: 20px 0;">
+
+    <h3>3.2. DRILL-DOWN (Khoan Sâu / Chi Tiết Hóa)</h3>
+    <p>
+        <b>Khái niệm:</b> Là thao tác đảo ngược của Roll-up. Đi từ mức tổng quan cấp cao xuống sâu các tầng bên dưới của cây phân cấp để mổ xẻ nguyên nhân.
+    </p>
+    <p>
+        <b>Ý nghĩa nghiệp vụ:</b>
+        <ul>
+            <li>Khi thấy doanh số năm 2026 biến động, nhà phân tích <b>khoan sâu xuống 4 Quý của năm 2026</b> để xác định quý nào có vấn đề.</li>
+            <li>Khi thấy ngành hàng <i>"Nội thất văn phòng"</i> đạt doanh thu ấn tượng, tiến hành <b>khoan sâu xuống từng Tên sản phẩm con</b> để nắm bắt mặt hàng chủ lực mang lại lợi nhuận cao nhất.</li>
+        </ul>
+    </p>
+
+    <h4>Câu lệnh MDX minh họa:</h4>
+<pre><span class="sql-comment">-- Kỹ thuật 1: Dùng hàm .CHILDREN khoan từ Năm 2026 xuống các Quý con</span>
+<span class="sql-keyword">SELECT</span> 
+    [Measures].[Sales Amount] <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Time].[Year].&amp;[2026].<span class="sql-func">CHILDREN</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+
+<span class="sql-comment">-- Kỹ thuật 2: Dùng hàm DESCENDANTS khoan từ Category xuống chi tiết từng Product</span>
+<span class="sql-keyword">SELECT</span> 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } <span class="sql-keyword">ON COLUMNS</span>,
+    <span class="sql-func">DESCENDANTS</span>(
+        [Dim Product].[Category].&amp;[Nội thất văn phòng],
+        [Dim Product].[Product Name]
+    ) <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+</pre>
+
+    <h4>Minh họa bảng dữ liệu sau khi Drill-down:</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Cấp cha (Category)</th>
+                <th>Sản phẩm con sau Drill-down (Product Name)</th>
+                <th>Sales Amount (Doanh thu)</th>
+                <th>Profit Amount (Lợi nhuận)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nội thất văn phòng</td>
+                <td>Bàn làm việc chữ L chân sắt sơn tĩnh điện</td>
+                <td>85.000.000 đ</td>
+                <td>25.000.000 đ</td>
+            </tr>
+            <tr>
+                <td>Nội thất văn phòng</td>
+                <td>Ghế công thái học Ergonomic E1 cao cấp</td>
+                <td>120.000.000 đ</td>
+                <td>42.000.000 đ</td>
+            </tr>
+            <tr>
+                <td>Nội thất văn phòng</td>
+                <td>Tủ tài liệu 3 ngăn khóa số</td>
+                <td>35.000.000 đ</td>
+                <td>8.500.000 đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h3>3.3. SLICE & DICE (Cắt Lát & Chia Khối Hạt Lựu)</h3>
+
+    <h4>A. SLICE (Cắt lát)</h4>
+    <p>
+        <b>Khái niệm:</b> Cố định <b>1 chiều duy nhất</b> tại một giá trị cụ thể, biến khối 3D thành 1 mặt phẳng 2D (giống việc cắt 1 lát bánh mì từ ổ bánh lớn).
+    </p>
+    <p>
+        <b>Mã MDX:</b> Sử dụng mệnh đề <code>WHERE</code> (Slicer Dimension) để cố định lát cắt:
+    </p>
+<pre><span class="sql-comment">-- SLICE: Cố định lát cắt CHỈ XEM KHU VỰC "Miền Nam"</span>
+<span class="sql-keyword">SELECT</span> 
+    [Measures].[Sales Amount] <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube]
+<span class="sql-keyword">WHERE</span> ([Dim Location].[Region].&amp;[Miền Nam]);
+</pre>
+
+    <h4>B. DICE (Chia hạt lựu / Cắt đa chiều)</h4>
+    <p>
+        <b>Khái niệm:</b> Thu hẹp phạm vi phân tích trên <b>nhiều chiều đồng thời</b>, tạo ra một khối lập phương con nhỏ hơn (Subcube) thỏa mãn đồng thời tất cả các tiêu chí lọc.
+    </p>
+    <p>
+        <b>Ví dụ nghiệp vụ:</b> Chỉ phân tích riêng Doanh số tại thị trường <b>Khu vực Miền Nam</b> VÀ trong <b>Năm tài khóa 2026</b>.
+    </p>
+<pre><span class="sql-comment">-- DICE: Lọc đồng thời 2 chiều (Khu vực Miền Nam + Năm 2026)</span>
+<span class="sql-keyword">SELECT</span> 
+    [Measures].[Sales Amount] <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube]
+<span class="sql-keyword">WHERE</span> (
+    [Dim Location].[Region].&amp;[Miền Nam], 
+    [Dim Time].[Year].&amp;[2026]
+);
+</pre>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Danh mục (Category)</th>
+                <th>Doanh thu sau khi Dice (Chỉ Miền Nam &amp; Năm 2026)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nội thất gia đình</td>
+                <td>1.450.000.000 đ</td>
+            </tr>
+            <tr>
+                <td>Nội thất văn phòng</td>
+                <td>2.100.000.000 đ</td>
+            </tr>
+            <tr>
+                <td>Phụ kiện decor trang trí</td>
+                <td>320.000.000 đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr style="border: none; border-top: 1px dashed #d0d7de; margin: 20px 0;">
+
+    <h3>3.4. PIVOT (Xoay Chiều / Hoán Đổi Góc Nhìn)</h3>
+    <p>
+        <b>Khái niệm:</b> Giữ nguyên tập dữ liệu tổng hợp nhưng <b>hoán đổi các trục tọa độ</b> (chuyển một Dimension từ Cột sang Hàng hoặc ngược lại).
+    </p>
+    <p>
+        <b>Ý nghĩa nghiệp vụ:</b> Tùy theo nhu cầu so sánh (so sánh chéo các vùng miền trên từng loại sản phẩm, hay so sánh tỷ trọng sản phẩm trong từng vùng miền), thao tác Pivot giúp người đọc dễ nhận ra xu hướng và đối sánh trực quan nhất.
+    </p>
+
+    <h4>Mã MDX thực hiện Pivot:</h4>
+<pre><span class="sql-comment">-- GÓC NHÌN 1: Cột là Vùng miền (Region), Hàng là Danh mục (Category)</span>
+<span class="sql-keyword">SELECT</span> 
+    [Dim Location].[Region].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Product].[Category].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube]
+<span class="sql-keyword">WHERE</span> ([Measures].[Sales Amount]);
+
+<span class="sql-comment">-- GÓC NHÌN 2 (HOÁN ĐỔI TRỤC - PIVOT): Cột là Danh mục, Hàng là Vùng miền</span>
+<span class="sql-keyword">SELECT</span> 
+    [Dim Product].[Category].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON COLUMNS</span>,
+    [Dim Location].[Region].<span class="sql-func">MEMBERS</span> <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube]
+<span class="sql-keyword">WHERE</span> ([Measures].[Sales Amount]);
+</pre>
+
+    <h4>Đối chiếu bảng hiển thị sau khi Pivot:</h4>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="4" style="text-align: center; background: #eef2f6;">Góc nhìn 1: Bảng phân bổ theo Khu vực (Region trên Cột)</th>
+            </tr>
+            <tr>
+                <th>Danh mục (Hàng)</th>
+                <th>Miền Bắc</th>
+                <th>Miền Trung</th>
+                <th>Miền Nam</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nội thất gia đình</td>
+                <td>800 triệu đ</td>
+                <td>400 triệu đ</td>
+                <td>1.200 triệu đ</td>
+            </tr>
+            <tr>
+                <td>Nội thất văn phòng</td>
+                <td>1.100 triệu đ</td>
+                <td>600 triệu đ</td>
+                <td>1.800 triệu đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="3" style="text-align: center; background: #eef2f6;">Góc nhìn 2 (Sau Pivot): Bảng phân bổ theo Sản phẩm (Category trên Cột)</th>
+            </tr>
+            <tr>
+                <th>Vùng miền (Hàng)</th>
+                <th>Nội thất gia đình</th>
+                <th>Nội thất văn phòng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Miền Bắc</td>
+                <td>800 triệu đ</td>
+                <td>1.100 triệu đ</td>
+            </tr>
+            <tr>
+                <td>Miền Trung</td>
+                <td>400 triệu đ</td>
+                <td>600 triệu đ</td>
+            </tr>
+            <tr>
+                <td>Miền Nam</td>
+                <td>1.200 triệu đ</td>
+                <td>1.800 triệu đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- PHẦN 4 -->
+    <h2>4. Các Câu Truy Vấn MDX Nâng Cao Trong Đề Tài</h2>
+
+    <h3>4.1. Top 10 Sản Phẩm Đem Lại Lợi Nhuận Cao Nhất (Hàm <code>TOPCOUNT</code>)</h3>
+<pre><span class="sql-keyword">SELECT</span> 
+    [Measures].[Total Profit] <span class="sql-keyword">ON COLUMNS</span>,
+    <span class="sql-func">TOPCOUNT</span>([Dim Product].[Product Name].<span class="sql-func">MEMBERS</span>, 10, [Measures].[Total Profit]) <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+</pre>
+    <p><i>Ý nghĩa:</i> Hàm <code>TOPCOUNT</code> nhận 3 đối số: Tập hợp thành viên, số lượng N cần lấy, và độ đo xếp hạng. Hệ thống SSAS tự động thực hiện Sort và trả về chính xác 10 mặt hàng siêu lợi nhuận.</p>
+
+    <h3>4.2. Cảnh Báo Thiếu Hụt Tồn Kho (Dùng <code>WITH MEMBER</code> và <code>FILTER</code>)</h3>
+<pre><span class="sql-keyword">WITH MEMBER</span> [Measures].[Stock Deficit] <span class="sql-keyword">AS</span> 
+    [Measures].[Reorder Level] - [Measures].[Quantity On Hand]
+<span class="sql-keyword">SELECT</span> 
+    { [Measures].[Quantity On Hand], [Measures].[Reorder Level], [Measures].[Stock Deficit] } <span class="sql-keyword">ON COLUMNS</span>,
+    <span class="sql-func">FILTER</span>(
+        [Dim Product].[Product Name].<span class="sql-func">MEMBERS</span>,
+        [Measures].[Quantity On Hand] &lt; [Measures].[Reorder Level]
+    ) <span class="sql-keyword">ON ROWS</span>
+<span class="sql-keyword">FROM</span> [KhangNghi_Cube];
+</pre>
+    <p><i>Ý nghĩa:</i> <code>WITH MEMBER</code> cho phép tạo trường tính toán động (Calculated Member) tại thời điểm chạy truy vấn mà không cần thay đổi schema của Cube. Kết hợp <code>FILTER</code> lọc ra các mặt hàng có nguy cơ đứt gãy nguồn cung.</p>
+
+    <!-- PHẦN 5 -->
+    <h2>5. Tích Hợp MDX Vào Hệ Thống Backend (.NET Core C#)</h2>
+    <p>Trong mã nguồn dự án tại <code>KhangNghi.Infrastructure/Repositories/SsasRepository.cs</code>, MDX được thực thi thông qua OleDb Data Provider (kết nối MSOLAP):</p>
+
+<pre><span class="sql-comment">// Chuỗi kết nối tới dịch vụ SSAS</span>
+<span class="sql-keyword">string</span> connString = <span class="sql-string">"Provider=MSOLAP;Data Source=localhost;Initial Catalog=KhangNghi_SSAS;Integrated Security=SSPI;"</span>;
+
+<span class="sql-keyword">public async</span> Task&lt;List&lt;Dictionary&lt;<span class="sql-keyword">string</span>, <span class="sql-keyword">object</span>?&gt;&gt;&gt; ExecuteMdxQueryAsync(<span class="sql-keyword">string</span> mdxQuery)
+{
+    var result = <span class="sql-keyword">new</span> List&lt;Dictionary&lt;<span class="sql-keyword">string</span>, <span class="sql-keyword">object</span>?&gt;&gt;();
+    <span class="sql-keyword">using</span> var conn = <span class="sql-keyword">new</span> OleDbConnection(connString);
+    <span class="sql-keyword">await</span> conn.OpenAsync();
+
+    <span class="sql-keyword">using</span> var cmd = <span class="sql-keyword">new</span> OleDbCommand(mdxQuery, conn);
+    <span class="sql-keyword">using</span> var reader = <span class="sql-keyword">await</span> cmd.ExecuteReaderAsync();
+
+    <span class="sql-keyword">while</span> (<span class="sql-keyword">await</span> reader.ReadAsync())
+    {
+        var row = <span class="sql-keyword">new</span> Dictionary&lt;<span class="sql-keyword">string</span>, <span class="sql-keyword">object</span>?&gt;();
+        <span class="sql-keyword">for</span> (<span class="sql-keyword">int</span> i = 0; i &lt; reader.FieldCount; i++)
+        {
+            row[reader.GetName(i)] = reader.IsDBNull(i) ? <span class="sql-keyword">null</span> : reader.GetValue(i);
+        }
+        result.Add(row);
+    }
+    <span class="sql-keyword">return</span> result;
+}
+</pre>
+    <p>
+        Hệ thống cung cấp Endpoint API tại <code>POST /api/v1/ssas/query</code> trong <code>SsasController.cs</code> cho phép người dùng hoặc các công cụ ngoài gửi truy vấn MDX tùy ý và nhận dữ liệu JSON phân tích.
+    </p>
+
+    <!-- PHẦN 6 -->
+    <h2>6. Bảng Tra Cứu Tóm Tắt Khi Thuyết Trình Khóa Luận</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Thao tác</th>
+                <th>Bản chất hình học</th>
+                <th>Cú pháp MDX then chốt</th>
+                <th>Mục tiêu phân tích nghiệp vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Roll-up</b></td>
+                <td>Gộp hạt mịn lên hạt thô</td>
+                <td><code>[Dim].[Level].MEMBERS</code>, <code>.PARENT</code></td>
+                <td>Xem xu hướng vĩ mô, đánh giá tổng thể KPI.</td>
+            </tr>
+            <tr>
+                <td><b>Drill-down</b></td>
+                <td>Khoan sâu xuống hạt mịn</td>
+                <td><code>.CHILDREN</code>, <code>DESCENDANTS()</code></td>
+                <td>Truy vết nguyên nhân gốc rễ (Root Cause Analysis).</td>
+            </tr>
+            <tr>
+                <td><b>Slice</b></td>
+                <td>Cắt 1 mặt phẳng theo 1 chiều</td>
+                <td><code>WHERE ([Dimension].[Member])</code></td>
+                <td>Tập trung phân tích vào 1 đơn vị hoặc phân khúc hẹp.</td>
+            </tr>
+            <tr>
+                <td><b>Dice</b></td>
+                <td>Cắt khối con nhỏ theo nhiều chiều</td>
+                <td><code>WHERE (Dim1.[M], Dim2.[M], ...)</code></td>
+                <td>Báo cáo đặc thù thỏa mãn đồng thời nhiều tiêu chí lọc.</td>
+            </tr>
+            <tr>
+                <td><b>Pivot</b></td>
+                <td>Xoay 90 độ các trục tọa độ</td>
+                <td>Đổi vị trí giữa <code>ON COLUMNS</code> và <code>ON ROWS</code></td>
+                <td>Đối chiếu, hoán đổi góc nhìn trực quan trên bảng ma trận.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-note">
+        Tài liệu được biên soạn phục vụ đồ án Khóa Luận Tốt Nghiệp - Bản quyền thuộc dự án Data Warehouse Khang Nghi
+    </div>
+
+</body>
+</html>

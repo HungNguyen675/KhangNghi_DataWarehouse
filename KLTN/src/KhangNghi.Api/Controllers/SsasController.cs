@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +20,42 @@ namespace KhangNghi.Api.Controllers
         }
 
         /// <summary>
+        /// Kiểm tra trạng thái kết nối SSAS Server, Catalog và Cube KhangNghi
+        /// </summary>
+        [HttpGet("status")]
+        public async Task<IActionResult> GetStatus()
+        {
+            var status = await _ssasRepo.GetSsasStatusAsync();
+            return Ok(new { success = true, data = status });
+        }
+
+        /// <summary>
+        /// Danh mục 40 câu truy vấn MDX chuẩn hóa theo đề cương khóa luận Khang Nghi
+        /// </summary>
+        [HttpGet("catalog-40")]
+        public IActionResult GetCatalog40()
+        {
+            var catalog = _ssasRepo.Get40MdxQueries();
+            return Ok(new { success = true, count = catalog.Count, data = catalog });
+        }
+
+        /// <summary>
         /// Truy vấn doanh thu theo năm trực tiếp từ SSAS OLAP Cube
         /// </summary>
         [HttpGet("revenue-by-year")]
         public async Task<IActionResult> GetRevenueByYear()
         {
+            var sw = Stopwatch.StartNew();
             try
             {
                 var result = await _ssasRepo.GetRevenueByYearFromCubeAsync();
-                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result });
+                sw.Stop();
+                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result, executionTimeMs = sw.ElapsedMilliseconds });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message });
+                sw.Stop();
+                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message, executionTimeMs = sw.ElapsedMilliseconds });
             }
         }
 
@@ -39,14 +65,17 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("top-products")]
         public async Task<IActionResult> GetTopProducts([FromQuery] int top = 10)
         {
+            var sw = Stopwatch.StartNew();
             try
             {
                 var result = await _ssasRepo.GetTopProductsFromCubeAsync(top);
-                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result });
+                sw.Stop();
+                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result, executionTimeMs = sw.ElapsedMilliseconds });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message });
+                sw.Stop();
+                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message, executionTimeMs = sw.ElapsedMilliseconds });
             }
         }
 
@@ -56,14 +85,17 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("by-category")]
         public async Task<IActionResult> GetRevenueByCategory()
         {
+            var sw = Stopwatch.StartNew();
             try
             {
                 var result = await _ssasRepo.GetRevenueByCategoryFromCubeAsync();
-                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result });
+                sw.Stop();
+                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result, executionTimeMs = sw.ElapsedMilliseconds });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message });
+                sw.Stop();
+                return StatusCode(500, new { success = false, message = "Lỗi kết nối hoặc truy vấn SSAS: " + ex.Message, executionTimeMs = sw.ElapsedMilliseconds });
             }
         }
 
@@ -75,17 +107,34 @@ namespace KhangNghi.Api.Controllers
         {
             if (string.IsNullOrWhiteSpace(request?.MdxQuery))
             {
-                return BadRequest(new { success = false, message = "Truy vấn MDX không được để trống" });
+                return BadRequest(new { success = false, message = "Truy vấn MDX không được để trống." });
             }
 
+            var sw = Stopwatch.StartNew();
             try
             {
                 var result = await _ssasRepo.ExecuteMdxQueryAsync(request.MdxQuery);
-                return Ok(new { success = true, source = "SSAS OLAP Cube", data = result });
+                sw.Stop();
+                var columns = result.Count > 0 ? result[0].Keys.ToList() : new List<string>();
+                return Ok(new
+                {
+                    success = true,
+                    source = "SSAS OLAP Cube (MSOLAP)",
+                    data = result,
+                    columns = columns,
+                    rowCount = result.Count,
+                    executionTimeMs = sw.ElapsedMilliseconds
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "Lỗi thực thi MDX: " + ex.Message });
+                sw.Stop();
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Lỗi thực thi MDX: " + ex.Message,
+                    executionTimeMs = sw.ElapsedMilliseconds
+                });
             }
         }
     }

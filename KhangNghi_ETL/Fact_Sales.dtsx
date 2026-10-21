@@ -25,7 +25,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-Fact_Sales-{F9426FF6-96D2-4341-BF95-BE9C78294A81}HungNguyen.DWH_KhangNghi.sa;">
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-Fact_Sales-{F9426FF6-96D2-4341-BF95-BE9C78294A81}HungNguyen.DWH_KhangNghi.sa;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -42,7 +42,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-Fact_Sales-{64078E34-3EDD-40D1-9625-929A1DA370DD}HungNguyen.KhangNghi_Staging.sa;">
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-Fact_Sales-{64078E34-3EDD-40D1-9625-929A1DA370DD}HungNguyen.KhangNghi_Staging.sa;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"

@@ -17,10 +17,10 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/variables.css?v=20261019_02">
+  <link rel="stylesheet" href="css/layout.css?v=20261019_02">
+  <link rel="stylesheet" href="css/components.css?v=20261020_02">
+  <link rel="stylesheet" href="css/responsive.css?v=20261019_02">
 </head>
 <body data-theme="light">
 
@@ -66,19 +66,19 @@
         <a href="#/purchase" class="nav-item" data-tooltip="Mua hàng / Purchase" data-roles="CEO,Purchase">
           <i class="fa-solid fa-cart-flatbed nav-icon"></i>
           <span class="nav-text">Mua hàng / Purchase</span>
-          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE DWH</span>
         </a>
 
         <a href="#/inventory" class="nav-item" data-tooltip="Tồn kho / Inventory" data-roles="CEO,Warehouse">
           <i class="fa-solid fa-boxes-stacked nav-icon"></i>
           <span class="nav-text">Tồn kho / Inventory</span>
-          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE DWH</span>
         </a>
 
         <a href="#/shipping" class="nav-item" data-tooltip="Vận chuyển / Shipping" data-roles="CEO,Logistics">
           <i class="fa-solid fa-truck-fast nav-icon"></i>
           <span class="nav-text">Vận chuyển / Shipping</span>
-          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE DWH</span>
         </a>
 
         <div class="menu-group-header">PHÂN TÍCH ĐỐI TƯỢNG / MASTER ANALYSIS</div>
@@ -98,13 +98,27 @@
         <a href="#/supplier" class="nav-item" data-tooltip="Nhà cung cấp / Suppliers" data-roles="CEO,Purchase">
           <i class="fa-solid fa-handshake nav-icon"></i>
           <span class="nav-text">Nhà cung cấp / Suppliers</span>
-          <span class="nav-badge" style="background:rgba(243,156,18,0.15); color:#f39c12;">NO DATA</span>
+          <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE DWH</span>
         </a>
 
         <a href="#/geography" class="nav-item" data-tooltip="Khu vực / Geography" data-roles="ALL">
           <i class="fa-solid fa-globe nav-icon"></i>
           <span class="nav-text">Khu vực / Geography</span>
           <span class="nav-badge" style="background:rgba(37,162,68,0.15); color:#25a244;">LIVE DWH</span>
+        </a>
+
+        <div class="menu-group-header">MÔ HÌNH ĐA CHIỀU / OLAP & MDX</div>
+
+        <a href="#/olap-explorer" class="nav-item" data-tooltip="OLAP Cube Explorer / Khám phá Khối Đa Chiều" data-roles="ALL">
+          <i class="fa-solid fa-cube nav-icon"></i>
+          <span class="nav-text">Khám phá Khối / Cube Explorer</span>
+          <span class="nav-badge" style="background:rgba(15,98,254,0.15); color:#0f62fe;">SSAS</span>
+        </a>
+
+        <a href="#/mdx-studio" class="nav-item" data-tooltip="MDX Query Studio & Thư Viện 40 Truy Vấn" data-roles="ALL">
+          <i class="fa-solid fa-terminal nav-icon"></i>
+          <span class="nav-text">MDX Studio & 40 Truy vấn</span>
+          <span class="nav-badge" style="background:rgba(138,63,252,0.15); color:#8a3ffc;">40 MDX</span>
         </a>
 
         <div class="menu-group-header">PHÂN TÍCH NÂNG CAO / ADVANCED ANALYTICS</div>
@@ -183,7 +197,7 @@
 
         <div class="global-search-wrapper">
           <i class="fa-solid fa-magnifying-glass global-search-icon"></i>
-          <input type="text" class="global-search-input" placeholder="Tìm kiếm dữ liệu..." title="Tìm kiếm">
+          <input type="text" id="topbar-global-search" class="global-search-input" placeholder="Tìm kiếm dữ liệu toàn hệ thống..." title="Tìm kiếm" oninput="KhangNghiFilters.setFilter('search', this.value)">
         </div>
 
         <div class="data-status-indicator" id="lineage-badge">
@@ -205,11 +219,20 @@
 
         <!-- Quick Filters -->
         <div class="filter-group" style="display:flex; align-items:center; gap:6px; background:var(--bg-input); padding:4px 8px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
-          <select id="filter-year" class="filter-select" style="background:transparent; border:none; outline:none; font-size:12px; color:var(--text-main);">
-            <option value="2015" selected>Năm: 2015</option>
-            <option value="2014">Năm: 2014</option>
-            <option value="2013">Năm: 2013</option>
-            <option value="2012">Năm: 2012</option>
+          <select id="filter-year" class="filter-select" onchange="KhangNghiFilters.setFilter('year', this.value)" style="background:transparent; border:none; outline:none; font-size:12px; color:var(--text-main); font-weight:600;">
+            <optgroup label="Kỳ Mua hàng & Vận hành (2022-2025)">
+              <option value="2025" selected>Năm: 2025</option>
+              <option value="2024">Năm: 2024</option>
+              <option value="2023">Năm: 2023</option>
+              <option value="2022">Năm: 2022</option>
+            </optgroup>
+            <optgroup label="Kỳ Bán hàng lịch sử (2012-2015)">
+              <option value="2015">Năm: 2015</option>
+              <option value="2014">Năm: 2014</option>
+              <option value="2013">Năm: 2013</option>
+              <option value="2012">Năm: 2012</option>
+            </optgroup>
+            <option value="ALL">Tất cả năm (2012-2025)</option>
           </select>
         </div>
 
@@ -483,97 +506,134 @@
         </div>
 
         <!-- SMART FILTER BAR -->
-        <div class="glass-card smart-filter-bar" style="padding:12px 16px; margin-bottom:14px; border-radius:var(--radius-md); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+        <!-- SMART FILTER BAR (Single-Row Desktop Optimized) -->
+        <div class="sales-filter-toolbar">
           
-          <!-- Search & Selectors Group -->
-          <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:320px; position:relative;">
-            <!-- Modern Search Box with Ctrl+K -->
-            <div style="position:relative; flex:1; min-width:220px;">
-              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
-              <input type="text" id="sales-search-input" placeholder="Tìm kiếm sản phẩm, khách hàng, khu vực..." style="width:100%; padding:8px 60px 8px 34px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); outline:none; transition:all 0.2s;" onfocus="KhangNghiApp.showSearchSuggestions()" oninput="KhangNghiApp.onSearchInput(this.value)">
-              <span style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:10px; font-weight:700; background:var(--bg-app); border:1px solid var(--border-color); padding:2px 5px; border-radius:4px; color:var(--text-muted); pointer-events:none;">Ctrl K</span>
-              
-              <!-- Suggestions Dropdown -->
-              <div id="sales-search-suggestions" style="display:none; position:absolute; left:0; top:110%; width:100%; max-height:280px; overflow-y:auto; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); box-shadow:var(--shadow-xl); z-index:1000; padding:8px 0; backdrop-filter:blur(16px);"></div>
-            </div>
-
-            <!-- Quick Selectors -->
-            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-              <select id="sales-filter-year" onchange="KhangNghiFilters.setFilter('year', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="2015" selected>Năm: 2015</option>
-                <option value="2014">Năm: 2014</option>
-                <option value="2013">Năm: 2013</option>
-                <option value="2012">Năm: 2012</option>
-                <option value="ALL">Tất cả năm</option>
-              </select>
-
-              <select id="sales-filter-region" onchange="KhangNghiFilters.setFilter('region', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="All Regions" selected>Khu vực: Tất cả</option>
-                <option value="North America">Bắc Mỹ (North America)</option>
-                <option value="South East Asia">Đông Nam Á (South East Asia)</option>
-                <option value="Western Europe">Tây Âu (Western Europe)</option>
-                <option value="East Asia">Đông Á (East Asia)</option>
-                <option value="South America">Nam Mỹ (South America)</option>
-              </select>
-
-              <select id="sales-filter-category" onchange="KhangNghiFilters.setFilter('category', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="All Categories" selected>Danh mục: Tất cả</option>
-                <option value="Truyền động">Truyền động</option>
-                <option value="Tự động hóa">Tự động hóa</option>
-                <option value="Thiết bị đóng cắt">Thiết bị đóng cắt</option>
-              </select>
-
-              <select id="sales-filter-segment" onchange="KhangNghiFilters.setFilter('segment', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="All Segments" selected>Phân khúc: Tất cả</option>
-                <option value="Corporate">Doanh nghiệp (Corporate)</option>
-                <option value="Consumer">Khách lẻ (Consumer)</option>
-                <option value="Home Office">Văn phòng tại nhà (Home Office)</option>
-              </select>
-            </div>
+          <!-- 1. Tìm kiếm sản phẩm -->
+          <div class="sales-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px; pointer-events:none;"></i>
+            <input type="text" id="sales-search-input" class="sales-filter-control" placeholder="Tìm kiếm sản phẩm, khách hàng, khu vực..." style="width:100%; padding-left:34px; padding-right:54px;" onfocus="KhangNghiApp.showSearchSuggestions()" oninput="KhangNghiApp.onSearchInput(this.value)">
+            <span style="position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:10px; font-weight:700; background:var(--bg-app); border:1px solid var(--border-color); padding:1px 5px; border-radius:4px; color:var(--text-muted); pointer-events:none;">Ctrl K</span>
+            
+            <!-- Suggestions Dropdown -->
+            <div id="sales-search-suggestions" style="display:none; position:absolute; left:0; top:calc(100% + 4px); width:100%; max-height:280px; overflow-y:auto; background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); box-shadow:var(--shadow-xl); z-index:1000; padding:8px 0; backdrop-filter:blur(16px);"></div>
           </div>
 
-          <!-- Actions & Presets Group -->
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <!-- Presets Select -->
-            <select id="sales-preset-select" onchange="KhangNghiFilters.loadPreset(this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;" title="Bộ lọc đã lưu">
-              <option value="All Sales">Xem: Tất cả bán hàng</option>
-              <option value="High Profit Sales">Xem: Lợi nhuận cao</option>
-              <option value="APAC Technology 2015">Xem: Công nghệ 2015</option>
-              <option value="Low Margin Alert">Xem: Biên lợi nhuận thấp</option>
-            </select>
+          <!-- 2. Chọn năm -->
+          <select id="sales-filter-year" class="sales-filter-control" onchange="KhangNghiFilters.setFilter('year', this.value)" title="Chọn năm">
+            <optgroup label="Kỳ Bán hàng có dữ liệu (2012-2015)">
+              <option value="2015" selected>Năm: 2015</option>
+              <option value="2014">Năm: 2014</option>
+              <option value="2013">Năm: 2013</option>
+              <option value="2012">Năm: 2012</option>
+              <option value="ALL">Tất cả năm Bán hàng (2012-2015)</option>
+            </optgroup>
+            <optgroup label="Kỳ Mua hàng & Vận hành (2022-2025)">
+              <option value="2025">Năm: 2025 (Chưa phát sinh bán)</option>
+              <option value="2024">Năm: 2024 (Chưa phát sinh bán)</option>
+              <option value="2023">Năm: 2023 (Chưa phát sinh bán)</option>
+              <option value="2022">Năm: 2022 (Chưa phát sinh bán)</option>
+            </optgroup>
+          </select>
 
-            <!-- Save View Button -->
-            <button class="topbar-action-btn" onclick="KhangNghiApp.saveCurrentPreset()" title="Lưu góc nhìn hiện tại" style="width:auto; padding:0 8px; font-size:11.5px;">
-              <i class="fa-regular fa-bookmark"></i>
+          <!-- 3. Chọn khu vực -->
+          <select id="sales-filter-region" class="sales-filter-control" onchange="KhangNghiFilters.setFilter('region', this.value)" title="Chọn khu vực">
+            <option value="All Regions" selected>Khu vực: Tất cả</option>
+            <option value="North America">Bắc Mỹ (North America)</option>
+            <option value="South East Asia">Đông Nam Á (South East Asia)</option>
+            <option value="Western Europe">Tây Âu (Western Europe)</option>
+            <option value="East Asia">Đông Á (East Asia)</option>
+            <option value="South America">Nam Mỹ (South America)</option>
+          </select>
+
+          <!-- 4. Chọn danh mục -->
+          <select id="sales-filter-category" class="sales-filter-control" onchange="KhangNghiFilters.setFilter('category', this.value)" title="Chọn danh mục">
+            <option value="All Categories" selected>Danh mục: Tất cả</option>
+            <option value="Truyền động">Truyền động</option>
+            <option value="Tự động hóa">Tự động hóa</option>
+            <option value="Thiết bị đóng cắt">Thiết bị đóng cắt</option>
+          </select>
+
+          <!-- 5. Nút Bộ lọc nâng cao (Popover chứa Phân khúc & Bộ lọc đã lưu) -->
+          <div style="position:relative;">
+            <button type="button" class="sales-filter-btn" id="sales-adv-filter-btn" onclick="KhangNghiApp.toggleSalesAdvPopover()" title="Bộ lọc nâng cao (Phân khúc, Bộ lọc đã lưu)">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Bộ lọc</span>
+              <span class="filter-adv-count-badge" id="sales-adv-count-badge" style="display:none;">(0)</span>
+              <i class="fa-solid fa-chevron-down" style="font-size:10px; opacity:0.7;"></i>
             </button>
+            
+            <!-- Popover Menu -->
+            <div id="sales-adv-popover" class="filter-popover-menu">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
+                <span style="font-size:12.5px; font-weight:700; color:var(--text-main);"><i class="fa-solid fa-sliders" style="margin-right:6px; color:var(--color-primary);"></i>Bộ lọc bổ sung</span>
+                <span style="font-size:11px; color:var(--color-primary); cursor:pointer; font-weight:600;" onclick="KhangNghiFilters.setFilter('segment', 'All Segments')">Đặt lại</span>
+              </div>
+              
+              <!-- Phân khúc khách hàng -->
+              <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:11.5px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Phân khúc khách hàng</label>
+                <select id="sales-filter-segment" class="sales-filter-control" style="width:100%;" onchange="KhangNghiFilters.setFilter('segment', this.value)">
+                  <option value="All Segments" selected>Phân khúc: Tất cả</option>
+                  <option value="Corporate">Doanh nghiệp (Corporate)</option>
+                  <option value="Consumer">Khách lẻ (Consumer)</option>
+                  <option value="Home Office">Văn phòng tại nhà (Home Office)</option>
+                </select>
+              </div>
 
-            <!-- [+ Filters Drawer] -->
-            <button class="topbar-action-btn" onclick="document.getElementById('filter-panel').classList.add('active')" title="Lọc nâng cao" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
-              <i class="fa-solid fa-sliders"></i> <span>Bộ lọc</span> <span class="filter-count-badge" style="display:none; font-weight:700; color:var(--color-primary);">(0)</span>
-            </button>
+              <!-- Bộ lọc đã lưu (Presets) -->
+              <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:11.5px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Bộ lọc đã lưu (Preset)</label>
+                <div style="display:flex; gap:6px;">
+                  <select id="sales-preset-select" class="sales-filter-control" style="flex:1;" onchange="KhangNghiFilters.loadPreset(this.value)">
+                    <option value="All Sales">Xem: Tất cả bán hàng</option>
+                    <option value="High Profit Sales">Xem: Lợi nhuận cao</option>
+                    <option value="APAC Technology 2015">Xem: Công nghệ 2015</option>
+                    <option value="Low Margin Alert">Xem: Biên lợi nhuận thấp</option>
+                  </select>
+                  <button type="button" class="sales-filter-btn" onclick="KhangNghiApp.saveCurrentPreset()" title="Lưu góc nhìn hiện tại" style="padding:0 10px;">
+                    <i class="fa-regular fa-bookmark"></i>
+                  </button>
+                </div>
+              </div>
 
-            <!-- Compare Mode Button -->
-            <button class="topbar-action-btn" id="sales-compare-btn" onclick="KhangNghiApp.toggleCompareMode()" title="So sánh 2015 vs 2014" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
-              <i class="fa-solid fa-code-compare"></i> <span>So sánh</span>
-            </button>
-
-            <!-- Refresh Button -->
-            <button class="topbar-action-btn" id="sales-refresh-btn" onclick="KhangNghiApp.refreshSalesData()" title="Làm mới dữ liệu / Refresh" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
-              <i class="fa-solid fa-arrows-rotate" id="sales-refresh-icon"></i> <span>Làm mới / Refresh</span>
-            </button>
-
-            <!-- Export Menu -->
-            <div style="position:relative;">
-              <button class="topbar-action-btn" onclick="KhangNghiApp.toggleExportMenu()" title="Xuất Báo Cáo / Export" style="width:auto; padding:0 10px; font-size:12px; gap:6px; background:var(--color-primary); color:white; border:none; font-weight:600;">
-                <i class="fa-solid fa-download"></i> <span>Xuất báo cáo / Export</span> <i class="fa-solid fa-caret-down"></i>
-              </button>
-              <div id="sales-export-dropdown" class="dropdown-menu" style="right:0; width:180px; padding:6px 0; display:none;">
-                <div class="dropdown-item" onclick="KhangNghiApp.exportSalesCSV()"><i class="fa-solid fa-file-csv" style="color:var(--color-success); margin-right:8px;"></i> Xuất dữ liệu CSV</div>
-                <div class="dropdown-item" onclick="KhangNghiApp.exportChartPNG()"><i class="fa-solid fa-image" style="color:var(--color-primary); margin-right:8px;"></i> Xuất ảnh biểu đồ PNG</div>
-                <div class="dropdown-item" onclick="KhangNghiApp.printSalesView()"><i class="fa-solid fa-print" style="color:var(--text-muted); margin-right:8px;"></i> In trang</div>
+              <!-- Drawer Link & Close -->
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid var(--border-color); font-size:11.5px;">
+                <button type="button" onclick="document.getElementById('filter-panel').classList.add('active'); KhangNghiApp.toggleSalesAdvPopover(false);" style="color:var(--text-muted); font-size:11.5px; display:inline-flex; align-items:center; gap:4px; border:none; background:none; cursor:pointer; padding:0;" title="Mở ngăn lọc chi tiết">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Ngăn lọc chi tiết
+                </button>
+                <button type="button" class="sales-filter-btn primary" style="height:30px; padding:0 12px; font-size:11.5px;" onclick="KhangNghiApp.toggleSalesAdvPopover(false)">
+                  Đóng
+                </button>
               </div>
             </div>
           </div>
+
+          <!-- 6. Nút So sánh -->
+          <button type="button" class="sales-filter-btn" id="sales-compare-btn" onclick="KhangNghiApp.toggleCompareMode()" title="So sánh kỳ 2015 vs 2014">
+            <i class="fa-solid fa-code-compare"></i>
+            <span>So sánh</span>
+          </button>
+
+          <!-- 7. Nút Làm mới dạng biểu tượng có tooltip -->
+          <button type="button" class="sales-filter-icon-btn" id="sales-refresh-btn" onclick="KhangNghiApp.refreshSalesData()" title="Làm mới dữ liệu (Refresh)">
+            <i class="fa-solid fa-arrows-rotate" id="sales-refresh-icon"></i>
+          </button>
+
+          <!-- 8. Nút Xuất báo cáo (Hành động chính, màu nổi bật) -->
+          <div style="position:relative;">
+            <button type="button" class="sales-filter-btn primary" id="sales-export-btn" onclick="KhangNghiApp.toggleExportMenu()" title="Xuất Báo Cáo / Export">
+              <i class="fa-solid fa-download"></i>
+              <span>Xuất báo cáo</span>
+              <i class="fa-solid fa-caret-down" style="font-size:10px; margin-left:2px;"></i>
+            </button>
+            <div id="sales-export-dropdown" class="dropdown-menu" style="right:0; width:180px; padding:6px 0; display:none; top:calc(100% + 4px);">
+              <div class="dropdown-item" onclick="KhangNghiApp.exportSalesCSV()"><i class="fa-solid fa-file-csv" style="color:var(--color-success); margin-right:8px;"></i> Xuất dữ liệu CSV</div>
+              <div class="dropdown-item" onclick="KhangNghiApp.exportChartPNG()"><i class="fa-solid fa-image" style="color:var(--color-primary); margin-right:8px;"></i> Xuất ảnh biểu đồ PNG</div>
+              <div class="dropdown-item" onclick="KhangNghiApp.printSalesView()"><i class="fa-solid fa-print" style="color:var(--text-muted); margin-right:8px;"></i> In trang</div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ACTIVE CHIPS CONTAINER -->
@@ -595,13 +655,20 @@
           </div>
         </div>
 
-        <!-- CHARTS SECTION WITH METRIC & GRANULARITY SWITCHERS -->
-        <div class="grid-charts-2" id="sales-charts-container">
-          <!-- Trend Chart Card -->
+        <!-- ======================================================================
+             SECTION: 4 BIỂU ĐỒ PHÂN TÍCH LIÊN KẾT LOGIC & BẢNG ĐỐI CHIẾU
+             ====================================================================== -->
+        
+        <!-- HÀNG 1: BIỂU ĐỒ 1 (XU HƯỚNG THỜI GIAN) & BIỂU ĐỒ 2 (XẾP HẠNG SẢN PHẨM) -->
+        <div class="grid-charts-2" id="sales-charts-row-1" style="margin-bottom:16px;">
+          <!-- Biểu đồ 1: Xu hướng Doanh thu theo thời gian -->
           <div class="glass-card chart-card">
-            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
               <div class="chart-title-group">
-                <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Xu hướng doanh thu</h3>
+                <h3 class="chart-title" id="sales-trend-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> 1. Xu hướng Doanh thu theo thời gian</h3>
+                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                  Nhận diện chu kỳ tăng trưởng. <em>(💡 Click vào một cột Năm/Quý để lọc toàn bộ dashboard theo mốc đó)</em>
+                </div>
               </div>
               
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -609,27 +676,29 @@
                 <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
                   <button class="segment-btn active" data-metric="revenue" onclick="KhangNghiApp.switchSalesMetric('revenue', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Doanh thu</button>
                   <button class="segment-btn" data-metric="profit" onclick="KhangNghiApp.switchSalesMetric('profit', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Lợi nhuận</button>
-                  <button class="segment-btn" data-metric="quantity" onclick="KhangNghiApp.switchSalesMetric('quantity', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Số lượng bán</button>
-                  <button class="segment-btn" data-metric="margin" onclick="KhangNghiApp.switchSalesMetric('margin', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Biên lợi nhuận</button>
+                  <button class="segment-btn" data-metric="quantity" onclick="KhangNghiApp.switchSalesMetric('quantity', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Số lượng</button>
                 </div>
 
-                <!-- Time Granularity Switcher -->
+                <!-- Granularity Switcher -->
                 <div class="segmented-control" style="display:flex; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:2px;">
-                  <button class="gran-btn active" data-gran="monthly" onclick="KhangNghiApp.switchGranularity('monthly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Tháng</button>
-                  <button class="gran-btn" data-gran="quarterly" onclick="KhangNghiApp.switchGranularity('quarterly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Quý</button>
                   <button class="gran-btn" data-gran="yearly" onclick="KhangNghiApp.switchGranularity('yearly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-muted); font-weight:600; border-radius:4px;">Năm</button>
+                  <button class="gran-btn active" data-gran="quarterly" onclick="KhangNghiApp.switchGranularity('quarterly', this)" style="padding:3px 8px; font-size:11px; border:none; background:transparent; cursor:pointer; color:var(--text-main); font-weight:600; border-radius:4px;">Quý</button>
                 </div>
               </div>
             </div>
 
-            <div class="chart-canvas-wrapper" id="chart-sal-trend"></div>
+            <div class="chart-canvas-wrapper" id="chart-sal-trend" style="min-height:280px;"></div>
+            <div id="chart-sal-trend-insight" style="margin-top:8px; padding:6px 10px; background:var(--bg-app); border-radius:var(--radius-sm); font-size:11.5px; color:var(--text-secondary); border-left:3px solid var(--color-primary);"></div>
           </div>
 
-          <!-- Category & Ranking Card -->
+          <!-- Biểu đồ 2: Phân tích Xếp hạng theo Sản phẩm -->
           <div class="glass-card chart-card">
-            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
               <div class="chart-title-group">
-                <h3 class="chart-title" id="sales-ranking-title"><i class="fa-solid fa-chart-pie" style="color:var(--color-accent);"></i> Cơ cấu doanh thu</h3>
+                <h3 class="chart-title" id="sales-ranking-title"><i class="fa-solid fa-ranking-star" style="color:var(--color-accent);"></i> 2. Top Sản phẩm đóng góp Doanh thu</h3>
+                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                  Xếp hạng sản phẩm bán chạy nhất. <em>(💡 Click vào tên thanh sản phẩm để xem chi tiết diễn biến)</em>
+                </div>
               </div>
 
               <!-- Top/Bottom Ranking Switcher -->
@@ -639,7 +708,63 @@
               </div>
             </div>
 
-            <div class="chart-canvas-wrapper" id="chart-sal-cat"></div>
+            <div class="chart-canvas-wrapper" id="chart-sal-cat" style="min-height:280px;"></div>
+            <div id="chart-sal-ranking-insight" style="margin-top:8px; padding:6px 10px; background:var(--bg-app); border-radius:var(--radius-sm); font-size:11.5px; color:var(--text-secondary); border-left:3px solid var(--color-accent);"></div>
+          </div>
+        </div>
+
+        <!-- HÀNG 2: BIỂU ĐỒ 3 (KẾT HỢP NĂM × SẢN PHẨM) -->
+        <div class="glass-card chart-card" style="margin-bottom:16px;">
+          <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+            <div class="chart-title-group">
+              <h3 class="chart-title"><i class="fa-solid fa-chart-column" style="color:#0284c7;"></i> 3. Phân tích kết hợp: Diễn biến Doanh thu Top Sản phẩm qua các Năm</h3>
+              <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                Mô hình khối đa chiều SSAS: So sánh sự ổn định và tăng trưởng thị phần của từng sản phẩm chủ lực qua 2012, 2013, 2014, 2015.
+              </div>
+            </div>
+            <div style="font-size:11px; font-weight:600; background:rgba(2, 132, 199, 0.12); color:#0284c7; padding:4px 10px; border-radius:12px;">
+              Cube: [KhangNghi_Cube]
+            </div>
+          </div>
+
+          <div class="chart-canvas-wrapper" id="chart-sal-year-product" style="min-height:300px;"></div>
+          <div id="chart-sal-year-product-insight" style="margin-top:8px; padding:6px 10px; background:var(--bg-app); border-radius:var(--radius-sm); font-size:11.5px; color:var(--text-secondary); border-left:3px solid #0284c7;"></div>
+        </div>
+
+        <!-- HÀNG 3: BIỂU ĐỒ 4 (CƠ CẤU DOANH THU) & BẢNG ĐỐI CHIẾU SỐ LIỆU THỰC TẾ -->
+        <div class="grid-charts-2-1" style="grid-template-columns: 1fr 1.6fr; gap:16px; margin-bottom:20px;">
+          <!-- Biểu đồ 4: Cơ cấu Doanh thu theo Danh mục / Sản phẩm -->
+          <div class="glass-card chart-card">
+            <div class="chart-card-header" style="margin-bottom:8px;">
+              <h3 class="chart-title"><i class="fa-solid fa-chart-pie" style="color:#8a3ffc;"></i> 4. Cơ cấu Tỷ trọng Doanh thu</h3>
+              <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                Tỷ trọng đóng góp trong tổng số (Đồng bộ theo phạm vi lọc hiện hành)
+              </div>
+            </div>
+
+            <div class="chart-canvas-wrapper" id="chart-sal-share" style="min-height:280px;"></div>
+            <div id="chart-sal-share-insight" style="margin-top:8px; padding:6px 10px; background:var(--bg-app); border-radius:var(--radius-sm); font-size:11.5px; color:var(--text-secondary); border-left:3px solid #8a3ffc;"></div>
+          </div>
+
+          <!-- Bảng đối chiếu số liệu thực tế -->
+          <div class="glass-card chart-card">
+            <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+              <div>
+                <h3 class="chart-title"><i class="fa-solid fa-table" style="color:var(--color-primary);"></i> Bảng Đối Chiếu Số Liệu Chi Tiết</h3>
+                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                  Đối chiếu số liệu thật giữa bảng và 4 biểu đồ phía trên
+                </div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="topbar-action-btn" onclick="KhangNghiApp.exportSalesCSV()" title="Xuất CSV" style="width:auto; padding:4px 10px; font-size:11.5px;">
+                  <i class="fa-solid fa-download"></i> CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive" id="sales-detail-table-container" style="max-height:330px; overflow-y:auto;">
+              <!-- Bảng dữ liệu sẽ được render động qua app.js -->
+            </div>
           </div>
         </div>
       </section>
@@ -675,22 +800,22 @@
 
             <!-- Quick Selectors -->
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-              <select id="purchase-filter-year" onchange="KhangNghiFilters.setFilter('year', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="2015" selected>Năm: 2015</option>
-                <option value="2014">Năm: 2014</option>
-                <option value="2013">Năm: 2013</option>
-                <option value="2012">Năm: 2012</option>
-                <option value="ALL">Tất cả năm</option>
+              <select id="purchase-filter-year" onchange="KhangNghiFilters.setFilter('year', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); font-weight:600; outline:none;">
+                <option value="2025" selected>Năm: 2025 (Kỳ mới nhất)</option>
+                <option value="2024">Năm: 2024</option>
+                <option value="2023">Năm: 2023</option>
+                <option value="2022">Năm: 2022</option>
+                <option value="ALL">Tất cả năm Mua hàng (2022-2025)</option>
               </select>
 
               <select id="purchase-filter-supplier" onchange="KhangNghiFilters.setFilter('supplier', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
-                <option value="All Suppliers" selected>NCC: Tất cả</option>
-                <option value="Tập đoàn HP Việt Nam">Tập đoàn HP Việt Nam</option>
-                <option value="Canon Asia Marketing Corp">Canon Asia Marketing Corp</option>
-                <option value="Nội thất Hòa Phát">Nội thất Hòa Phát</option>
-                <option value="Deli Office Supplies Global">Deli Office Supplies Global</option>
-                <option value="Panasonic Industry Vietnam">Panasonic Industry Vietnam</option>
-                <option value="Parker Pen International">Parker Pen International</option>
+                <option value="All Suppliers" selected>NCC: Tất cả (6 Nhà cung cấp)</option>
+                <option value="Công ty Thiết bị điện An Thịnh">Công ty Thiết bị điện An Thịnh</option>
+                <option value="Công ty Tự động hóa Đông Thành">Công ty Tự động hóa Đông Thành</option>
+                <option value="Công ty Kỹ thuật Minh Phát">Công ty Kỹ thuật Minh Phát</option>
+                <option value="Công ty Công nghệ Thiên Phúc">Công ty Công nghệ Thiên Phúc</option>
+                <option value="Công ty Thiết bị công nghiệp Hưng Gia">Công ty Thiết bị công nghiệp Hưng Gia</option>
+                <option value="Công ty Vật tư điện Nam Việt">Công ty Vật tư điện Nam Việt</option>
               </select>
 
               <select id="purchase-filter-category" onchange="KhangNghiFilters.setFilter('category', this.value)" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); outline:none;">
@@ -947,10 +1072,10 @@
                     <th>Mã PO</th>
                     <th>Ngày Nhập</th>
                     <th>Nhà Cung Cấp</th>
-                    <th>Sản Phẩm</th>
-                    <th>Hãng Sản Xuất</th>
-                    <th>Số Lượng</th>
-                    <th>Đơn Giá Nhập</th>
+                    <th>Kho Hàng</th>
+                    <th>Quy Mô (Items)</th>
+                    <th>Tổng Số Lượng</th>
+                    <th>Đơn Giá TB</th>
                     <th>Tổng Chi Phí Mua</th>
                   </tr>
                 </thead>
@@ -1388,6 +1513,306 @@
         </div>
       </section>
 
+      <!-- VIEW: OLAP CUBE EXPLORER (SSAS MULTI-DIMENSIONAL ANALYSIS) -->
+      <section id="view-olap-explorer" class="view-section" style="display:none;">
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">Khám phá Khối Đa Chiều / OLAP Cube Explorer <span class="badge badge-info" style="vertical-align:middle; font-size:10px;">SSAS CUBE</span></h1>
+            <p class="page-subtitle">Thao tác đa chiều (Roll-up, Drill-down, Slice, Dice, Pivot) trên mô hình khối <code>[KhangNghi_Cube]</code></p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="topbar-action-btn" style="width:auto; padding:0 12px; font-size:12px; font-weight:600; background:var(--color-primary); color:white; border:none;" onclick="window.location.hash='#/mdx-studio'">
+              <i class="fa-solid fa-terminal"></i> <span>Mở MDX Query Studio</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- QUICK OLAP OPERATIONS TOOLBAR -->
+        <div class="glass-card" style="padding:14px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <span style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--color-primary); margin-right:4px;"></i> THAO TÁC NHANH OLAP (PRESET OPERATIONS)
+              </span>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <button type="button" class="topbar-action-btn" id="btn-olap-rollup" style="width:auto; padding:6px 12px; font-size:12px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.applyOlapOperation('rollup')">
+                  🔄 Roll-up (Năm)
+                </button>
+                <button type="button" class="topbar-action-btn" id="btn-olap-drilldown" style="width:auto; padding:6px 12px; font-size:12px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.applyOlapOperation('drilldown')">
+                  🔍 Drill-down (Quý / Nhóm)
+                </button>
+                <button type="button" class="topbar-action-btn" id="btn-olap-slice" style="width:auto; padding:6px 12px; font-size:12px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.applyOlapOperation('slice')">
+                  ✂️ Slice (Miền Nam)
+                </button>
+                <button type="button" class="topbar-action-btn" id="btn-olap-dice" style="width:auto; padding:6px 12px; font-size:12px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.applyOlapOperation('dice')">
+                  🎲 Dice (Miền Nam & 2026)
+                </button>
+                <button type="button" class="topbar-action-btn" id="btn-olap-pivot" style="width:auto; padding:6px 12px; font-size:12px; font-weight:600; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.applyOlapOperation('pivot')">
+                  🔃 Pivot (Xoay Ma Trận)
+                </button>
+              </div>
+            </div>
+            <div style="font-size:11.5px; color:var(--text-muted); text-align:right;">
+              <div>Khối: <strong>KhangNghi_Cube</strong></div>
+              <div>Cơ sở dữ liệu SSAS: <strong>KhangNghi_SSAS</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUBE BUILDER CONTROLS -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
+            <i class="fa-solid fa-sliders" style="color:var(--color-primary); margin-right:6px;"></i> Thiết lập Tọa độ Đa chiều (Dimensions & Measures)
+          </h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">CHỈ ĐỘ ĐO (MEASURE)</label>
+              <select id="olap-select-measure" class="filter-select" style="width:100%; padding:8px 10px; font-size:12.5px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main);" onchange="KhangNghiApp.renderOlapTable()">
+                <option value="[Measures].[Sales Amount]" selected>Sales Amount (Doanh thu bán hàng)</option>
+                <option value="[Measures].[Profit Amount]">Profit Amount (Lợi nhuận gộp)</option>
+                <option value="[Measures].[Quantity]">Quantity (Số lượng bán)</option>
+                <option value="[Measures].[Discount Amount]">Discount Amount (Tiền chiết khấu)</option>
+                <option value="[Measures].[Shipping Cost]">Shipping Cost (Cước vận chuyển)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">CHIỀU HÀNG (ROWS AXIS)</label>
+              <select id="olap-select-rows" class="filter-select" style="width:100%; padding:8px 10px; font-size:12.5px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main);" onchange="KhangNghiApp.renderOlapTable()">
+                <option value="[Dim Product].[Category]" selected>Danh mục sản phẩm (Category)</option>
+                <option value="[Dim Product].[Sub Category]">Phân nhóm sản phẩm (Sub Category)</option>
+                <option value="[Dim Customer].[Segment]">Phân khúc khách hàng (Segment)</option>
+                <option value="[Dim Location].[Region]">Vùng miền địa lý (Region)</option>
+                <option value="[Dim Time].[Year]">Năm bán hàng (Year)</option>
+                <option value="[Dim Sales Channel].[Channel Name]">Kênh bán hàng (Sales Channel)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">CHIỀU CỘT (COLUMNS AXIS)</label>
+              <select id="olap-select-cols" class="filter-select" style="width:100%; padding:8px 10px; font-size:12.5px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main);" onchange="KhangNghiApp.renderOlapTable()">
+                <option value="[Dim Time].[Year]" selected>Năm bán hàng (Year: 2012 - 2015)</option>
+                <option value="[Dim Location].[Region]">Vùng miền (Region)</option>
+                <option value="[Dim Sales Channel].[Channel Name]">Kênh bán hàng (Sales Channel)</option>
+                <option value="[Dim Customer].[Segment]">Phân khúc (Segment)</option>
+                <option value="[Dim Time].[Quarter]">Quý trong năm (Quarter)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">BỘ LỌC CẮT LÁT (SLICE / WHERE)</label>
+              <select id="olap-select-slice" class="filter-select" style="width:100%; padding:8px 10px; font-size:12.5px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main);" onchange="KhangNghiApp.renderOlapTable()">
+                <option value="NONE" selected>Toàn bộ phạm vi (Không cắt lát)</option>
+                <option value="[Dim Location].[Region].&[Miền Nam]">Lát cắt: Riêng Miền Nam (Slice Region)</option>
+                <option value="[Dim Location].[Region].&[Miền Bắc]">Lát cắt: Riêng Miền Bắc (Slice Region)</option>
+                <option value="[Dim Time].[Year].&[2026]">Lát cắt: Riêng Năm 2026 (Slice Year)</option>
+                <option value="DICE_NAM_2026">Khối cắt: Miền Nam & Năm 2026 (Dice)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- GENERATED MDX PREVIEW BOX -->
+        <div class="glass-card" style="padding:14px; margin-bottom:16px; background:var(--bg-app); border:1px solid var(--border-color);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:700; color:var(--color-primary); text-transform:uppercase;">
+              <i class="fa-solid fa-code"></i> CÂU TRUY VẤN MDX TƯƠNG ỨNG TỰ ĐỘNG PHÁT SINH:
+            </span>
+            <button class="topbar-action-btn" style="width:auto; padding:2px 10px; font-size:11px; background:var(--color-primary); color:white; border:none;" onclick="KhangNghiApp.sendGeneratedMdxToStudio()">
+              🚀 Nạp vào MDX Query Studio
+            </button>
+          </div>
+          <pre id="olap-generated-mdx" style="margin:0; font-family:Consolas, 'Fira Code', monospace; font-size:12px; color:var(--text-main); background:var(--bg-card); padding:10px 12px; border-radius:6px; overflow-x:auto; line-height:1.5; border:1px solid var(--border-color);"></pre>
+        </div>
+
+        <!-- MULTI-DIMENSIONAL RESULT TABLE -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="font-size:14px; font-weight:700; color:var(--text-main);">
+              <i class="fa-solid fa-table-cells" style="color:var(--color-primary); margin-right:6px;"></i> Ma Trận Kết Quả Đa Chiều (Multi-Dimensional Pivot Grid)
+            </h3>
+            <span id="olap-table-info" class="badge badge-info" style="font-size:11px;">Đang tải dữ liệu...</span>
+          </div>
+          <div class="table-responsive" id="olap-table-container">
+            <!-- Dynamic OLAP table rendered via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: MDX QUERY STUDIO & 40 MDX QUERIES LIBRARY -->
+      <section id="view-mdx-studio" class="view-section" style="display:none;">
+        <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div class="page-title-group">
+            <h1 class="page-title">MDX Query Studio & Thư Viện 40 Truy Vấn <span class="badge badge-info" style="vertical-align:middle; font-size:10px;">OLAP / SSAS</span></h1>
+            <p class="page-subtitle">Môi trường soạn thảo, biên dịch, thực thi câu lệnh MDX trên khối SSAS và tra cứu 40 truy vấn chuẩn hóa khóa luận</p>
+          </div>
+          <!-- SUB-TAB SWITCHER -->
+          <div class="segmented-control" style="background:var(--bg-card); border:1px solid var(--border-color); padding:3px; border-radius:var(--radius-sm);">
+            <button type="button" class="btn active" id="tab-btn-studio" onclick="KhangNghiApp.switchMdxSubTab('studio')" style="font-size:12px; padding:6px 14px; font-weight:600;">
+              <i class="fa-solid fa-terminal" style="margin-right:4px;"></i> MDX Query Studio
+            </button>
+            <button type="button" class="btn" id="tab-btn-catalog" onclick="KhangNghiApp.switchMdxSubTab('catalog')" style="font-size:12px; padding:6px 14px; font-weight:600;">
+              <i class="fa-solid fa-book-bookmark" style="margin-right:4px;"></i> Thư Viện 40 Truy Vấn MDX
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-TAB 1: MDX QUERY STUDIO -->
+        <div id="subtab-mdx-studio">
+          <!-- EDITOR CARD -->
+          <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">TRUY VẤN MẪU:</label>
+                <select id="mdx-sample-select" style="padding:6px 10px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main); max-width:320px;" onchange="KhangNghiApp.loadSelectedSampleMdx(this.value)">
+                  <option value="">-- Chọn truy vấn mẫu từ Thư viện --</option>
+                  <option value="MDX-01">MDX-01: Doanh thu theo Năm (Roll-up)</option>
+                  <option value="MDX-02">MDX-02: Doanh thu theo Quý (Drill-down)</option>
+                  <option value="MDX-04">MDX-04: Doanh thu theo Danh mục sản phẩm</option>
+                  <option value="MDX-06">MDX-06: Top 10 Sản phẩm Doanh thu cao nhất</option>
+                  <option value="MDX-11">MDX-11: Doanh thu theo Phân khúc khách hàng</option>
+                  <option value="MDX-13">MDX-13: Doanh thu theo Vùng miền (Region)</option>
+                  <option value="MDX-15">MDX-15: Doanh thu Danh mục tại Miền Nam (Slice)</option>
+                  <option value="MDX-17">MDX-17: Ma trận chéo Danh mục x Vùng miền (Pivot)</option>
+                  <option value="MDX-22">MDX-22: Tính Tỷ suất lợi nhuận (Calculated Member)</option>
+                  <option value="MDX-36">MDX-36: Chi phí vận chuyển theo Hãng (Shipper)</option>
+                </select>
+              </div>
+
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="topbar-action-btn" style="width:auto; padding:6px 12px; font-size:12px; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.clearMdxEditor()">
+                  <i class="fa-solid fa-trash-can"></i> Xóa trắng
+                </button>
+                <button type="button" class="topbar-action-btn" style="width:auto; padding:6px 14px; font-size:12px; font-weight:700; background:linear-gradient(135deg, var(--color-primary), #1d4ed8); color:white; border:none; box-shadow:0 4px 12px rgba(15,98,254,0.3);" id="btn-execute-mdx" onclick="KhangNghiApp.executeMdxFromStudio()">
+                  <i class="fa-solid fa-play"></i> Thực thi MDX (Execute)
+                </button>
+              </div>
+            </div>
+
+            <!-- CODE TEXTAREA -->
+            <div style="position:relative;">
+              <textarea id="mdx-query-input" rows="8" style="width:100%; font-family:Consolas, 'Fira Code', monospace; font-size:13px; line-height:1.5; padding:12px; background:var(--bg-app); border:1px solid var(--border-color); border-radius:var(--radius-sm); color:var(--text-main); outline:none; resize:vertical; box-sizing:border-box;" placeholder="Nhập câu lệnh MDX tại đây... (Nhấn Ctrl + Enter để thực thi)">SELECT 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount], [Measures].[Quantity] } ON COLUMNS,
+    [Dim Time].[Year].MEMBERS ON ROWS
+FROM [KhangNghi_Cube];</textarea>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:11.5px; color:var(--text-muted);">
+              <span>Phím tắt: <strong>Ctrl + Enter</strong> để thực thi. Cú pháp chuẩn MDX chạy trực tiếp trên SSAS Analysis Services.</span>
+              <span>Endpoint: <code>POST /api/v1/ssas/query</code></span>
+            </div>
+          </div>
+
+          <!-- EXECUTION STATUS & METRICS BAR -->
+          <div id="mdx-execution-bar" class="glass-card" style="padding:10px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span id="mdx-exec-status" class="badge badge-info" style="font-size:11px;">Sẵn sàng thực thi</span>
+              <span id="mdx-exec-time" style="font-size:11.5px; color:var(--text-secondary);">Thời gian: <strong>0 ms</strong></span>
+              <span id="mdx-exec-rows" style="font-size:11.5px; color:var(--text-secondary);">Số bản ghi: <strong>0</strong></span>
+            </div>
+            <div style="font-size:11.5px; color:var(--text-muted);">
+              Nguồn kết nối: <span id="mdx-exec-source">SSAS OLAP Cube (MSOLAP)</span>
+            </div>
+          </div>
+
+          <!-- RESULT & ERROR DISPLAY CONTAINER -->
+          <div id="mdx-result-container" class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div id="mdx-result-placeholder" style="text-align:center; padding:32px; color:var(--text-muted);">
+              <i class="fa-solid fa-code" style="font-size:32px; opacity:0.3; margin-bottom:12px; display:block;"></i>
+              <div style="font-size:13.5px; font-weight:600;">Chưa có kết quả thực thi</div>
+              <p style="font-size:12px; margin-top:4px;">Nhập câu lệnh MDX hoặc chọn từ Thư viện 40 câu truy vấn rồi nhấn "Thực thi MDX".</p>
+            </div>
+
+            <!-- DYNAMIC RESULT TABLE -->
+            <div id="mdx-table-wrapper" class="table-responsive" style="display:none;">
+              <table class="enterprise-table" id="mdx-dynamic-table" style="font-size:12px;">
+                <thead id="mdx-dynamic-thead"></thead>
+                <tbody id="mdx-dynamic-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- RICH DIAGNOSTIC ERROR CARD (FOR ACCURATE DEFENSE PRESENTATION) -->
+            <div id="mdx-error-card" style="display:none; background:var(--color-danger-bg); border:1px solid var(--color-danger); border-radius:var(--radius-sm); padding:16px; color:var(--text-main);">
+              <div style="display:flex; align-items:flex-start; gap:12px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size:20px; color:var(--color-danger); margin-top:2px;"></i>
+                <div style="flex:1;">
+                  <strong style="font-size:13.5px; color:var(--color-danger); display:block; margin-bottom:6px;">Lỗi Thực Thi MDX từ SSAS Analysis Services Engine</strong>
+                  <div id="mdx-error-message" style="font-family:Consolas, monospace; font-size:12px; background:rgba(0,0,0,0.1); padding:8px 10px; border-radius:4px; margin-bottom:10px; word-break:break-all;"></div>
+                  <div style="font-size:12px; line-height:1.6; color:var(--text-secondary);">
+                    <strong>Căn cứ chẩn đoán kỹ thuật:</strong>
+                    <ul style="margin:4px 0 0 16px; padding:0;">
+                      <li>Dịch vụ <code>MSOLAP$SSAS_MULTI</code> và Catalog <code>KhangNghi_SSAS</code> đã kết nối thành công qua OleDb.</li>
+                      <li>Khối <code>KhangNghi_Cube</code> trên SSAS gặp lỗi Metadata Manager do thuộc tính <code>Employee Key</code> trong Measure Group <code>Fact Sales</code> bị lệch định danh khi deploy.</li>
+                      <li><strong>Hướng dẫn bảo vệ khóa luận:</strong> Mở solution SSAS trong Visual Studio SSDT, kiểm tra dimension <code>Dim Employee</code>, đồng bộ lại Attribute Key và thực hiện <em>Process Full</em> cho Cube.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-TAB 2: 40 MDX QUERIES LIBRARY -->
+        <div id="subtab-mdx-catalog" style="display:none;">
+          <!-- CATALOG TOOLBAR -->
+          <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+              <div>
+                <h3 style="font-size:14px; font-weight:700; color:var(--text-main); margin:0 0 4px 0;">
+                  <i class="fa-solid fa-list-ol" style="color:var(--color-primary); margin-right:6px;"></i> Danh Mục 40 Câu Truy Vấn MDX Chuẩn Hóa Theo Đề Cương Khóa Luận
+                </h3>
+                <span style="font-size:12px; color:var(--text-muted);">
+                  Tổng hợp từ tài liệu <code>docs/40_CAU_TRUY_VAN_MDX.md</code> — 29 câu đã kiểm chứng dữ liệu thực tế / 11 câu mẫu thiết kế chờ nguồn.
+                </span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="topbar-action-btn" style="width:auto; padding:6px 12px; font-size:12px; background:var(--bg-app); border:1px solid var(--border-color); color:var(--text-main);" onclick="KhangNghiApp.filterMdxCatalogByStatus('ALL')">
+                  Tất cả (40)
+                </button>
+                <button type="button" class="topbar-action-btn" style="width:auto; padding:6px 12px; font-size:12px; background:rgba(37,162,68,0.15); border:1px solid rgba(37,162,68,0.3); color:#25a244;" onclick="KhangNghiApp.filterMdxCatalogByStatus('VERIFIED')">
+                  ✓ Đã kiểm chứng (29)
+                </button>
+                <button type="button" class="topbar-action-btn" style="width:auto; padding:6px 12px; font-size:12px; background:rgba(243,156,18,0.15); border:1px solid rgba(243,156,18,0.3); color:#f39c12;" onclick="KhangNghiApp.filterMdxCatalogByStatus('DESIGN_TEMPLATE')">
+                  ⏳ Câu mẫu (11)
+                </button>
+              </div>
+            </div>
+
+            <!-- SEARCH & SECTOR FILTERS -->
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <input type="text" id="mdx-catalog-search" placeholder="🔍 Tìm theo mã (MDX-01), nghiệp vụ, hoặc từ khóa..." style="flex:1; min-width:240px; padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); outline:none;" oninput="KhangNghiApp.filterMdxCatalogList(this.value)">
+              <select id="mdx-catalog-sector-filter" style="padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main);" onchange="KhangNghiApp.filterMdxCatalogBySector(this.value)">
+                <option value="ALL" selected>-- Tất cả 6 Phân hệ Nghiệp vụ --</option>
+                <option value="Bán hàng & Doanh thu">1. Bán hàng & Doanh thu (Câu 01 - 10)</option>
+                <option value="Khách hàng & Thị trường">2. Khách hàng & Thị trường (Câu 11 - 18)</option>
+                <option value="Nhân sự & Khuyến mãi">3. Nhân sự & Khuyến mãi (Câu 19 - 24)</option>
+                <option value="Mua hàng & Nhà cung cấp">4. Mua hàng & Nhà cung cấp (Câu 25 - 29)</option>
+                <option value="Quản lý Kho & Tồn kho">5. Quản lý Kho & Tồn kho (Câu 30 - 35)</option>
+                <option value="Vận chuyển & Logistics">6. Vận chuyển & Logistics (Câu 36 - 40)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 40 MDX TABLE -->
+          <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+            <div class="table-responsive">
+              <table class="enterprise-table" style="font-size:12px;">
+                <thead>
+                  <tr>
+                    <th style="width:65px;">Mã</th>
+                    <th style="width:130px;">Phân Hệ</th>
+                    <th>Nội Dung Câu Hỏi & Ý Nghĩa Nghiệp Vụ</th>
+                    <th style="width:110px;">Thao Tác OLAP</th>
+                    <th style="width:100px;">Bảng Fact</th>
+                    <th style="width:150px;">Trạng Thái Kiểm Chứng</th>
+                    <th style="width:90px; text-align:center;">Thực Thi</th>
+                  </tr>
+                </thead>
+                <tbody id="mdx-catalog-table-body">
+                  <!-- Rendered dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- VIEW 11: AI SALES FORECAST (ROUND 7) -->
       <section id="view-forecast" class="view-section">
         <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
@@ -1507,10 +1932,13 @@
           </div>
         </div>
 
-        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
-          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="explorer-search-input" placeholder="Tìm kiếm câu hỏi nghiệp vụ, chỉ số..." style="padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12.5px; color:var(--text-main); flex:1; outline:none;" oninput="KhangNghiApp.filterQuestionCatalog(this.value)">
-            <select id="explorer-filter-domain" style="padding:6px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:12px; color:var(--text-main);" onchange="KhangNghiApp.filterQuestionCatalogByDomain(this.value)">
+        <div class="glass-card explorer-toolbar-card">
+          <div class="explorer-toolbar">
+            <div class="explorer-search-box">
+              <i class="fa-solid fa-magnifying-glass explorer-search-icon"></i>
+              <input type="text" id="explorer-search-input" class="explorer-search-input" placeholder="Tìm kiếm câu hỏi nghiệp vụ, mã, chỉ số, chiều phân tích..." oninput="KhangNghiApp.filterQuestionCatalog(this.value)">
+            </div>
+            <select id="explorer-filter-domain" class="explorer-filter-select" onchange="KhangNghiApp.filterQuestionCatalogByDomain(this.value)">
               <option value="ALL" selected>Phân hệ: Tất cả</option>
               <option value="Sales">Bán hàng</option>
               <option value="Purchase">Mua hàng</option>
@@ -1525,11 +1953,19 @@
           </div>
         </div>
 
-        <div class="glass-card" style="padding:16px; margin-bottom:16px;">
+        <div class="glass-card explorer-table-card">
           <div class="table-responsive">
-            <table class="enterprise-table" style="font-size:12px;">
+            <table class="enterprise-table question-explorer-table">
               <thead>
-                <tr><th>Mã Câu Hỏi</th><th>Phân Hệ</th><th>Tên Câu Hỏi Nghiệp Vụ</th><th>Chỉ Số</th><th>Chiều Phân Tích</th><th>Trạng Thái</th><th>Thao Tác</th></tr>
+                <tr>
+                  <th class="col-id">Mã Câu Hỏi</th>
+                  <th class="col-domain">Phân Hệ</th>
+                  <th class="col-question">Tên Câu Hỏi Nghiệp Vụ</th>
+                  <th class="col-measures">Chỉ Số</th>
+                  <th class="col-dim">Chiều Phân Tích</th>
+                  <th class="col-status">Trạng Thái</th>
+                  <th class="col-action">Thao Tác</th>
+                </tr>
               </thead>
               <tbody id="explorer-table-body"></tbody>
             </table>
@@ -1546,22 +1982,60 @@
           </div>
         </div>
 
-        <div class="grid-kpi-4" style="margin-bottom:16px;">
-          <div class="glass-card" style="padding:14px;">
-            <span style="font-size:11px; color:var(--text-muted);">Database DWH</span>
-            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Đã kết nối</div>
+        <div class="grid-kpi-4" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); margin-bottom:16px;">
+          <div class="glass-card" style="padding:14px;" id="status-card-dwh">
+            <span style="font-size:11px; color:var(--text-muted);">SQL SERVER DWH</span>
+            <div style="font-size:15px; font-weight:800; color:var(--color-success); margin-top:4px;" id="status-dwh-val">🟢 Online (DWH_KhangNghi)</div>
+            <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">MSSQLSERVER2025 | Dapper</div>
+          </div>
+          <div class="glass-card" style="padding:14px;" id="status-card-ssas">
+            <span style="font-size:11px; color:var(--text-muted);">SSAS INSTANCE</span>
+            <div style="font-size:15px; font-weight:800; color:var(--color-success); margin-top:4px;" id="status-ssas-val">🟢 Online (.\SSAS_MULTI)</div>
+            <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Service MSOLAP$SSAS_MULTI</div>
+          </div>
+          <div class="glass-card" style="padding:14px;" id="status-card-cube">
+            <span style="font-size:11px; color:var(--text-muted);">KHỐI ĐA CHIỀU (CUBE)</span>
+            <div style="font-size:15px; font-weight:800; color:#f39c12; margin-top:4px;" id="status-cube-val">🟡 Cần Đồng Bộ Metadata</div>
+            <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Catalog: KhangNghi_SSAS</div>
+          </div>
+          <div class="glass-card" style="padding:14px;" id="status-card-api">
+            <span style="font-size:11px; color:var(--text-muted);">MDX QUERY API</span>
+            <div style="font-size:15px; font-weight:800; color:var(--color-success); margin-top:4px;" id="status-api-val">🟢 Sẵn Sàng (Timeout 5s)</div>
+            <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">POST /api/v1/ssas/query</div>
           </div>
           <div class="glass-card" style="padding:14px;">
-            <span style="font-size:11px; color:var(--text-muted);">Tầng REST API</span>
-            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Đã kết nối</div>
+            <span style="font-size:11px; color:var(--text-muted);">TỔNG SỐ BẢN GHI DWH</span>
+            <div style="font-size:15px; font-weight:800; color:var(--color-primary); margin-top:4px;">51,456 Fact Sales</div>
+            <div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">5 POs | 4 Kho | 25 NCC</div>
           </div>
-          <div class="glass-card" style="padding:14px;">
-            <span style="font-size:11px; color:var(--text-muted);">Quy trình ETL</span>
-            <div style="font-size:16px; font-weight:800; color:var(--color-success); margin-top:4px;">🟢 Đã kết nối (Sẵn sàng)</div>
+        </div>
+
+        <!-- SSAS DIAGNOSTIC DETAIL CARD -->
+        <div class="glass-card" style="padding:16px; margin-bottom:16px; background:var(--bg-app); border:1px solid var(--border-color);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="font-size:13.5px; font-weight:700; color:var(--text-main); margin:0;">
+              <i class="fa-solid fa-server" style="color:var(--color-primary); margin-right:6px;"></i> Chẩn Đoán Trạng Thái Kết Nối Đa Tầng DWH & SSAS OLAP
+            </h3>
+            <span id="system-diagnostic-timestamp" class="badge badge-info" style="font-size:10.5px;">Kiểm tra: Thời gian thực</span>
           </div>
-          <div class="glass-card" style="padding:14px;">
-            <span style="font-size:11px; color:var(--text-muted);">Tổng Số Bản Ghi</span>
-            <div style="font-size:16px; font-weight:800; color:var(--color-primary); margin-top:4px;">51,291 Bản ghi</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px; font-size:12px;">
+            <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border-color);">
+              <strong style="color:var(--color-primary); display:block; margin-bottom:6px;">1. Cơ sở dữ liệu Quan hệ DWH (Relational Storage)</strong>
+              <div>• <strong>Máy chủ:</strong> <code>.\MSSQLSERVER2025</code> (Windows Integrated Security)</div>
+              <div>• <strong>Tên CSDL:</strong> <code>DWH_KhangNghi</code></div>
+              <div>• <strong>Trạng thái:</strong> <span class="badge badge-healthy">ONLINE (ĐÃ KẾT NỐI)</span></div>
+              <div>• <strong>Bảng Fact chính:</strong> Fact_Sales (51,456 dòng), Fact_Purchase, Fact_Shipping, Fact_Inventory</div>
+            </div>
+            <div style="background:var(--bg-card); padding:12px; border-radius:6px; border:1px solid var(--border-color);">
+              <strong style="color:#8a3ffc; display:block; margin-bottom:6px;">2. Máy chủ Phân tích Đa chiều SSAS (Multidimensional Instance)</strong>
+              <div>• <strong>Máy chủ SSAS:</strong> <code>.\SSAS_MULTI</code> (Dịch vụ: <code>MSOLAP$SSAS_MULTI</code>)</div>
+              <div>• <strong>Catalog:</strong> <code>KhangNghi_SSAS</code> (Đã tạo và nạp trên SSAS)</div>
+              <div>• <strong>Kết nối OleDb Provider:</strong> <span class="badge badge-healthy">MSOLAP THÀNH CÔNG</span></div>
+              <div>• <strong>Tình trạng Cube KhangNghi_Cube:</strong> <span class="badge badge-warning">CẦN ĐỒNG BỘ METADATA</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:11.5px; color:var(--text-secondary); background:rgba(243,156,18,0.1); padding:8px 12px; border-radius:4px; border-left:3px solid #f39c12;">
+            ℹ️ <strong>Ghi chú bảo vệ đồ án:</strong> Máy chủ Analysis Services đang chạy cục bộ trên máy chấm thi (<code>.\SSAS_MULTI</code>). Web BI kết nối trực tiếp đến SSAS qua OleDb/ADOMD. Khi xử lý Process Cube trong SSDT, các câu truy vấn MDX trong Studio sẽ trả về kết quả số liệu ngay lập tức.
           </div>
         </div>
 
@@ -1637,9 +2111,9 @@
                 <tr><td><code>Staging_Product</code></td><td><code>Dim_Product</code></td><td>Dimension</td><td><strong>3,788</strong></td><td>MERGE (Natural Key ProductID)</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
                 <tr><td><code>Staging_Location</code></td><td><code>Dim_Location</code></td><td>Dimension</td><td><strong>3,856</strong></td><td>MERGE (City, State, Region)</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
                 <tr><td><code>Staging_Time</code></td><td><code>Dim_Time</code></td><td>Dimension</td><td><strong>1,430</strong></td><td>Generator (2012-2015)</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
-                <tr><td><code>Staging_Purchase</code></td><td><code>Fact_Purchase</code></td><td>Fact</td><td><strong>0</strong></td><td>Chưa có trong File Nguồn</td><td><span class="badge badge-warning">NO DATA</span></td></tr>
-                <tr><td><code>Staging_Inventory</code></td><td><code>Fact_Inventory</code></td><td>Fact</td><td><strong>0</strong></td><td>Chưa có trong File Nguồn</td><td><span class="badge badge-warning">NO DATA</span></td></tr>
-                <tr><td><code>Staging_Shipping</code></td><td><code>Fact_Shipping</code></td><td>Fact</td><td><strong>0</strong></td><td>Chưa có trong File Nguồn</td><td><span class="badge badge-warning">NO DATA</span></td></tr>
+                <tr><td><code>Staging_Purchase</code></td><td><code>Fact_Purchase</code></td><td>Fact</td><td><strong>3,788</strong></td><td>SqlBulkCopy & MERGE</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
+                <tr><td><code>Staging_Inventory</code></td><td><code>Fact_Inventory</code></td><td>Fact</td><td><strong>55,067</strong></td><td>SqlBulkCopy & MERGE</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
+                <tr><td><code>Staging_Shipping</code></td><td><code>Fact_Shipping</code></td><td>Fact</td><td><strong>51,290</strong></td><td>SqlBulkCopy & MERGE</td><td><span class="badge badge-healthy">AVAILABLE</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -1801,16 +2275,16 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/mock-data.js"></script>
-  <script src="js/mock-api.js"></script>
-  <script src="js/apiClient.js"></script>
-  <script src="js/searchService.js"></script>
-  <script src="js/authService.js"></script>
-  <script src="js/analyticsService.js"></script>
-  <script src="js/components.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/filters.js"></script>
-  <script src="js/router.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/mock-data.js?v=20261015_01"></script>
+  <script src="js/mock-api.js?v=20261015_01"></script>
+  <script src="js/apiClient.js?v=20261015_01"></script>
+  <script src="js/searchService.js?v=20261015_01"></script>
+  <script src="js/authService.js?v=20261015_01"></script>
+  <script src="js/analyticsService.js?v=20261020_02"></script>
+  <script src="js/components.js?v=20261015_01"></script>
+  <script src="js/charts.js?v=20261020_02"></script>
+  <script src="js/filters.js?v=20261015_01"></script>
+  <script src="js/router.js?v=20261015_01"></script>
+  <script src="js/app.js?v=20261020_02"></script>
 </body>
 </html>

@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="0_Nap_Staging"
   DTS:PackageType="5"
-  DTS:VersionBuild="36"
-  DTS:VersionGUID="{EF1CE421-F7C1-45A1-BF5B-52C6CF0C7CC8}">
+  DTS:VersionBuild="38"
+  DTS:VersionGUID="{EA492DAF-297D-4DA1-B8AF-A8EF487B79D5}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,7 +25,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="0"
           DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
+          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -37,7 +37,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="0"
           DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
+          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -49,7 +49,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="0"
           DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Nguon1_Sales_MienTrung.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
+          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Nguon1_Sales_MienTrung.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -61,12 +61,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_OLTP;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADxB9A87sW7UmSt3fXZG2PWCq5mL0fOFESbwVzwQdE/qwAAAAAOgAAAAAIAACAAAAAvFKn8Yj46l+lZFCh7bq9Z+zNVzrpDRX+9ixL4XKFxXBAAAAAPhVJsNskrMQEFpFzfsHPCQAAAAIc+tovImd8z4LSp7FhMC606z81NhmAy9+DFRMfZ2lXZyRsEGTGN1QCBpqf3IY/6fI6Rma9eSxtqzeCLgtXdMOo</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -78,12 +73,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Purchasing_OLTP;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{9326787D-3890-497C-BB4E-EC2A15433802}HungNguyen.KhangNghi_Purchasing_OLTP.sa;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD36Jfg8AS/sZ4lG918tequVibIQUoKHZHPHhEPnz051gAAAAAOgAAAAAIAACAAAADWdeH4R/5+IQNmBIvCPCfrZiQLWd8Be8WaNv3AmUqawhAAAADshVyhdseVRyjVa3cI8TiWQAAAAILC2W/+CJ6SJcL3EQMFpa64mkhqe5+G8UVAvz1amrg/UlK6BDsJbrIMnOw64Yqtl5f1pZZYOuKiPAZwpncEDak</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{9326787D-3890-497C-BB4E-EC2A15433802}HungNguyen.KhangNghi_Purchasing_OLTP.sa;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -95,12 +85,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Purchasing_OLTP;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{756EB4E3-FE96-4619-BF98-72914CB453CC}HungNguyen.KhangNghi_Purchasing_OLTP.sa 1;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACpoQNnVzTcEZSo3A5raYHzkZS+6zik+MPLehTXEfupmwAAAAAOgAAAAAIAACAAAABlJq7+YM9KebDuxvu5qZdiZWJMUQE7YTf39lDFxhfN8RAAAAB4WZohyhvjMCiOluL8wTEuQAAAAL1WSTw29akpXkAFKfSrXVbcgEUp1tT5MD5fDKMQyP5tulhNSRnz/viDOtfpnSiU7T6eenY/L4m7IWyqtXMAFvI</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{756EB4E3-FE96-4619-BF98-72914CB453CC}HungNguyen.KhangNghi_Purchasing_OLTP.sa 1;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -112,12 +97,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{447755A6-0C52-4970-B13C-5E9675AB000D}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD+WJTgLInkzafqr6g9nCn4GygxGkJsGnpracng4yMKFAAAAAAOgAAAAAIAACAAAADZgUuykFYcyWU0z/iXbA7/9M5iWYBF8GD2lEF/CmmEQBAAAACjYSlCVb2YVfi7yKxCvLiJQAAAAHq0tmAFbJMdcR8r2D+X72GW55yPATpL1t0Li+XPEaq/tsl34sp7Zvjrnv8vL+K7n4GLUfVqFAJ3lfqXRBLchsM</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{447755A6-0C52-4970-B13C-5E9675AB000D}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -129,12 +109,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=Nguon2_WebBanHang;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{635B551F-4998-4ABE-8D1C-55000170A40B}HungNguyen.Nguon2_WebBanHang.sa;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABjyr4QXUrA7JEBPUIrgsryCDvr/AeEnVXjoxuq5SR0HAAAAAAOgAAAAAIAACAAAABdoTTUT9sczXgv+jKJJaEfTijLPpr05afcrgsv4JC6ehAAAACAWiYvPmBOVq8eFiXhZABwQAAAAKFQbr5xKNPs1K9KqGUtgdsofMj6Fp/IhZUgCR8kSTg8zkBcIfDdnrQtMfcbMZ+YmmLpxw30QD6V5enWkKYtdXE</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=Nguon2_WebBanHang;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{635B551F-4998-4ABE-8D1C-55000170A40B}HungNguyen.Nguon2_WebBanHang.sa;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -146,12 +121,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=Nguon3_PhanMemNhapHang;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{242C6042-4B59-4360-AA70-7EFDD84925E3}HungNguyen.Nguon3_PhanMemNhapHang.sa;Auto Translate=False;">
-          <DTS:Password
-            DTS:Name="Password"
-            Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADwKTYP6JnxCBo5se2HLlwm2TDoDdWBGE2Q7zvla1l3QAAAAAAOgAAAAAIAACAAAACmleP/LnhVySEeNM5XrLa/b7swjmxp9Rn2WsKezUA/DRAAAABmt5np15ik1YodFfxMkHk9QAAAABoQxehC6C2xuAjUeo32Y1ZRkrftSWHonPy/TSNRxQOtn0c9QgP2u+wbD+3ELbrv8lUCjFN8eMLy6Y9JE3ciXxg</DTS:Password>
-        </DTS:ConnectionManager>
+          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=Nguon3_PhanMemNhapHang;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{242C6042-4B59-4360-AA70-7EFDD84925E3}HungNguyen.Nguon3_PhanMemNhapHang.sa;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -494,20 +464,6 @@
                       cachedName="Location ID"
                       externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Location ID]"
                       lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Location ID]" />
-                    <inputColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Warehouse]"
-                      cachedDataType="wstr"
-                      cachedLength="100"
-                      cachedName="Warehouse"
-                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse ]"
-                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]" />
-                    <inputColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Service]"
-                      cachedDataType="wstr"
-                      cachedLength="255"
-                      cachedName="Service"
-                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service ]"
-                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Service]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -599,7 +555,7 @@
                       name="Product Name" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Sales]"
-                      dataType="cy"
+                      dataType="r8"
                       name="Sales" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Quantity]"
@@ -611,7 +567,7 @@
                       name="Discount" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Profit]"
-                      dataType="cy"
+                      dataType="r8"
                       name="Profit" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Shipping Cost]"
@@ -622,11 +578,6 @@
                       dataType="wstr"
                       length="255"
                       name="Order Priority" />
-                    <externalMetadataColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse ]"
-                      dataType="wstr"
-                      length="255"
-                      name="Warehouse " />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Payment Method]"
                       dataType="wstr"
@@ -643,11 +594,6 @@
                       length="255"
                       name="Manufacturer" />
                     <externalMetadataColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service ]"
-                      dataType="wstr"
-                      length="255"
-                      name="Service " />
-                    <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Employee Name]"
                       dataType="wstr"
                       length="255"
@@ -663,10 +609,15 @@
                       length="255"
                       name="Location ID" />
                     <externalMetadataColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryStreetAddress]"
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse]"
                       dataType="wstr"
                       length="255"
-                      name="DeliveryStreetAddress" />
+                      name="Warehouse" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service]"
+                      dataType="wstr"
+                      length="255"
+                      name="Service" />
                   </externalMetadataColumns>
                 </input>
               </inputs>

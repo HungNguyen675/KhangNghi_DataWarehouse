@@ -174,9 +174,24 @@ window.KhangNghiAuth = (function () {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        const matched = DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === (parsed.email || "").toLowerCase() || a.role.toLowerCase() === (parsed.role || "").toLowerCase());
+        const matched = DEMO_ACCOUNTS.find(a => 
+          a.email.toLowerCase() === (parsed.email || "").toLowerCase() || 
+          a.email.replace(".demo", ".com.vn").toLowerCase() === (parsed.email || "").toLowerCase() ||
+          a.role.toLowerCase() === (parsed.role || "").toLowerCase()
+        );
         if (matched) {
           currentUser = { ...matched, lastLogin: parsed.loginTime || new Date().toLocaleTimeString("vi-VN") };
+        } else if (parsed.email && parsed.role) {
+          currentUser = {
+            userId: "USR-SESSION",
+            email: parsed.email,
+            fullName: parsed.email.split("@")[0],
+            role: parsed.role,
+            roleTitle: parsed.role === "Admin" ? "Quản Trị Hệ Thống" : "Ban Giám Đốc",
+            department: "Hệ Thống DWH Khang Nghị",
+            avatar: parsed.role.substring(0, 2).toUpperCase(),
+            lastLogin: parsed.loginTime || new Date().toLocaleTimeString("vi-VN")
+          };
         }
       } catch (e) {
         console.error("Auth session parse error:", e);
@@ -188,22 +203,55 @@ window.KhangNghiAuth = (function () {
     const client = window.KhangNghiApiClient;
     const input = (emailOrUsername || "").trim();
 
+    // Mapping alias demo accounts sang tài khoản thực tế trong CSDL Sys_User
+    const aliasMap = {
+      "ceo@khangnghi.demo": "ceo@khangnghi.com.vn",
+      "sales@khangnghi.demo": "sales@khangnghi.com.vn",
+      "purchase@khangnghi.demo": "purchase@khangnghi.com.vn",
+      "warehouse@khangnghi.demo": "kho@khangnghi.com.vn",
+      "logistics@khangnghi.demo": "shipping@khangnghi.com.vn",
+      "admin@khangnghi.demo": "admin@khangnghi.com.vn"
+    };
+    const apiIdentifier = aliasMap[input.toLowerCase()] || input.replace(".demo", ".com.vn");
+
     // 1. Attempt Real Backend JWT Login
     if (client) {
-      const res = await client.post("/auth/login", { username: input, password });
+      const res = await client.post("/auth/login", { username: apiIdentifier, email: apiIdentifier, password });
       if (res.success && res.data && res.data.token) {
         client.saveToken(res.data.token, rememberMe);
         const nowStr = new Date().toLocaleString("vi-VN");
         
-        const role = res.data.role || "Director";
+        const rawRole = res.data.role || "Director";
+        let mappedRole = "CEO";
+        let roleTitle = "Ban Giám Đốc";
+        if (rawRole === "Admin") {
+          mappedRole = "Admin";
+          roleTitle = "Quản Trị Hệ Thống";
+        } else if (rawRole === "Director" || rawRole === "CEO") {
+          mappedRole = "CEO";
+          roleTitle = "Ban Giám Đốc";
+        } else if (rawRole === "SalesManager" || rawRole === "Sales") {
+          mappedRole = "Sales";
+          roleTitle = "Trưởng Phòng Kinh Doanh";
+        } else if (rawRole === "PurchaseManager" || rawRole === "Purchase") {
+          mappedRole = "Purchase";
+          roleTitle = "Trưởng Phòng Mua Hàng";
+        } else if (rawRole === "InventoryManager" || rawRole === "Warehouse") {
+          mappedRole = "Warehouse";
+          roleTitle = "Thủ Kho Trưởng";
+        } else if (rawRole === "ShippingStaff" || rawRole === "Logistics") {
+          mappedRole = "Logistics";
+          roleTitle = "Trưởng Phòng Logistics";
+        }
+
         currentUser = {
-          userId: "USR-LIVE",
-          email: res.data.username + "@khangnghi.com",
+          userId: `USR-${res.data.username || "LIVE"}`,
+          email: res.data.email || (res.data.username + "@khangnghi.com.vn"),
           fullName: res.data.fullName || res.data.username,
-          role: role === "Admin" ? "Admin" : role === "Director" ? "CEO" : role,
-          roleTitle: role === "Admin" ? "Quản Trị Hệ Thống" : "Ban Giám Đốc",
-          department: "DWH System",
-          avatar: (res.data.fullName || "KN").substring(0, 2).toUpperCase(),
+          role: mappedRole,
+          roleTitle: roleTitle,
+          department: "Hệ Thống DWH Khang Nghị",
+          avatar: (res.data.fullName || res.data.username || "KN").substring(0, 2).toUpperCase(),
           lastLogin: nowStr
         };
 
@@ -228,12 +276,14 @@ window.KhangNghiAuth = (function () {
     const lowerInput = input.toLowerCase();
     const account = DEMO_ACCOUNTS.find(a => 
       a.email.toLowerCase() === lowerInput || 
+      a.email.replace(".demo", ".com.vn").toLowerCase() === lowerInput ||
       a.role.toLowerCase() === lowerInput ||
       (lowerInput === "giamdoc" && a.role === "CEO") ||
       (lowerInput === "kinhdoanh" && a.role === "Sales") ||
       (lowerInput === "muahang" && a.role === "Purchase") ||
       (lowerInput === "kho" && a.role === "Warehouse") ||
-      (lowerInput === "vanchuyen" && a.role === "Logistics")
+      (lowerInput === "vanchuyen" && a.role === "Logistics") ||
+      (lowerInput === "admin" && a.role === "Admin")
     );
 
     if (!account) {

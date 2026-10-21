@@ -71,15 +71,24 @@ window.KhangNghiFilters = (function () {
 
   function countActiveFilters() {
     let count = 0;
-    if (activeFilters.search) count++;
-    if (activeFilters.year !== "ALL") count++;
-    if (activeFilters.quarter !== "ALL") count++;
-    if (activeFilters.region !== "All Regions") count++;
-    if (activeFilters.category !== "All Categories") count++;
-    if (activeFilters.supplier && activeFilters.supplier !== "All Suppliers") count++;
-    if (activeFilters.manufacturer && activeFilters.manufacturer !== "All Manufacturers") count++;
-    if (activeFilters.segment !== "All Segments") count++;
+    if (activeFilters.search && activeFilters.search.trim()) count++;
+    if (activeFilters.year && activeFilters.year !== DEFAULT_FILTERS.year) count++;
+    if (activeFilters.quarter && activeFilters.quarter !== DEFAULT_FILTERS.quarter) count++;
+    if (activeFilters.region && activeFilters.region !== DEFAULT_FILTERS.region) count++;
+    if (activeFilters.category && activeFilters.category !== DEFAULT_FILTERS.category) count++;
+    if (activeFilters.supplier && activeFilters.supplier !== DEFAULT_FILTERS.supplier) count++;
+    if (activeFilters.manufacturer && activeFilters.manufacturer !== DEFAULT_FILTERS.manufacturer) count++;
+    if (activeFilters.segment && activeFilters.segment !== DEFAULT_FILTERS.segment) count++;
     if (activeFilters.compareMode) count++;
+    return count;
+  }
+
+  function countAdvancedFilters() {
+    let count = 0;
+    if (activeFilters.segment && activeFilters.segment !== DEFAULT_FILTERS.segment) count++;
+    if (activeFilters.quarter && activeFilters.quarter !== DEFAULT_FILTERS.quarter) count++;
+    if (activeFilters.supplier && activeFilters.supplier !== DEFAULT_FILTERS.supplier) count++;
+    if (activeFilters.manufacturer && activeFilters.manufacturer !== DEFAULT_FILTERS.manufacturer) count++;
     return count;
   }
 
@@ -91,15 +100,28 @@ window.KhangNghiFilters = (function () {
 
   function renderChipsContainer(targetId) {
     const el = document.getElementById(targetId);
-    if (!el) return;
-    el.innerHTML = buildChipsHTML();
+    if (el) {
+      el.innerHTML = buildChipsHTML();
+    }
 
-    const count = countActiveFilters();
+    const totalCount = countActiveFilters();
+    const advCount = countAdvancedFilters();
+
     const badgeEls = document.querySelectorAll(".filter-count-badge");
     badgeEls.forEach(badge => {
-      if (count > 0) {
-        badge.textContent = `(${count})`;
+      if (totalCount > 0) {
+        badge.textContent = `(${totalCount})`;
         badge.style.display = "inline";
+      } else {
+        badge.style.display = "none";
+      }
+    });
+
+    const advBadgeEls = document.querySelectorAll(".filter-adv-count-badge");
+    advBadgeEls.forEach(badge => {
+      if (advCount > 0) {
+        badge.textContent = `(${advCount})`;
+        badge.style.display = "inline-flex";
       } else {
         badge.style.display = "none";
       }
@@ -108,33 +130,37 @@ window.KhangNghiFilters = (function () {
 
   function buildChipsHTML() {
     let html = "";
-    if (activeFilters.search) {
-      html += `<div class="filter-chip">🔍 Tìm: "${activeFilters.search}" <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('search', '')">&times;</span></div>`;
+    if (activeFilters.search && activeFilters.search.trim()) {
+      html += `<div class="filter-chip">🔍 Tìm: "${activeFilters.search}" <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('search', '')" title="Xóa tìm kiếm">&times;</span></div>`;
     }
-    if (activeFilters.year !== "ALL") {
-      html += `<div class="filter-chip">Năm: ${activeFilters.year} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('year', 'ALL')">&times;</span></div>`;
+    if (activeFilters.year && activeFilters.year !== DEFAULT_FILTERS.year) {
+      const yrText = activeFilters.year === "ALL" ? "Tất cả năm" : activeFilters.year;
+      html += `<div class="filter-chip">Năm: ${yrText} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('year', '${DEFAULT_FILTERS.year}')" title="Đặt lại năm mặc định">&times;</span></div>`;
     }
-    if (activeFilters.region !== "All Regions") {
-      html += `<div class="filter-chip">Vùng: ${activeFilters.region} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('region', 'All Regions')">&times;</span></div>`;
+    if (activeFilters.region && activeFilters.region !== DEFAULT_FILTERS.region) {
+      html += `<div class="filter-chip">Khu vực: ${activeFilters.region} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('region', '${DEFAULT_FILTERS.region}')" title="Xóa khu vực">&times;</span></div>`;
     }
-    if (activeFilters.category !== "All Categories") {
-      html += `<div class="filter-chip">Danh mục: ${activeFilters.category} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('category', 'All Categories')">&times;</span></div>`;
+    if (activeFilters.category && activeFilters.category !== DEFAULT_FILTERS.category) {
+      html += `<div class="filter-chip">Danh mục: ${activeFilters.category} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('category', '${DEFAULT_FILTERS.category}')" title="Xóa danh mục">&times;</span></div>`;
     }
-    if (activeFilters.supplier && activeFilters.supplier !== "All Suppliers") {
-      html += `<div class="filter-chip">NCC: ${activeFilters.supplier} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('supplier', 'All Suppliers')">&times;</span></div>`;
+    if (activeFilters.segment && activeFilters.segment !== DEFAULT_FILTERS.segment) {
+      html += `<div class="filter-chip">Phân khúc: ${activeFilters.segment} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('segment', '${DEFAULT_FILTERS.segment}')" title="Xóa phân khúc">&times;</span></div>`;
     }
-    if (activeFilters.manufacturer && activeFilters.manufacturer !== "All Manufacturers") {
-      html += `<div class="filter-chip">Hãng: ${activeFilters.manufacturer} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('manufacturer', 'All Manufacturers')">&times;</span></div>`;
+    if (activeFilters.quarter && activeFilters.quarter !== DEFAULT_FILTERS.quarter) {
+      html += `<div class="filter-chip">Quý: ${activeFilters.quarter} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('quarter', '${DEFAULT_FILTERS.quarter}')" title="Xóa quý">&times;</span></div>`;
     }
-    if (activeFilters.segment !== "All Segments") {
-      html += `<div class="filter-chip">Phân khúc: ${activeFilters.segment} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('segment', 'All Segments')">&times;</span></div>`;
+    if (activeFilters.supplier && activeFilters.supplier !== DEFAULT_FILTERS.supplier) {
+      html += `<div class="filter-chip">NCC: ${activeFilters.supplier} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('supplier', '${DEFAULT_FILTERS.supplier}')" title="Xóa NCC">&times;</span></div>`;
+    }
+    if (activeFilters.manufacturer && activeFilters.manufacturer !== DEFAULT_FILTERS.manufacturer) {
+      html += `<div class="filter-chip">Hãng: ${activeFilters.manufacturer} <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('manufacturer', '${DEFAULT_FILTERS.manufacturer}')" title="Xóa hãng">&times;</span></div>`;
     }
     if (activeFilters.compareMode) {
-      html += `<div class="filter-chip" style="background:var(--color-primary-light); color:var(--color-primary);">So sánh vs 2014 <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('compareMode', false)">&times;</span></div>`;
+      html += `<div class="filter-chip" style="background:var(--color-primary-light); color:var(--color-primary);">So sánh vs 2014 <span class="filter-chip-remove" onclick="KhangNghiFilters.setFilter('compareMode', false)" title="Tắt so sánh">&times;</span></div>`;
     }
 
     if (html) {
-      html = `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:11.5px; font-weight:700; color:var(--text-muted);">BỘ LỌC ĐANG DÙNG:</span> ${html} <button class="reset-filters-btn" onclick="KhangNghiFilters.resetAllFilters()"><i class="fa-solid fa-arrows-rotate"></i> Xóa tất cả</button></div>`;
+      html = `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">BỘ LỌC ĐANG ÁP DỤNG:</span> ${html} <button class="reset-filters-btn" onclick="KhangNghiFilters.resetAllFilters()"><i class="fa-solid fa-arrows-rotate"></i> Xóa tất cả</button></div>`;
     }
 
     return html;
@@ -191,6 +217,7 @@ window.KhangNghiFilters = (function () {
     setMultipleFilters,
     resetAllFilters,
     countActiveFilters,
+    countAdvancedFilters,
     renderChipsContainer,
     saveCurrentView,
     loadPreset,

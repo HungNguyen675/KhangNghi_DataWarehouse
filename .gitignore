@@ -427,3 +427,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Database backup files (>100MB limit on GitHub)
+*.bak
+scratch_*.py
+
