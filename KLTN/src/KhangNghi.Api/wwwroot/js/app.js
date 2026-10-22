@@ -1207,31 +1207,90 @@ document.addEventListener("DOMContentLoaded", function () {
     chatAppend("user", esc(text));
     const input = document.getElementById("copilot-input");
     if (input) input.value = "";
-    const loading = chatAppend("bot", `<i class="fa-solid fa-spinner fa-spin"></i> Đang truy vấn kho dữ liệu…`);
+
+    // Trạng thái đang tải dùng loader chuẩn của CopilotResponseRules
+    const loadingHtml = window.CopilotResponseRules
+      ? window.CopilotResponseRules.renderLoading("Đang truy vấn dữ liệu…")
+      : `<i class="fa-solid fa-spinner fa-spin"></i> Đang truy vấn dữ liệu…`;
+    const loading = chatAppend("bot", loadingHtml);
 
     const res = await window.KhangNghiApiClient.get("/nlq/query", { q: text });
     loading.remove();
+
     if (!res.success) {
-      chatAppend("bot", `${Comp.statusBadge("danger", "Chưa truy vấn được dữ liệu")}<p>${esc(res.status === 403 ? "Vai trò hiện tại không có quyền dùng trợ lý." : (res.data && res.data.answer) || res.error || "Lỗi kết nối API.")}</p>`);
+      const errText = res.status === 403
+        ? (window.CopilotResponseRules ? window.CopilotResponseRules.MESSAGES.UNAUTHORIZED : "Vai trò hiện tại chưa được cấp quyền dùng trợ lý.")
+        : ((res.data && (res.data.answer || res.data.Answer)) || res.error || (window.CopilotResponseRules ? window.CopilotResponseRules.MESSAGES.CONNECTION_ERROR : "Không thể kết nối nguồn dữ liệu."));
+      const errHtml = window.CopilotResponseRules ? window.CopilotResponseRules.renderError(errText) : `<p>${esc(errText)}</p>`;
+      chatAppend("bot", errHtml);
       return;
     }
+
     const answer = (res.data && (res.data.answer ?? res.data.Answer)) || "";
     const data = res.data ? (res.data.data ?? res.data.Data) : null;
-    const source = `<div class="chat-source"><i class="fa-solid fa-database"></i> Nguồn: kho DWH_KhangNghi (truy vấn trực tiếp)</div>`;
+    const isLlm = res.data && (res.data.source === "llm" || res.data.Source === "llm");
+    const queriesUsed = res.data ? (res.data.queriesUsed || res.data.QueriesUsed || []) : [];
+
+    // TRƯỜNG HỢP 1: Phản hồi từ Tầng 3 LLM (đã áp dụng trọn vẹn Model Response Rules: Markdown, Table, Code Block MDX, số liệu BI)
+    if (isLlm && window.CopilotResponseRules) {
+      const sourceNote = queriesUsed.length > 0
+        ? `Nguồn: kho DWH_KhangNghi (truy vấn ${queriesUsed.join(", ")})`
+        : "Nguồn: Khang Nghi AI Copilot";
+      chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(answer, sourceNote));
+      return;
+    }
+
+    // TRƯỜNG HỢP 2: Dữ liệu fallback từ khóa hoặc khi chưa qua LLM
+    const source = `<div class="chat-source"><i class="fa-solid fa-database"></i> Nguồn: kho DWH_KhangNghi</div>`;
 
     if (data === null || data === undefined) {
-      // Backend không nhận diện được câu hỏi -> không có truy vấn dữ liệu nào được chạy
-      chatAppend("bot", `${Comp.statusBadge("neutral", "Chưa truy vấn dữ liệu")}<p>${esc(answer)}</p>`);
+      if (window.CopilotResponseRules) {
+        chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(answer || window.CopilotResponseRules.MESSAGES.EMPTY_DATA, "Hệ thống BI Khang Nghị"));
+      } else {
+        chatAppend("bot", `<p>${esc(answer)}</p>`);
+      }
     } else if (Array.isArray(data)) {
-      chatAppend("bot", data.length
-        ? `<p>${esc(answer)}</p>${chatTable(data)}${source}`
-        : `<p>${esc(answer)}</p>${Comp.statusBadge("warning", "Kho dữ liệu chưa có bản ghi phù hợp")}${source}`);
+      if (!data.length) {
+        const emptyHtml = window.CopilotResponseRules
+          ? window.CopilotResponseRules.renderEmpty(answer || window.CopilotResponseRules.MESSAGES.EMPTY_DATA)
+          : `<p>${esc(answer || "Kho dữ liệu chưa có bản ghi phù hợp.")}</p>`;
+        chatAppend("bot", emptyHtml);
+      } else {
+        const intro = window.CopilotResponseRules ? window.CopilotResponseRules.renderMarkdown(answer) : `<p>${esc(answer)}</p>`;
+        const content = `
+<div class="chat-bubble-content">
+  ${intro}
+  ${chatTable(data)}
+</div>
+${source}
+<div class="chat-actions">
+  <button type="button" class="btn-chat-action" onclick="CopilotResponseRules.copyMessage(this)" title="Sao chép toàn bộ câu trả lời">
+    <i class="fa-regular fa-copy"></i> Sao chép
+  </button>
+</div>`.trim();
+        chatAppend("bot", content);
+      }
     } else {
-      // Tổng quan: tự định dạng từ số liệu (ProfitMargin đã ở đơn vị %)
+      // Dữ liệu tổng quan
       const g = k => data[k] ?? data[k.charAt(0).toLowerCase() + k.slice(1)];
-      chatAppend("bot", Number(g("TotalOrders")) > 0
-        ? `<p>Tổng quan kinh doanh:</p><ul class="chat-list"><li>Doanh thu: <strong>${fv(g("TotalRevenue"), CUR)}</strong></li><li>Lợi nhuận: <strong>${fv(g("TotalProfit"), CUR)}</strong></li><li>Biên lợi nhuận: <strong>${fv(g("ProfitMargin"), "percent")}</strong></li><li>Số đơn hàng: <strong>${fv(g("TotalOrders"))}</strong></li></ul>${source}`
-        : `${Comp.statusBadge("warning", "Kho dữ liệu chưa có giao dịch")}<p>Chưa có doanh thu để tổng hợp.</p>${source}`);
+      const totalOrders = Number(g("TotalOrders") || 0);
+      if (totalOrders > 0) {
+        const mdText = `### Tổng quan kinh doanh
+- **Doanh thu:** ${fv(g("TotalRevenue"), CUR)}
+- **Lợi nhuận:** ${fv(g("TotalProfit"), CUR)}
+- **Biên lợi nhuận:** ${fv(g("ProfitMargin"), "percent")}
+- **Số đơn hàng:** ${fv(g("TotalOrders"))}`;
+        if (window.CopilotResponseRules) {
+          chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(mdText, "Kho DWH_KhangNghi (tổng quan)"));
+        } else {
+          chatAppend("bot", `<p>Tổng quan kinh doanh:</p><ul class="chat-list"><li>Doanh thu: <strong>${fv(g("TotalRevenue"), CUR)}</strong></li><li>Lợi nhuận: <strong>${fv(g("TotalProfit"), CUR)}</strong></li><li>Biên lợi nhuận: <strong>${fv(g("ProfitMargin"), "percent")}</strong></li><li>Số đơn hàng: <strong>${fv(g("TotalOrders"))}</strong></li></ul>${source}`);
+        }
+      } else {
+        const emptyHtml = window.CopilotResponseRules
+          ? window.CopilotResponseRules.renderEmpty("Chưa có giao dịch phát sinh để tổng hợp.")
+          : `<p>Chưa có giao dịch phát sinh để tổng hợp.</p>`;
+        chatAppend("bot", emptyHtml);
+      }
     }
   }
 
