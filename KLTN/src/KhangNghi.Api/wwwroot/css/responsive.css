@@ -5,22 +5,21 @@
 
 /* Large Screens & Desktop (<= 1280px) */
 @media (max-width: 1280px) {
-  #breadcrumb-category {
-    max-width: 130px;
-  }
-  #breadcrumb-current {
-    max-width: 160px;
-  }
-  .global-search-wrapper {
-    width: 160px;
-  }
+  .topbar-copilot-btn span,
   .data-status-indicator span:last-child {
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-    vertical-align: middle;
+    display: none;
+  }
+
+  .topbar-copilot-btn {
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .data-status-indicator {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
   }
 }
 
@@ -59,9 +58,38 @@
     padding: 12px;
   }
 
+  .sidebar-toggle-btn {
+    display: none;
+  }
+
+  .menu-group-header {
+    display: block !important;
+    height: 1px;
+    padding: 0;
+    margin: 10px 8px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0;
+  }
+
   .sidebar-footer {
+    margin: 0 10px 12px;
+    padding: 8px 0;
     justify-content: center;
-    padding: 12px 0;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #topbar {
+    left: var(--sidebar-width) !important;
+  }
+
+  #main-content {
+    margin-left: var(--sidebar-width) !important;
+  }
+
+  .breadcrumb #breadcrumb-category,
+  .breadcrumb .breadcrumb-separator {
+    display: none;
   }
 
   .grid-charts-2,
@@ -78,7 +106,37 @@
 @media (max-width: 768px) {
   #sidebar {
     transform: translateX(-100%);
-    width: 275px;
+    width: 264px;
+    box-shadow: 12px 0 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .sidebar-footer {
+    margin: 0 12px 12px;
+    padding: 10px;
+    flex-direction: row;
+  }
+
+  .menu-group-header {
+    height: auto;
+    margin: 0;
+    background: none;
+    font-size: 10.5px;
+    padding: 16px 10px 6px;
+  }
+
+  .topbar-divider,
+  .data-status-indicator,
+  .topbar-year i {
+    display: none !important;
+  }
+
+  .global-search-wrapper {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar-right {
+    gap: 6px;
   }
 
   #sidebar.mobile-open {
@@ -125,13 +183,6 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  #copilot-trigger {
-    bottom: 16px;
-    right: 16px;
-    padding: 10px 16px;
-    font-size: 12px;
-  }
-
   .explorer-toolbar {
     flex-direction: column;
     align-items: stretch;
@@ -149,7 +200,9 @@
     grid-template-columns: 1fr;
   }
   
-  .filter-group {
-    display: none; /* Accessible via mobile filter modal if needed */
+  #btn-theme-toggle,
+  #filter-panel-toggle,
+  .topbar-copilot-btn {
+    display: none; /* Copilot vẫn mở được từ menu Trợ lý AI trong sidebar */
   }
 }

@@ -5,7 +5,7 @@
 
 :root {
   /* Typography Scale */
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 
   /* Color Palette - Enterprise Primary & Accents */
@@ -28,27 +28,28 @@
   --color-info-bg: rgba(0, 67, 206, 0.1);
 
   /* Neutral Light Theme Surfaces */
-  --bg-app: #f4f4f6;
+  --bg-app: #f4f6fa;
   --bg-sidebar: #ffffff;
-  --bg-topbar: rgba(255, 255, 255, 0.92);
+  --bg-topbar: rgba(255, 255, 255, 0.85);
   --bg-card: #ffffff;
   --bg-card-hover: #fafafa;
-  --bg-surface-secondary: #f0f0f3;
+  --bg-surface-secondary: #f1f3f7;
   --bg-modal: rgba(255, 255, 255, 0.96);
-  --bg-input: #eef0f3;
+  --bg-input: #f1f3f7;
 
   /* Text Hierarchy - Light Theme */
   --text-main: #161616;
-  --text-secondary: #525252;
-  --text-muted: #8d8d8d;
+  --text-secondary: #4b5563;
+  --text-muted: #7b8494;
   --text-on-primary: #ffffff;
 
   /* Borders & Micro Shadows */
-  --border-color: #e0e0e0;
-  --border-color-strong: #c6c6c6;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --border-color: #e3e7ee;
+  --border-color-strong: #c9cfd9;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.07);
+  --shadow-lg: 0 12px 28px rgba(16, 24, 40, 0.12);
+  --shadow-xl: 0 20px 40px rgba(16, 24, 40, 0.16);
   --shadow-drawer: -8px 0 24px rgba(0, 0, 0, 0.08);
 
   /* Subdued Glassmorphism Effects */
@@ -56,7 +57,7 @@
   --glass-border: 1px solid rgba(0, 0, 0, 0.06);
 
   /* Layout Dimensions & Radius */
-  --sidebar-width: 275px;
+  --sidebar-width: 248px;
   --sidebar-collapsed-width: 72px;
   --topbar-height: 60px;
   --filter-panel-width: 340px;
@@ -64,8 +65,8 @@
 
   --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
 
   /* Animation Speeds */
@@ -75,24 +76,25 @@
 
 /* Enterprise Dark Theme Overrides */
 [data-theme="dark"] {
-  --bg-app: #121214;
+  --bg-app: #0f1115;
   --bg-sidebar: #18181b;
-  --bg-topbar: rgba(24, 24, 27, 0.92);
-  --bg-card: #202024;
-  --bg-card-hover: #27272a;
-  --bg-surface-secondary: #2a2a2e;
+  --bg-topbar: rgba(17, 19, 24, 0.85);
+  --bg-card: #181b22;
+  --bg-card-hover: #1f232b;
+  --bg-surface-secondary: #222631;
   --bg-modal: rgba(32, 32, 36, 0.96);
-  --bg-input: #2d2d32;
+  --bg-input: #222631;
 
   --text-main: #f4f4f6;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
 
-  --border-color: #2e2e34;
-  --border-color-strong: #3f3f46;
+  --border-color: #2a2f3a;
+  --border-color-strong: #3b4252;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
   --shadow-drawer: -8px 0 24px rgba(0, 0, 0, 0.6);
 
   --glass-border: 1px solid rgba(255, 255, 255, 0.08);
@@ -100,4 +102,8 @@
   --color-success: #24a148;
   --color-warning: #f1c21b;
   --color-danger: #fa4d56;
+  --color-primary: #4589ff;
+  --color-primary-hover: #78a9ff;
+  --color-primary-light: rgba(69, 137, 255, 0.14);
+  --color-primary-border: rgba(69, 137, 255, 0.35);
 }

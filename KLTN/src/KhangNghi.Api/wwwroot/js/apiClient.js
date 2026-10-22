@@ -74,7 +74,10 @@ window.KhangNghiApiClient = (function () {
         if (!url.includes("/auth/login")) {
           console.warn("[ApiClient] 401 Unauthorized - Invalid or expired JWT token");
           clearToken();
-          if (window.location.hash !== "#/login") {
+          // Xóa luôn phiên đăng nhập phía client, tránh vòng lặp login <-> overview của router
+          if (window.KhangNghiAuth && window.KhangNghiAuth.isAuthenticated()) {
+            window.KhangNghiAuth.logout();
+          } else if (window.location.hash !== "#/login") {
             window.location.hash = "#/login";
           }
         }

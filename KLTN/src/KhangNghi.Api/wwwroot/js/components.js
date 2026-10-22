@@ -1,430 +1,301 @@
 /* ==========================================================================
-   KHANG NGHI BUSINESS INTELLIGENCE - REUSABLE ENTERPRISE UI BUILDERS
-   KPI Cards, Chart Cards, Tables, Context Menu, Skeleton Shimmers, Toasts
+   KHANG NGHI BUSINESS INTELLIGENCE - UI COMPONENTS
+   Định dạng số, thẻ KPI, khối trạng thái dữ liệu, bảng, toast, ngăn chi tiết.
+   Style: css/components.css (.kpi-card, .state-panel, .data-table, .detail-*)
    ========================================================================== */
 
+// Đơn vị tiền của Fact_Sales / Fact_Shipping. Nguồn KhangNghi_OLTP_VN 2022–2025 dùng VNĐ (mặc định);
+// nếu Fact_Sales nạp từ nguồn Superstore 2012–2015 (USD) thì đặt salesCurrency: "usd". Fact_Purchase luôn là VNĐ.
+window.KN_CONFIG = Object.assign({ salesCurrency: "vnd" }, window.KN_CONFIG || {});
+
 window.KhangNghiComponents = (function () {
+  const SALES_CURRENCY = window.KN_CONFIG.salesCurrency === "vnd" ? "vnd" : "usd";
+  const SALES_CURRENCY_LABEL = SALES_CURRENCY === "vnd" ? "VNĐ" : "USD";
 
-  function formatCurrency(num) {
-    if (num === null || num === undefined || Number.isNaN(Number(num))) return "N/A";
-    const n = Number(num);
-    if (n >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
-    if (n >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
-    return "$" + n.toLocaleString();
+  // --------------------------------------------------------------------------
+  // ĐỊNH DẠNG
+  // --------------------------------------------------------------------------
+  function isNum(v) {
+    return v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v));
   }
 
-  function formatNumber(num) {
-    if (num === null || num === undefined) return "0";
-    return num.toLocaleString();
+  function compact(n) {
+    const a = Math.abs(n);
+    if (a >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, "") + " tỷ";
+    if (a >= 1e6) return (n / 1e6).toFixed(2).replace(/\.?0+$/, "") + " tr";
+    if (a >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K";
+    return n.toLocaleString("vi-VN", { maximumFractionDigits: 2 });
   }
 
-  function renderStatusBadge(status) {
-    const s = String(status || "").toUpperCase();
-    if (s === "HEALTHY" || s === "AVAILABLE" || s === "ACTIVE" || s === "OK" || s === "DWH ACTIVE") {
-      return `<span class="badge badge-healthy" style="background:rgba(37,162,68,0.15); color:#25a244; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Healthy'}</span>`;
+  // format: "usd" | "vnd" | "number" | "percent" | "days" | "text"
+  function formatValue(v, format = "number") {
+    if (format === "text") return v === null || v === undefined || v === "" ? "—" : String(v);
+    if (!isNum(v)) return "—";
+    const n = Number(v);
+    switch (format) {
+      case "usd": {
+        const a = Math.abs(n);
+        const sign = n < 0 ? "-" : "";
+        if (a >= 1e9) return `${sign}$${(a / 1e9).toFixed(2)}B`;
+        if (a >= 1e6) return `${sign}$${(a / 1e6).toFixed(2)}M`;
+        if (a >= 1e3) return `${sign}$${(a / 1e3).toFixed(1)}K`;
+        return `${sign}$${a.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+      }
+      case "vnd": return compact(n) + " ₫";
+      case "percent": return n.toLocaleString("vi-VN", { maximumFractionDigits: 1 }) + "%";
+      case "days": return n.toLocaleString("vi-VN", { maximumFractionDigits: 1 }) + " ngày";
+      default: return n.toLocaleString("vi-VN", { maximumFractionDigits: 2 });
     }
-    if (s === "WARNING" || s === "LOW" || s === "WARN") {
-      return `<span class="badge badge-warning" style="background:rgba(243,156,18,0.15); color:#f39c12; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Warning'}</span>`;
-    }
-    if (s === "CRITICAL" || s === "DANGER" || s === "ERROR" || s === "NO DATA") {
-      return `<span class="badge badge-danger" style="background:rgba(231,76,60,0.15); color:#e74c3c; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'Critical'}</span>`;
-    }
-    return `<span class="badge badge-secondary" style="background:rgba(149,165,166,0.15); color:#95a5a6; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">${status || 'N/A'}</span>`;
   }
 
-  function renderKpiCard({ id, label, value, changePct, priorLabel = "vs kỳ trước", icon, isCurrency = true, unit = "" }) {
-    const valText = isCurrency ? formatCurrency(value) : formatNumber(value) + unit;
-    
-    // Phòng chống NaN%, null, undefined, Infinity
-    const numChange = (changePct !== undefined && changePct !== null && !Number.isNaN(Number(changePct)) && Number.isFinite(Number(changePct)))
-      ? Number(changePct)
-      : null;
+  // Giữ tương thích với mã cũ
+  function formatCurrency(v) { return formatValue(v, "usd"); }
+  function formatNumber(v) { return formatValue(v, "number"); }
 
-    const isPositive = numChange !== null ? numChange >= 0 : true;
-    const tagClass = numChange !== null ? (isPositive ? "positive" : "negative") : "neutral";
-    const arrow = numChange !== null ? (isPositive ? "↑" : "↓") : "";
-    const changeTagText = numChange !== null ? `${arrow} ${Math.abs(numChange).toFixed(1)}%` : "--";
+  function escapeHtml(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
 
+  // --------------------------------------------------------------------------
+  // THẺ KPI
+  //   value null -> "—" + ghi chú "Chưa có dữ liệu"
+  //   change: { pct, label } chỉ hiển thị khi được tính từ dữ liệu thật
+  // --------------------------------------------------------------------------
+  function renderKpiCard({ label, value, format = "number", icon = "fa-chart-simple", change = null, note = "", hint = "" }) {
+    const hasValue = format === "text" ? !!value : isNum(value);
+    let changeHtml = "";
+    if (change && isNum(change.pct)) {
+      const up = change.pct >= 0;
+      changeHtml = `<span class="kpi-change ${up ? "is-up" : "is-down"}"><i class="fa-solid fa-arrow-${up ? "up" : "down"}"></i> ${Math.abs(change.pct).toFixed(1)}% <span class="kpi-change-label">${escapeHtml(change.label || "")}</span></span>`;
+    }
+    const foot = !hasValue ? "Chưa có dữ liệu" : note;
     return `
-      <div class="glass-card kpi-card" id="card-${id}">
+      <div class="kpi-card glass-card${hasValue ? "" : " is-empty"}${format === "text" ? " is-text" : ""}"${hint ? ` title="${escapeHtml(hint)}"` : ""}>
         <div class="kpi-top-row">
-          <span class="kpi-label">${label} <i class="fa-solid fa-circle-info kpi-info-tooltip-icon" title="Chỉ số ${label} đo lường trên toàn DWH Khang Nghị"></i></span>
-          <div style="font-size:16px;">${icon}</div>
+          <span class="kpi-label">${escapeHtml(label)}</span>
+          <span class="kpi-icon"><i class="fa-solid ${icon}"></i></span>
         </div>
-        <div class="kpi-value-row">
-          <span class="kpi-main-value">${valText}</span>
-          <span class="kpi-change-tag ${tagClass}">${changeTagText}</span>
-        </div>
-        <div class="kpi-bottom-row">
-          <span>${priorLabel}</span>
-          <div class="kpi-sparkline-box" id="spark-${id}"></div>
-        </div>
-      </div>
-    `;
+        <div class="kpi-main-value">${escapeHtml(formatValue(value, format))}</div>
+        <div class="kpi-foot">${changeHtml}${foot ? `<span class="kpi-note">${escapeHtml(foot)}</span>` : ""}</div>
+      </div>`;
   }
 
-  function renderChartCard({ id, title, description, bodyHtml = "" }) {
+  function renderSkeletonCards(n = 4) {
+    return Array.from({ length: n }, () => `
+      <div class="kpi-card glass-card">
+        <div class="skeleton skeleton-text" style="width:45%;"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text" style="width:30%;"></div>
+      </div>`).join("");
+  }
+
+  // --------------------------------------------------------------------------
+  // KHỐI TRẠNG THÁI DỮ LIỆU (phân biệt rõ từng trường hợp)
+  // --------------------------------------------------------------------------
+  const STATE_META = {
+    loading:     { icon: "fa-spinner fa-spin", tone: "info",    title: "Đang tải dữ liệu" },
+    empty:       { icon: "fa-database",        tone: "neutral", title: "Chưa có dữ liệu" },
+    error:       { icon: "fa-plug-circle-xmark", tone: "danger", title: "Không truy vấn được dữ liệu" },
+    forbidden:   { icon: "fa-lock",            tone: "warning", title: "Không có quyền truy cập" },
+    unavailable: { icon: "fa-server",          tone: "warning", title: "Nguồn dữ liệu chưa kết nối" }
+  };
+
+  function renderState(state, { title = "", message = "", compact = false, actions = "" } = {}) {
+    const meta = STATE_META[state] || STATE_META.empty;
     return `
-      <div class="glass-card chart-card" id="chart-card-${id}">
-        <div class="chart-card-header">
-          <div class="chart-title-group">
-            <h3 class="chart-title">${title}</h3>
-            <span class="chart-description">${description}</span>
-          </div>
-          <div style="position:relative;">
-            <button class="chart-context-menu-trigger" onclick="KhangNghiComponents.toggleContextMenu('${id}')" title="Tùy chọn biểu đồ">
-              <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-            <div class="dropdown-menu" id="ctx-menu-${id}">
-              <div class="dropdown-item" onclick="KhangNghiComponents.handleChartCtxAction('${id}', 'view')"><i class="fa-solid fa-eye"></i> Xem Chi Tiết</div>
-              <div class="dropdown-item" onclick="KhangNghiComponents.handleChartCtxAction('${id}', 'data')"><i class="fa-solid fa-table"></i> Hiển Thị Bảng</div>
-              <div class="dropdown-item" onclick="KhangNghiComponents.handleChartCtxAction('${id}', 'csv')"><i class="fa-solid fa-file-csv"></i> Xuất CSV</div>
-            </div>
-          </div>
+      <div class="state-panel tone-${meta.tone}${compact ? " is-compact" : ""}" role="${state === "error" ? "alert" : "status"}">
+        <span class="state-icon"><i class="fa-solid ${meta.icon}"></i></span>
+        <div class="state-text">
+          <strong>${escapeHtml(title || meta.title)}</strong>
+          ${message ? `<span>${escapeHtml(message)}</span>` : ""}
         </div>
-        <div class="chart-canvas-wrapper" id="${id}">
-          ${bodyHtml}
-        </div>
-      </div>
-    `;
+        ${actions ? `<div class="state-actions">${actions}</div>` : ""}
+      </div>`;
   }
 
-  function toggleContextMenu(id) {
-    const menu = document.getElementById(`ctx-menu-${id}`);
-    if (menu) {
-      document.querySelectorAll(".dropdown-menu").forEach(m => {
-        if (m !== menu) m.classList.remove("active");
-      });
-      menu.classList.toggle("active");
+  // Thông điệp mặc định cho một section rỗng/lỗi
+  function sectionMessage(sec, emptyMessage) {
+    if (!sec) return "";
+    if (sec.state === "empty") return emptyMessage || "Kho dữ liệu chưa có bản ghi phù hợp.";
+    return sec.message || "";
+  }
+
+  // Ghi nội dung trạng thái vào một vùng; trả về true nếu section sẵn sàng để vẽ.
+  // emptyTitle: dùng khi truy vấn thành công nhưng không có dòng (vd. "Không có cảnh báo")
+  function applySectionState(containerId, sec, emptyMessage, emptyTitle) {
+    const el = document.getElementById(containerId);
+    if (!el) return false;
+    if (sec && sec.state === "ready") return true;
+    const state = sec ? sec.state : "empty";
+    el.innerHTML = renderState(state, { title: state === "empty" ? (emptyTitle || "") : "", message: sectionMessage(sec, emptyMessage), compact: true });
+    return false;
+  }
+
+  // --------------------------------------------------------------------------
+  // BẢNG DỮ LIỆU
+  //   columns: [{ key, label, format, align, render(row) }]
+  // --------------------------------------------------------------------------
+  function renderTable(columns, rows, { onRowClick = "", rowKey = null, empty = "Không có dòng dữ liệu.", emptyTitle = "Không có dòng nào" } = {}) {
+    if (!rows || !rows.length) {
+      return renderState("empty", { title: emptyTitle, message: empty, compact: true });
     }
+    const head = columns.map(c => `<th class="${c.align === "right" || ["usd", "vnd", "number", "percent", "days"].includes(c.format) ? "num" : ""}">${escapeHtml(c.label)}</th>`).join("");
+    const body = rows.map(r => {
+      const click = onRowClick && rowKey ? ` class="is-clickable" tabindex="0" onclick="${onRowClick}('${escapeHtml(String(r[rowKey]).replace(/'/g, "\\'"))}')"` : "";
+      const cells = columns.map(c => {
+        const isNumCol = c.align === "right" || ["usd", "vnd", "number", "percent", "days"].includes(c.format);
+        const content = c.render ? c.render(r) : escapeHtml(formatValue(r[c.key], c.format || "text"));
+        return `<td class="${isNumCol ? "num" : ""}">${content}</td>`;
+      }).join("");
+      return `<tr${click}>${cells}</tr>`;
+    }).join("");
+    return `<div class="table-scroll"><table class="data-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
-  function handleChartCtxAction(id, action) {
-    const menu = document.getElementById(`ctx-menu-${id}`);
-    if (menu) menu.classList.remove("active");
-
-    if (action === "csv") {
-      showToast(`Đã xuất dữ liệu biểu đồ ${id} ra file CSV.`);
-    } else {
-      showToast(`Thao tác ${action} trên biểu đồ ${id}`);
-    }
+  function statusBadge(tone, text) {
+    return `<span class="status-badge tone-${tone}">${escapeHtml(text)}</span>`;
   }
 
-  function showToast(message) {
+  // --------------------------------------------------------------------------
+  // TOAST
+  // --------------------------------------------------------------------------
+  function showToast(message, tone = "success") {
     let container = document.getElementById("toast-container");
     if (!container) {
       container = document.createElement("div");
       container.id = "toast-container";
       document.body.appendChild(container);
     }
-
+    const icons = { success: "fa-circle-check", info: "fa-circle-info", warning: "fa-triangle-exclamation", danger: "fa-circle-xmark" };
     const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> ${message}`;
+    toast.className = `toast tone-${tone}`;
+    toast.innerHTML = `<i class="fa-solid ${icons[tone] || icons.info}"></i> <span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
-
     setTimeout(() => {
       toast.style.opacity = "0";
       setTimeout(() => toast.remove(), 200);
-    }, 2500);
+    }, 2800);
   }
 
-  function renderSkeletonCard() {
-    return `
-      <div class="glass-card kpi-card">
-        <div class="skeleton skeleton-text" style="width:40%;"></div>
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-text" style="width:60%;"></div>
-      </div>
-    `;
-  }
-
-  function renderSkeletonChart() {
-    return `
-      <div class="glass-card chart-card">
-        <div class="skeleton skeleton-title"></div>
-        <div class="skeleton skeleton-chart"></div>
-      </div>
-    `;
-  }
-
-  function renderNoDataBanner({ title = "Chưa Có Dữ Liệu Thực Tế", message = "Phân hệ này chưa được nạp dữ liệu vào Kho dữ liệu DWH_KhangNghi.", icon = "📂", badgeText = "NO DATA IN DWH" } = {}) {
-    return `
-      <div class="glass-card" style="padding: 40px; text-align: center; margin-bottom: 24px; border-left: 4px solid var(--color-accent-amber, #f39c12);">
-        <div style="font-size: 48px; margin-bottom: 16px;">${icon}</div>
-        <div style="display:inline-block; background:rgba(243,156,18,0.15); color:#f39c12; font-size:12px; font-weight:700; padding:4px 12px; border-radius:12px; margin-bottom:12px;">
-          ● ${badgeText}
+  // --------------------------------------------------------------------------
+  // NGĂN CHI TIẾT (khách hàng, đơn hàng) - dữ liệu thật từ API tra cứu
+  // --------------------------------------------------------------------------
+  function openModal(id, title, subtitle) {
+    let modal = document.getElementById(id);
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = id;
+      modal.className = "modal-overlay";
+      modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("active"); });
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = `
+      <div class="modal-box detail-modal">
+        <div class="detail-head">
+          <div>
+            <h2>${escapeHtml(title)}</h2>
+            <span>${escapeHtml(subtitle)}</span>
+          </div>
+          <button type="button" class="panel-close-btn" aria-label="Đóng" onclick="document.getElementById('${id}').classList.remove('active')">&times;</button>
         </div>
-        <h2 style="font-size: 20px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 8px;">${title}</h2>
-        <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 600px; margin: 0 auto 20px auto; line-height: 1.6;">
-          ${message}
-        </p>
-        <div style="font-size: 12px; color: var(--color-text-muted); background: rgba(255,255,255,0.03); display: inline-block; padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
-          <i class="fa-solid fa-database" style="margin-right: 6px;"></i> Nguồn DWH: <strong>DWH_KhangNghi (SQL Server)</strong> | Trạng thái Bảng Fact: <strong>0 Records</strong>
-        </div>
-      </div>
-    `;
+        <div class="detail-body">${renderState("loading", { compact: true })}</div>
+      </div>`;
+    modal.classList.add("active");
+    return modal.querySelector(".detail-body");
+  }
+
+  function field(label, value) {
+    return `<div class="detail-field"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value === null || value === undefined || value === "" ? "—" : value)}</strong></div>`;
   }
 
   async function openCustomerDetailDrawer(customerId) {
     if (!customerId || customerId === "N/A" || customerId === "undefined") {
-      console.warn("[Data Quality Warning] Cannot open drawer for N/A or invalid CustomerID:", customerId);
-      showToast("⚠️ Mã KH không tồn tại hoặc N/A trong Data Warehouse.");
+      showToast("Dòng này không có mã khách hàng để tra cứu.", "warning");
       return;
     }
-
-    let modal = document.getElementById("customer-detail-drawer");
-    if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "customer-detail-drawer";
-      modal.className = "modal-overlay";
-      document.body.appendChild(modal);
-    }
-
-    modal.innerHTML = `
-      <div class="modal-box glass-card" style="max-width:850px; width:90%; max-height:90vh; overflow-y:auto; padding:24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
-          <div>
-            <h2 style="font-size:18px; font-weight:700; color:var(--color-primary, #3b82f6); margin:0;">
-              <i class="fa-solid fa-user-gear"></i> Chi Tiết Khách Hàng & Data Lineage Tracing
-            </h2>
-            <span style="font-size:12px; color:var(--color-text-secondary);">Natural Key: <strong>${customerId}</strong></span>
-          </div>
-          <button class="topbar-action-btn" onclick="document.getElementById('customer-detail-drawer').classList.remove('active')" style="background:transparent; border:none; color:white; font-size:18px; cursor:pointer;">&times;</button>
-        </div>
-        <div id="customer-drawer-content" style="padding:10px 0;">
-          <div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i> Đang tải dữ liệu từ DWH...</div>
-        </div>
-      </div>
-    `;
-    modal.classList.add("active");
-
+    const body = openModal("customer-detail-drawer", "Chi tiết khách hàng", `Mã khách hàng: ${customerId}`);
     const res = await window.analyticsService.getCustomerDetail(customerId);
-    const contentEl = document.getElementById("customer-drawer-content");
-    if (!contentEl) return;
-
-    if (!res.success || !res.data) {
-      contentEl.innerHTML = `
-        <div style="text-align:center; padding:30px; color:var(--color-danger, #e74c3c);">
-          <i class="fa-solid fa-triangle-exclamation" style="font-size:36px; margin-bottom:12px;"></i>
-          <h3>Không tìm thấy dữ liệu cho Mã KH: ${customerId}</h3>
-          <p style="font-size:13px; color:var(--color-text-muted);">Trạng thái Data Quality: N/A | Vui lòng kiểm tra lại dữ liệu nguồn Excel/DWH.</p>
-        </div>
-      `;
+    if (!res.success) {
+      body.innerHTML = renderState("error", { message: res.message });
       return;
     }
-
-    const d = res.data;
+    const d = res.data || {};
     const cust = d.customer || {};
     const sum = d.summary || {};
-    const lin = d.lineage || {};
-    const orders = d.orders || [];
-
-    contentEl.innerHTML = `
-      <!-- Customer Info Grid -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:20px;">
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">TÊN KHÁCH HÀNG</div>
-          <div style="font-size:15px; font-weight:700; color:white;">${cust.CustomerName || "N/A"}</div>
-          <div style="font-size:12px; color:var(--color-primary); margin-top:2px;">Mã KH (Natural Key): <strong>${cust.CustomerID || customerId}</strong></div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">PHÂN KHÚC (SEGMENT)</div>
-          <div style="font-size:15px; font-weight:700; color:white;">${cust.Segment || "Khách lẻ"}</div>
-          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Surrogate Key: <strong>CustomerKey = ${cust.CustomerKey || "N/A"}</strong></div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">TỔNG DOANH THU</div>
-          <div style="font-size:15px; font-weight:700; color:var(--color-success, #2ecc71);">${formatCurrency(sum.TotalRevenue || 0)}</div>
-          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Số đơn hàng: <strong>${sum.TotalOrders || 0} đơn</strong></div>
-        </div>
+    const orders = Array.isArray(d.orders) ? d.orders : [];
+    body.innerHTML = `
+      <div class="detail-grid">
+        ${field("Tên khách hàng", cust.CustomerName)}
+        ${field("Phân khúc", cust.Segment)}
+        ${field("Tổng doanh thu", isNum(sum.TotalRevenue) ? formatValue(sum.TotalRevenue, SALES_CURRENCY) : null)}
+        ${field("Số đơn hàng", isNum(sum.TotalOrders) ? formatValue(sum.TotalOrders) : null)}
+        ${field("Nguồn dữ liệu", cust.SourceSystem)}
+        ${field("Khóa thay thế (CustomerKey)", cust.CustomerKey)}
       </div>
-
-      <!-- DATA LINEAGE TRACING SECTION -->
-      <div style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(59, 130, 246, 0.3); border-radius:10px; padding:16px; margin-bottom:20px;">
-        <h4 style="font-size:13px; font-weight:700; color:var(--color-primary, #3b82f6); margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-          <i class="fa-solid fa-diagram-project"></i> DATA LINEAGE TRACING (TRUY VẾT DỮ LIỆU NGUỒN)
-        </h4>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; font-size:12px;">
-          <div><span style="color:var(--color-text-muted);">Nguồn Dữ Liệu:</span> <br><strong style="color:#f39c12;"><i class="fa-solid fa-file-excel"></i> ${lin.source || "Excel_Superstore"}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Natural Key Tra Cứu:</span> <br><strong style="color:#38bdf8;">${lin.naturalKey || "CustomerID = " + customerId}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Bảng Dimension:</span> <br><strong style="color:#a78bfa;">${lin.dimension || "Dim_Customer"}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Surrogate Key (Fact Join):</span> <br><strong style="color:#4ade80;">${lin.surrogateKey || "CustomerKey = " + cust.CustomerKey}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Bảng Fact Liên Kết:</span> <br><strong style="color:#f43f5e;">${lin.fact || "Fact_Sales"}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Bản Ghi Liên Quan:</span> <br><strong style="color:white;">${lin.relatedRecords || (orders.length + " orders")}</strong></div>
-        </div>
-      </div>
-
-      <!-- Order History Table -->
-      <h4 style="font-size:14px; font-weight:700; margin-bottom:10px; color:white;">Lịch Sử Đơn Hàng Của Khách Hàng (${orders.length} đơn gần nhất)</h4>
-      <div class="table-responsive" style="max-height:300px; overflow-y:auto;">
-        <table class="enterprise-table" style="font-size:12px; width:100%;">
-          <thead>
-            <tr>
-              <th>Order ID (Natural Key)</th>
-              <th>Ngày Đặt</th>
-              <th>Mã Sản Phẩm</th>
-              <th>Tên Sản Phẩm</th>
-              <th>Số Lượng</th>
-              <th>Doanh Số</th>
-              <th>Lợi Nhuận</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${orders.length ? orders.map(o => `
-              <tr>
-                <td>
-                  <a href="javascript:void(0)" onclick="KhangNghiComponents.openOrderDetailDrawer('${o.OrderID}')" style="color:var(--color-primary, #38bdf8); font-weight:700; text-decoration:underline;">
-                    ${o.OrderID || 'N/A'}
-                  </a>
-                </td>
-                <td>${o.OrderDate ? o.OrderDate.substring(0,10) : 'N/A'}</td>
-                <td><strong style="color:#a78bfa;">${o.ProductID || 'N/A'}</strong></td>
-                <td>${o.ProductName || 'N/A'}</td>
-                <td>${o.Quantity || 0}</td>
-                <td>${formatCurrency(o.SalesAmount || 0)}</td>
-                <td><strong style="color:${(o.ProfitAmount || 0) >= 0 ? 'var(--color-success,#2ecc71)' : 'var(--color-danger,#e74c3c)'}">${formatCurrency(o.ProfitAmount || 0)}</strong></td>
-              </tr>
-            `).join('') : '<tr><td colspan="7" style="text-align:center; padding:15px; color:var(--color-text-muted);">Chưa có đơn hàng phát sinh trong Fact_Sales.</td></tr>'}
-          </tbody>
-        </table>
-      </div>
-    `;
+      <h3 class="detail-section-title">Lịch sử đơn hàng (${orders.length})</h3>
+      ${renderTable([
+        { key: "OrderID", label: "Mã đơn", render: o => `<a href="javascript:void(0)" class="link" onclick="KhangNghiComponents.openOrderDetailDrawer('${escapeHtml(o.OrderID)}')">${escapeHtml(o.OrderID)}</a>` },
+        { key: "OrderDate", label: "Ngày đặt", render: o => escapeHtml((o.OrderDate || "").substring(0, 10) || "—") },
+        { key: "ProductName", label: "Sản phẩm" },
+        { key: "Quantity", label: "SL", format: "number" },
+        { key: "SalesAmount", label: "Doanh thu", format: SALES_CURRENCY },
+        { key: "ProfitAmount", label: "Lợi nhuận", format: SALES_CURRENCY }
+      ], orders, { empty: "Khách hàng chưa có đơn trong Fact_Sales." })}`;
   }
 
   async function openOrderDetailDrawer(orderId) {
     if (!orderId || orderId === "N/A" || orderId === "undefined") {
-      console.warn("[Data Quality Warning] Cannot open drawer for N/A or invalid OrderID:", orderId);
-      showToast("⚠️ Mã Đơn Hàng không tồn tại hoặc N/A trong Data Warehouse.");
+      showToast("Dòng này không có mã đơn hàng để tra cứu.", "warning");
       return;
     }
-
-    let modal = document.getElementById("order-detail-drawer");
-    if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "order-detail-drawer";
-      modal.className = "modal-overlay";
-      document.body.appendChild(modal);
-    }
-
-    modal.innerHTML = `
-      <div class="modal-box glass-card" style="max-width:850px; width:90%; max-height:90vh; overflow-y:auto; padding:24px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
-          <div>
-            <h2 style="font-size:18px; font-weight:700; color:var(--color-accent, #38bdf8); margin:0;">
-              <i class="fa-solid fa-receipt"></i> Chi Tiết Đơn Hàng & Lineage (Order ID: ${orderId})
-            </h2>
-            <span style="font-size:12px; color:var(--color-text-secondary);">Natural Key: <strong>${orderId}</strong></span>
-          </div>
-          <button class="topbar-action-btn" onclick="document.getElementById('order-detail-drawer').classList.remove('active')" style="background:transparent; border:none; color:white; font-size:18px; cursor:pointer;">&times;</button>
-        </div>
-        <div id="order-drawer-content" style="padding:10px 0;">
-          <div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i> Đang tải dữ liệu từ DWH...</div>
-        </div>
-      </div>
-    `;
-    modal.classList.add("active");
-
+    const body = openModal("order-detail-drawer", "Chi tiết đơn hàng", `Mã đơn hàng: ${orderId}`);
     const res = await window.analyticsService.getOrderDetail(orderId);
-    const contentEl = document.getElementById("order-drawer-content");
-    if (!contentEl) return;
-
-    if (!res.success || !res.data) {
-      contentEl.innerHTML = `
-        <div style="text-align:center; padding:30px; color:var(--color-danger, #e74c3c);">
-          <i class="fa-solid fa-triangle-exclamation" style="font-size:36px; margin-bottom:12px;"></i>
-          <h3>Không tìm thấy chi tiết cho Mã Đơn Hàng: ${orderId}</h3>
-          <p style="font-size:13px; color:var(--color-text-muted);">Trạng thái Data Quality: N/A | Đơn hàng không tồn tại trong Fact_Sales.</p>
-        </div>
-      `;
+    if (!res.success) {
+      body.innerHTML = renderState("error", { message: res.message });
       return;
     }
-
-    const d = res.data;
+    const d = res.data || {};
     const head = d.orderHeader || {};
-    const lin = d.lineage || {};
-    const items = d.items || [];
-
-    contentEl.innerHTML = `
-      <!-- Order Header Summary -->
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:20px;">
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">MÃ ĐƠN HÀNG (NATURAL KEY)</div>
-          <div style="font-size:15px; font-weight:700; color:var(--color-primary,#38bdf8);">${head.orderID || orderId}</div>
-          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Ngày đặt: <strong>${head.orderDate ? head.orderDate.substring(0,10) : 'N/A'}</strong></div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">KHÁCH HÀNG MUA HÀNG</div>
-          <div style="font-size:15px; font-weight:700; color:white;">${head.customerName || 'N/A'}</div>
-          <div style="font-size:12px; color:var(--color-primary); margin-top:2px;">
-            Mã KH: <a href="javascript:void(0)" onclick="document.getElementById('order-detail-drawer').classList.remove('active'); KhangNghiComponents.openCustomerDetailDrawer('${head.customerID}')" style="color:var(--color-primary); text-decoration:underline;"><strong>${head.customerID || 'N/A'}</strong></a>
-          </div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03); padding:12px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
-          <div style="font-size:11px; color:var(--color-text-muted);">TỔNG GIÁ TRỊ ĐƠN HÀNG</div>
-          <div style="font-size:15px; font-weight:700; color:var(--color-success, #2ecc71);">${formatCurrency(head.totalSales || items.reduce((acc, x)=>acc+(x.SalesAmount||0),0))}</div>
-          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Số mặt hàng: <strong>${head.itemCount || items.length} món</strong></div>
-        </div>
+    const items = Array.isArray(d.items) ? d.items : [];
+    const total = items.reduce((acc, x) => acc + (Number(x.SalesAmount) || 0), 0);
+    body.innerHTML = `
+      <div class="detail-grid">
+        ${field("Ngày đặt", (head.orderDate || "").substring(0, 10))}
+        ${field("Khách hàng", head.customerName)}
+        ${field("Mã khách hàng", head.customerID)}
+        ${field("Tổng giá trị", items.length ? formatValue(isNum(head.totalSales) ? head.totalSales : total, SALES_CURRENCY) : null)}
       </div>
-
-      <!-- LINEAGE TRACING SECTION -->
-      <div style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(56, 189, 248, 0.3); border-radius:10px; padding:16px; margin-bottom:20px;">
-        <h4 style="font-size:13px; font-weight:700; color:var(--color-accent, #38bdf8); margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-          <i class="fa-solid fa-diagram-project"></i> ORDER LINEAGE TRACING (FACT_SALES RECONCILIATION)
-        </h4>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; font-size:12px;">
-          <div><span style="color:var(--color-text-muted);">Nguồn Dữ Liệu:</span> <br><strong style="color:#f39c12;"><i class="fa-solid fa-file-excel"></i> ${lin.source || "Excel_Superstore"}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Order Natural Key:</span> <br><strong style="color:#38bdf8;">${lin.naturalKey || "OrderID = " + orderId}</strong></div>
-          <div><span style="color:var(--color-text-muted);">Bảng Fact Tra Cứu:</span> <br><strong style="color:#f43f5e;">Fact_Sales</strong></div>
-          <div><span style="color:var(--color-text-muted);">Surrogate Keys Join:</span> <br><strong style="color:#4ade80;">${lin.surrogateKey || "CustomerKey & ProductKey"}</strong></div>
-        </div>
-      </div>
-
-      <!-- Order Items Table -->
-      <h4 style="font-size:14px; font-weight:700; margin-bottom:10px; color:white;">Chi Tiết Danh Mục Mặt Hàng Trong Đơn</h4>
-      <div class="table-responsive">
-        <table class="enterprise-table" style="font-size:12px; width:100%;">
-          <thead>
-            <tr>
-              <th>Mã SP (Natural Key)</th>
-              <th>Tên Sản Phẩm</th>
-              <th>Danh Mục</th>
-              <th>Số Lượng</th>
-              <th>Chiết Khấu</th>
-              <th>Doanh Số</th>
-              <th>Lợi Nhuận</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items.map(i => `
-              <tr>
-                <td><strong style="color:#a78bfa;">${i.ProductID || 'N/A'}</strong></td>
-                <td><strong>${i.ProductName || 'N/A'}</strong></td>
-                <td><span class="badge badge-info">${i.Category || 'Thiết bị'}</span></td>
-                <td>${i.Quantity || 0}</td>
-                <td>${i.DiscountAmount ? formatCurrency(i.DiscountAmount) : '$0'}</td>
-                <td>${formatCurrency(i.SalesAmount || 0)}</td>
-                <td><strong style="color:${(i.ProfitAmount || 0) >= 0 ? 'var(--color-success,#2ecc71)' : 'var(--color-danger,#e74c3c)'}">${formatCurrency(i.ProfitAmount || 0)}</strong></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+      <h3 class="detail-section-title">Mặt hàng trong đơn (${items.length})</h3>
+      ${renderTable([
+        { key: "ProductID", label: "Mã SP" },
+        { key: "ProductName", label: "Sản phẩm" },
+        { key: "Category", label: "Danh mục" },
+        { key: "Quantity", label: "SL", format: "number" },
+        { key: "DiscountAmount", label: "Chiết khấu", format: SALES_CURRENCY },
+        { key: "SalesAmount", label: "Doanh thu", format: SALES_CURRENCY },
+        { key: "ProfitAmount", label: "Lợi nhuận", format: SALES_CURRENCY }
+      ], items, { empty: "Đơn hàng không có dòng chi tiết." })}`;
   }
 
   return {
+    SALES_CURRENCY,
+    SALES_CURRENCY_LABEL,
+    isNum,
+    formatValue,
     formatCurrency,
     formatNumber,
-    renderStatusBadge,
+    escapeHtml,
     renderKpiCard,
-    renderChartCard,
-    renderNoDataBanner,
-    toggleContextMenu,
-    handleChartCtxAction,
+    renderSkeletonCards,
+    renderState,
+    sectionMessage,
+    applySectionState,
+    renderTable,
+    statusBadge,
     showToast,
-    renderSkeletonCard,
-    renderSkeletonChart,
+    openModal,
+    field,
     openCustomerDetailDrawer,
     openOrderDetailDrawer
   };

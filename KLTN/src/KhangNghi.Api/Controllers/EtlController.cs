@@ -1,11 +1,13 @@
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/etl")]
+    [Authorize(Policy = "DirectorOrAdmin")]
     public class EtlController : ControllerBase
     {
         private readonly IEtlService _etlService;
@@ -16,6 +18,7 @@ namespace KhangNghi.Api.Controllers
         }
 
         [HttpPost("trigger")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> TriggerEtl([FromQuery] string? filePath = null, [FromQuery] string triggeredBy = "Web/Api")
         {
             var result = await _etlService.RunEtlAsync(filePath, triggeredBy);

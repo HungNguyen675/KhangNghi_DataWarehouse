@@ -1,11 +1,13 @@
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/cross-analysis")]
+    [Authorize(Policy = "DirectorOrAdmin")]
     public class CrossAnalysisController : ControllerBase
     {
         private readonly IDwhAnalyticsRepository _repo;

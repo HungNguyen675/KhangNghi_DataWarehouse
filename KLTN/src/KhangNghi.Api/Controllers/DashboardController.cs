@@ -1,11 +1,13 @@
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/dashboard")]
+    [Authorize]
     public class DashboardController : ControllerBase
     {
         private readonly IDwhAnalyticsRepository _analyticsRepo;

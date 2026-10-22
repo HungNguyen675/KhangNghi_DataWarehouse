@@ -1,8 +1,11 @@
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using KhangNghi.Infrastructure.Services.Copilot;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace KhangNghi.Api.Controllers
 {
@@ -12,10 +15,14 @@ namespace KhangNghi.Api.Controllers
     public class NlqController : ControllerBase
     {
         private readonly IDwhAnalyticsRepository _repo;
+        private readonly ILlmCopilotService _llm;
+        private readonly ILogger<NlqController> _logger;
 
-        public NlqController(IDwhAnalyticsRepository repo)
+        public NlqController(IDwhAnalyticsRepository repo, ILlmCopilotService llm, ILogger<NlqController> logger)
         {
             _repo = repo;
+            _llm = llm;
+            _logger = logger;
         }
 
         [HttpGet("query")]
@@ -71,10 +78,27 @@ namespace KhangNghi.Api.Controllers
                 if (text.Contains("tổng quan") || text.Contains("tóm tắt"))
                 {
                     var data = await _repo.GetDashboardSummaryAsync(null, null);
-                    return Ok(new { Answer = $"Tổng quan tình hình kinh doanh: Tổng doanh thu = {data.TotalRevenue:N0}, Tổng lợi nhuận = {data.TotalProfit:N0}, Biên lợi nhuận trung bình = {data.ProfitMargin:P2}.", Data = data });
+                    return Ok(new { Answer = $"Tổng quan tình hình kinh doanh: Tổng doanh thu = {data.TotalRevenue:N0}, Tổng lợi nhuận = {data.TotalProfit:N0}, Biên lợi nhuận trung bình = {data.ProfitMargin:N2}%.", Data = data });
                 }
 
-                return Ok(new { Answer = "Xin lỗi, tôi chưa hiểu rõ ý của bạn. Hãy thử hỏi các câu có chứa từ khóa như: 'doanh thu các năm', 'top sản phẩm doanh thu', 'hàng sắp hết', 'tổng quan', 'chi phí vận chuyển', 'top khách hàng'.", Data = (object?)null });
+                // Tầng 3: không khớp luật từ khóa -> LLM tự chọn truy vấn trong danh mục Q01-Q40 qua tool calling
+                string llmNote = string.Empty;
+                if (_llm.IsConfigured)
+                {
+                    try
+                    {
+                        var role = User.FindFirstValue(ClaimTypes.Role);
+                        var result = await _llm.AskAsync(q, role, HttpContext.RequestAborted);
+                        return Ok(new { Answer = result.Answer, Data = result.Data, Source = "llm", QueriesUsed = result.QueriesUsed });
+                    }
+                    catch (System.Exception ex) when (ex is not System.OperationCanceledException || !HttpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        _logger.LogWarning(ex, "AI Copilot tầng 3 lỗi, quay về gợi ý từ khóa");
+                        llmNote = " (Tầng AI tạm thời không phản hồi, đang dùng chế độ từ khóa.)";
+                    }
+                }
+
+                return Ok(new { Answer = "Xin lỗi, tôi chưa hiểu rõ ý của bạn." + llmNote + " Hãy thử hỏi các câu có chứa từ khóa như: 'doanh thu các năm', 'top sản phẩm doanh thu', 'hàng sắp hết', 'tổng quan', 'chi phí vận chuyển', 'top khách hàng'.", Data = (object?)null });
             }
             catch (System.Exception ex)
             {

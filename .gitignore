@@ -432,3 +432,9 @@ FodyWeavers.xsd
 *.bak
 scratch_*.py
 
+# macOS & OS artifacts
+.DS_Store
+*/.DS_Store
+.env
+*.env
+/src/

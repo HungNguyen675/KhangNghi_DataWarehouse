@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
@@ -7,6 +8,7 @@ namespace KhangNghi.Api.Controllers
     [ApiController]
     [Route("api/v1/customers")]
     [Route("api/customers")]
+    [Authorize(Policy = "SalesAccess")]
     public class CustomerController : ControllerBase
     {
         private readonly IDwhAnalyticsRepository _repo;

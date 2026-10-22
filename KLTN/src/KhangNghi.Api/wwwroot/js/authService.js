@@ -199,6 +199,13 @@ window.KhangNghiAuth = (function () {
     }
   }
 
+  // "Ban Giám Đốc Khang Nghị" -> "BN"; "admin" -> "AD"
+  function initialsOf(name) {
+    const words = String(name).trim().split(/\s+/).filter(Boolean);
+    if (words.length >= 2) return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    return String(name).substring(0, 2).toUpperCase();
+  }
+
   async function login(emailOrUsername, password, rememberMe = false) {
     const client = window.KhangNghiApiClient;
     const input = (emailOrUsername || "").trim();
@@ -251,7 +258,7 @@ window.KhangNghiAuth = (function () {
           role: mappedRole,
           roleTitle: roleTitle,
           department: "Hệ Thống DWH Khang Nghị",
-          avatar: (res.data.fullName || res.data.username || "KN").substring(0, 2).toUpperCase(),
+          avatar: initialsOf(res.data.fullName || res.data.username || "KN"),
           lastLogin: nowStr
         };
 
@@ -317,6 +324,7 @@ window.KhangNghiAuth = (function () {
     currentUser = null;
     sessionStorage.removeItem(SESSION_KEY);
     localStorage.removeItem(SESSION_KEY);
+    if (window.KhangNghiApiClient) window.KhangNghiApiClient.clearToken();
     notifyAuthStateChanged();
     window.location.hash = "#/login";
   }
@@ -341,21 +349,12 @@ window.KhangNghiAuth = (function () {
     return currentUser.role === roleId;
   }
 
-  function switchDemoRole(roleName) {
+  // Đăng nhập lại bằng tài khoản demo của vai trò đích để JWT khớp với vai trò (Backend kiểm tra quyền theo token)
+  async function switchDemoRole(roleName) {
     const targetAccount = DEMO_ACCOUNTS.find(a => a.role.toLowerCase() === roleName.toLowerCase());
-    if (targetAccount) {
-      const nowStr = new Date().toLocaleString("vi-VN");
-      currentUser = { ...targetAccount, lastLogin: nowStr };
-      const sessionPayload = JSON.stringify({
-        email: targetAccount.email,
-        role: targetAccount.role,
-        loginTime: nowStr
-      });
-      sessionStorage.setItem(SESSION_KEY, sessionPayload);
-      notifyAuthStateChanged();
-      return true;
-    }
-    return false;
+    if (!targetAccount) return false;
+    const result = await login(targetAccount.email, targetAccount.password, false);
+    return result.success;
   }
 
   function onAuthStateChanged(callback) {

@@ -1,1157 +1,769 @@
 /* ==========================================================================
-   KHANG NGHI BUSINESS INTELLIGENCE - ANALYTICS SERVICE LAYER
-   DATABASE -> REST API -> WEB UI INTEGRATION (REAL DWH DATA ALIGNED)
+   KHANG NGHI BUSINESS INTELLIGENCE - ANALYTICS DATA SERVICE
+   Lớp dữ liệu duy nhất giữa REST API (/api/v1) và giao diện.
+
+   Nguyên tắc trung thực dữ liệu:
+   - Mỗi khối dữ liệu là một "section": { state, items, message, scope }
+       state = "ready"     : API trả về dữ liệu hợp lệ
+               "empty"     : API trả về thành công nhưng không có bản ghi
+               "error"     : lỗi kết nối / lỗi truy vấn (status, message)
+               "forbidden" : vai trò hiện tại không có quyền với API này
+   - Không dùng số liệu mẫu, hằng số hay mock để lấp chỗ trống.
+   - Chỉ số không tính được từ dữ liệu thật trả về null (giao diện hiển thị "—").
+   - scope ghi rõ phạm vi thời gian mà API thực sự áp dụng
+     (nhiều API backend không nhận tham số năm -> "Toàn bộ giai đoạn").
    ========================================================================== */
 
 window.analyticsService = (function () {
-  const api = window.KhangNghiApi;
   const client = window.KhangNghiApiClient;
 
-  // ==================== EXECUTIVE OVERVIEW (REAL DWH DATA) ====================
-  async function getExecutiveOverview(filters = {}) {
-    const params = {};
-    if (filters.year && filters.year !== "ALL") params.year = parseInt(filters.year);
-    if (filters.region && filters.region !== "All Regions") params.region = filters.region;
+  // --------------------------------------------------------------------------
+  // HELPERS
+  // --------------------------------------------------------------------------
 
-    const [summaryRes, categoryRes, yearRes, topProdRes, topCustRes, regionRes, forecastRes] = await Promise.all([
-      client ? client.get("/dashboard/summary", params) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-category") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-year") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-products-revenue", { top: 5 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-customers-revenue", { top: 5 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-region") : Promise.resolve({ success: false }),
-      client ? client.get("/forecast/sales?horizon=6") : Promise.resolve({ success: false })
+  // Dapper dynamic trả PascalCase, DTO có kiểu trả camelCase -> đọc được cả hai
+  function pick(obj, key) {
+    if (!obj) return undefined;
+    if (obj[key] !== undefined) return obj[key];
+    const camel = key.charAt(0).toLowerCase() + key.slice(1);
+    return obj[camel];
+  }
+
+  function num(obj, key) {
+    const v = pick(obj, key);
+    if (v === null || v === undefined || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function str(obj, key) {
+    const v = pick(obj, key);
+    return v === null || v === undefined ? "" : String(v);
+  }
+
+  function sum(items, key) {
+    return items.reduce((acc, it) => acc + (Number(it[key]) || 0), 0);
+  }
+
+  function ratio(a, b) {
+    return b > 0 && a !== null && a !== undefined ? a / b : null;
+  }
+
+  function yearParam(filters) {
+    const y = filters && filters.year;
+    return y && y !== "ALL" ? parseInt(y, 10) : null;
+  }
+
+  function scopeLabel(year) {
+    return year ? `Năm ${year}` : "Toàn bộ giai đoạn";
+  }
+
+  const ALL_TIME = "Toàn bộ giai đoạn";
+
+  function failMessage(res) {
+    if (res.status === 403) return "Vai trò hiện tại không có quyền xem dữ liệu này.";
+    if (res.status === 0 || res.status === 408) return "Không kết nối được máy chủ API. Kiểm tra dịch vụ KhangNghi.Api.";
+    if (res.status >= 500) return "Máy chủ gặp lỗi khi truy vấn kho dữ liệu (HTTP " + res.status + ").";
+    return res.error || "Không truy vấn được dữ liệu.";
+  }
+
+  async function get(path, params) {
+    if (!client) return { success: false, status: 0, error: "API client chưa sẵn sàng" };
+    return client.get(path, params || {});
+  }
+
+  // Chuyển một phản hồi API dạng danh sách thành section đã chuẩn hóa
+  function section(res, mapFn, scope) {
+    if (!res || !res.success) {
+      return { state: res && res.status === 403 ? "forbidden" : "error", items: [], message: failMessage(res || {}), scope };
+    }
+    const raw = Array.isArray(res.data) ? res.data : [];
+    const items = mapFn ? raw.map(mapFn) : raw;
+    return { state: items.length ? "ready" : "empty", items, message: "", scope };
+  }
+
+  function emptySection(scope, message) {
+    return { state: "empty", items: [], message: message || "", scope };
+  }
+
+  // Tổng quan /dashboard/summary -> KPI. Không có đơn hàng nào = chưa có dữ liệu
+  function summarySection(res, scope) {
+    if (!res || !res.success) {
+      return { state: res && res.status === 403 ? "forbidden" : "error", data: null, message: failMessage(res || {}), scope };
+    }
+    const d = res.data || {};
+    const data = {
+      revenue: num(d, "TotalRevenue"),
+      profit: num(d, "TotalProfit"),
+      margin: num(d, "ProfitMargin"),          // đã ở đơn vị %
+      orders: num(d, "TotalOrders"),
+      quantity: num(d, "TotalQuantitySold"),
+      customers: num(d, "TotalCustomers"),
+      shippingCost: num(d, "TotalShippingCost"), // backend không lọc theo năm
+      lowStockAlerts: num(d, "LowStockAlertCount")
+    };
+    return { state: data.orders > 0 ? "ready" : "empty", data, message: "", scope };
+  }
+
+  // % thay đổi so với năm trước, chỉ khi có đủ dữ liệu cả 2 kỳ
+  function yoyChange(yearItems, year, key) {
+    if (!year) return null;
+    const cur = yearItems.find(y => y.year === year);
+    const prev = yearItems.find(y => y.year === year - 1);
+    if (!cur || !prev || !prev[key]) return null;
+    return { pct: ((cur[key] - prev[key]) / Math.abs(prev[key])) * 100, label: `so với ${year - 1}` };
+  }
+
+  const mapYear = r => ({ year: num(r, "Year"), revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0, quantity: num(r, "Quantity") || 0 });
+  const mapCategory = r => ({ label: str(r, "Category") || "Chưa phân loại", revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0, quantity: num(r, "Quantity") || 0, margin: num(r, "ProfitMargin") });
+  const mapRegion = r => ({ label: str(r, "Region") || "Chưa xác định", revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0, quantity: num(r, "Quantity") || 0 });
+
+  // --------------------------------------------------------------------------
+  // 1. TỔNG QUAN
+  // --------------------------------------------------------------------------
+  async function getOverview(filters = {}) {
+    const year = yearParam(filters);
+    const [sumRes, yearRes, catRes, regRes] = await Promise.all([
+      get("/dashboard/summary", year ? { year } : {}),
+      get("/sales/by-year"),
+      get("/sales/by-category"),
+      get("/sales/by-region")
     ]);
 
-    let metrics = {};
-    let categoryBreakdown = [];
-    let yearTrend = [];
-    let topProducts = [];
-    let topCustomers = [];
-    let regionBreakdown = [];
-    let forecastSeries = [];
-    let isLiveApi = false;
+    const summary = summarySection(sumRes, scopeLabel(year));
+    const byYear = section(yearRes, mapYear, ALL_TIME);
+    byYear.items.sort((a, b) => a.year - b.year);
 
-    if (summaryRes.success && summaryRes.data) {
-      isLiveApi = true;
-      const s = summaryRes.data;
-      metrics = {
-        revenue: s.totalRevenue || 0,
-        profit: s.totalProfit || 0,
-        orders: s.totalOrders || 0,
-        quantity: s.totalQuantitySold || 0,
-        customers: s.totalCustomers || 0,
-        margin: s.profitMargin ? s.profitMargin.toFixed(1) : "0.0",
-        aov: s.totalOrders > 0 ? Math.round(s.totalRevenue / s.totalOrders) : 0,
-        isLiveApi: true
+    return {
+      year,
+      summary,
+      change: {
+        revenue: yoyChange(byYear.items, year, "revenue"),
+        profit: yoyChange(byYear.items, year, "profit"),
+        quantity: yoyChange(byYear.items, year, "quantity")
+      },
+      byYear,
+      byCategory: section(catRes, mapCategory, ALL_TIME),
+      byRegion: section(regRes, mapRegion, ALL_TIME)
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 2. BÁN HÀNG
+  // --------------------------------------------------------------------------
+  async function getSales(filters = {}) {
+    const year = yearParam(filters);
+    const [sumRes, yearRes, quarterRes, revProdRes, profProdRes, catRes] = await Promise.all([
+      get("/dashboard/summary", year ? { year } : {}),
+      get("/sales/by-year"),
+      year ? get("/sales/by-quarter", { year }) : Promise.resolve(null),
+      get("/sales/top-products-revenue", { top: 15 }),
+      get("/sales/top-products-profit", { top: 15 }),
+      get("/sales/by-category")
+    ]);
+
+    const summary = summarySection(sumRes, scopeLabel(year));
+    if (summary.data) {
+      summary.data.aov = ratio(summary.data.revenue, summary.data.orders);
+    }
+
+    const byYear = section(yearRes, mapYear, ALL_TIME);
+    byYear.items.sort((a, b) => a.year - b.year);
+
+    // Có chọn năm -> xu hướng theo quý của năm đó; không chọn -> theo năm
+    const trend = year
+      ? section(quarterRes, r => ({ label: str(r, "Period") || `Q${num(r, "Quarter")}/${num(r, "Year")}`, revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0 }), scopeLabel(year))
+      : { ...byYear, items: byYear.items.map(y => ({ label: String(y.year), revenue: y.revenue, profit: y.profit })) };
+
+    const mapProduct = r => ({
+      key: str(r, "ProductKey"),
+      label: str(r, "ProductName") || "Chưa đặt tên",
+      category: str(r, "Category"),
+      subCategory: str(r, "SubCategory"),
+      revenue: num(r, "Revenue"),
+      profit: num(r, "Profit"),
+      quantity: num(r, "Quantity")
+    });
+
+    return {
+      year,
+      summary,
+      change: {
+        revenue: yoyChange(byYear.items, year, "revenue"),
+        profit: yoyChange(byYear.items, year, "profit"),
+        quantity: yoyChange(byYear.items, year, "quantity")
+      },
+      trend,
+      topByRevenue: section(revProdRes, mapProduct, ALL_TIME),
+      topByProfit: section(profProdRes, mapProduct, ALL_TIME),
+      byCategory: section(catRes, mapCategory, ALL_TIME)
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 3. MUA HÀNG
+  // --------------------------------------------------------------------------
+  async function getPurchase(filters = {}) {
+    const year = yearParam(filters);
+    const [ordersRes, catRes, supRes, prodRes] = await Promise.all([
+      get("/purchase/orders-summary", year ? { year } : {}),
+      get("/purchase/by-category", year ? { year } : {}),
+      get("/purchase/top-suppliers-amount"),
+      get("/purchase/top-purchased-products", { top: 10 })
+    ]);
+
+    const orders = section(ordersRes, r => ({
+      id: str(r, "PurchaseOrderID"),
+      date: str(r, "OrderDate"),
+      supplier: str(r, "SupplierName"),
+      warehouse: str(r, "WarehouseName"),
+      lines: num(r, "LineItemCount"),
+      quantity: num(r, "TotalQuantity") || 0,
+      cost: num(r, "TotalCost") || 0,
+      avgUnitCost: num(r, "AvgUnitCost")
+    }), scopeLabel(year));
+
+    let kpi = null;
+    if (orders.state === "ready") {
+      const totalCost = sum(orders.items, "cost");
+      const totalQty = sum(orders.items, "quantity");
+      const poCount = new Set(orders.items.map(o => o.id)).size;
+      kpi = {
+        totalCost,
+        poCount,
+        totalQty,
+        avgUnitCost: ratio(totalCost, totalQty),
+        avgPoValue: ratio(totalCost, poCount),
+        suppliers: new Set(orders.items.map(o => o.supplier)).size
       };
-    } else {
-      metrics = api ? api.calculateBaseMetrics(filters) : { revenue: 0, profit: 0, orders: 0, quantity: 0, margin: "0.0", aov: 0 };
     }
 
-    if (categoryRes.success && Array.isArray(categoryRes.data)) {
-      categoryBreakdown = categoryRes.data.map(c => ({
-        category: c.category || c.Category || "Khác",
-        revenue: c.revenue || c.Revenue || 0,
-        profit: c.profit || c.Profit || 0,
-        qty: c.quantity || c.Quantity || 0
-      }));
-    }
-
-    if (yearRes.success && Array.isArray(yearRes.data)) {
-      yearTrend = yearRes.data;
-    }
-
-    if (topProdRes.success && Array.isArray(topProdRes.data)) {
-      topProducts = topProdRes.data;
-    }
-
-    if (topCustRes.success && Array.isArray(topCustRes.data)) {
-      topCustomers = topCustRes.data;
-    }
-
-    if (regionRes.success && Array.isArray(regionRes.data)) {
-      regionBreakdown = regionRes.data.map(r => ({
-        region: r.region || r.Region || "Khác",
-        revenue: r.revenue ?? r.Revenue ?? 0,
-        profit: r.profit ?? r.Profit ?? 0,
-        quantity: r.quantity ?? r.Quantity ?? 0
-      }));
-    }
-
-    if (forecastRes.success && forecastRes.data && Array.isArray(forecastRes.data.points)) {
-      forecastSeries = forecastRes.data.points.map(pt => ({
-        month: pt.period || pt.Period || "",
-        revenue: pt.isFuture ? null : (pt.actualValue ?? pt.ActualValue ?? 0),
-        forecast: pt.forecastValue ?? pt.ForecastValue ?? 0,
-        upper: pt.upperBound ?? pt.UpperBound ?? 0,
-        lower: pt.lowerBound ?? pt.LowerBound ?? 0,
-        isFuture: !!pt.isFuture
-      }));
-    }
+    // Xu hướng chi phí theo tháng, gộp từ danh sách PO (đúng phạm vi năm đang chọn)
+    const monthMap = {};
+    orders.items.forEach(o => {
+      const m = (o.date || "").slice(0, 7);
+      if (m) monthMap[m] = (monthMap[m] || 0) + o.cost;
+    });
+    const months = Object.keys(monthMap).sort();
+    const trend = {
+      state: orders.state === "ready" ? (months.length ? "ready" : "empty") : orders.state,
+      message: orders.message,
+      scope: orders.scope,
+      items: months.map(m => ({ label: `${m.slice(5, 7)}/${m.slice(0, 4)}`, cost: monthMap[m] }))
+    };
 
     return {
-      metrics,
-      categoryBreakdown,
-      yearTrend,
-      trend: yearTrend,
-      topProducts,
-      topCustomers,
-      regionBreakdown,
-      forecastSeries,
-      isLiveApi
+      year,
+      kpi,
+      orders,
+      trend,
+      byCategory: section(catRes, r => ({ label: str(r, "Category") || "Chưa phân loại", cost: num(r, "TotalCost") || 0, quantity: num(r, "TotalQuantity") || 0 }), scopeLabel(year)),
+      suppliers: section(supRes, r => ({ label: str(r, "SupplierName"), cost: num(r, "TotalPurchaseAmount") || 0, quantity: num(r, "TotalQuantity") || 0 }), ALL_TIME),
+      topProducts: section(prodRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), cost: num(r, "TotalPurchaseAmount") || 0, quantity: num(r, "TotalQuantity") || 0 }), ALL_TIME)
     };
   }
 
-  // ==================== SALES ANALYTICS (REAL DWH & SSAS CUBE DATA) ====================
-  async function getSalesOverview(filters = {}) {
-    const params = {};
-    if (filters.year && filters.year !== "ALL") params.year = parseInt(filters.year);
-    if (filters.region && filters.region !== "All Regions") params.region = filters.region;
+  async function getPurchaseOrderDetail(poId) {
+    const res = await get(`/purchase/order-detail/${encodeURIComponent(poId)}`, { top: 50 });
+    return section(res, r => ({
+      id: str(r, "PurchaseOrderID"),
+      date: str(r, "OrderDate"),
+      supplier: str(r, "SupplierName"),
+      warehouse: str(r, "WarehouseName"),
+      productId: str(r, "ProductID"),
+      product: str(r, "ProductName"),
+      category: str(r, "Category"),
+      quantity: num(r, "PurchaseQuantity") || 0,
+      unitCost: num(r, "UnitCost"),
+      cost: num(r, "TotalCost") || 0
+    }), ALL_TIME);
+  }
 
-    // MDX query: Lấy doanh số Top 5 sản phẩm qua từng năm (2012 - 2015) trực tiếp từ Cube SSAS
-    const yearProductMdx = `SELECT { [Measures].[Sales Amount] } ON COLUMNS, NON EMPTY [Dim Time].[Year].CHILDREN * TOPCOUNT([Dim Product].[Product Name].CHILDREN, 5, [Measures].[Sales Amount]) ON ROWS FROM [KhangNghi_Cube]`;
-
-    const [summaryRes, categoryRes, quarterRes, yearRes, topProdRes, topProfitProdRes, topCustRes, regionRes, mdxYearProdRes] = await Promise.all([
-      client ? client.get("/dashboard/summary", params) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-category") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-quarter", { year: params.year }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-year") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-products-revenue", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-products-profit", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-customers-revenue", { top: 10 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-region") : Promise.resolve({ success: false }),
-      client ? client.post("/ssas/query", { mdxQuery: yearProductMdx }) : Promise.resolve({ success: false })
+  // --------------------------------------------------------------------------
+  // 4. TỒN KHO
+  // --------------------------------------------------------------------------
+  async function getInventory() {
+    const [regRes, moveRes, alertRes, sumRes] = await Promise.all([
+      get("/inventory/by-region"),
+      get("/inventory/movement-over-time"),
+      get("/inventory/alerts", { top: 50 }),
+      get("/dashboard/summary")
     ]);
 
-    let metrics = {};
-    let categories = [];
-    let quarterlySales = [];
-    let yearlySales = [];
-    let topProducts = [];
-    let topProfitProducts = [];
-    let topCustomers = [];
-    let regionBreakdown = [];
-    let yearProductPoints = [];
-    let isLiveApi = false;
-    let apiError = null;
+    const byRegion = section(regRes, r => ({
+      label: str(r, "Region") || "Chưa xác định",
+      onHand: num(r, "TotalOnHand") || 0,
+      inbound: num(r, "TotalIn") || 0,
+      outbound: num(r, "TotalOut") || 0
+    }), ALL_TIME);
 
-    if (summaryRes.success && summaryRes.data) {
-      isLiveApi = true;
-      const s = summaryRes.data;
-      metrics = {
-        revenue: s.totalRevenue || 0,
-        profit: s.totalProfit || 0,
-        orders: s.totalOrders || 0,
-        quantity: s.totalQuantitySold || 0,
-        margin: s.profitMargin ? s.profitMargin.toFixed(1) : "0.0",
-        aov: s.totalOrders > 0 ? Math.round(s.totalRevenue / s.totalOrders) : 0,
-        isLiveApi: true
+    const movement = section(moveRes, r => ({
+      label: str(r, "Period") || `${num(r, "Month")}/${num(r, "Year")}`,
+      inbound: num(r, "TotalQuantityIn") || 0,
+      outbound: num(r, "TotalQuantityOut") || 0,
+      onHand: num(r, "TotalQuantityOnHand") || 0
+    }), ALL_TIME);
+
+    const alerts = section(alertRes, r => ({
+      key: str(r, "ProductKey") || str(r, "ProductID"),
+      product: str(r, "ProductName"),
+      category: str(r, "Category"),
+      location: str(r, "Location") || str(r, "City"),
+      onHand: num(r, "QuantityOnHand"),
+      reorderLevel: num(r, "ReorderLevel"),
+      deficit: num(r, "Deficit"),
+      status: str(r, "StatusColor"),
+      recommendation: str(r, "Recommendation")
+    }), "Top 50 mặt hàng thiếu hụt nhiều nhất");
+
+    const sumOk = sumRes && sumRes.success;
+    let kpi = null;
+    if (byRegion.state === "ready") {
+      kpi = {
+        onHand: sum(byRegion.items, "onHand"),
+        inbound: sum(byRegion.items, "inbound"),
+        outbound: sum(byRegion.items, "outbound"),
+        belowReorder: sumOk ? num(sumRes.data, "LowStockAlertCount") : null
       };
-    } else {
-      if (summaryRes.error) apiError = summaryRes.error;
-      metrics = api ? api.calculateBaseMetrics(filters) : { revenue: 0, profit: 0, orders: 0, quantity: 0, margin: "0.0", aov: 0 };
     }
 
-    if (categoryRes.success && Array.isArray(categoryRes.data)) {
-      categories = categoryRes.data.map(c => ({
-        category: c.category || c.Category || "Khác",
-        revenue: c.revenue || c.Revenue || 0,
-        profit: c.profit || c.Profit || 0,
-        qty: c.quantity || c.Quantity || c.qty || 0
-      }));
-    }
+    return { kpi, byRegion, movement, alerts };
+  }
 
-    if (quarterRes.success && Array.isArray(quarterRes.data)) {
-      quarterlySales = quarterRes.data.map(q => ({
-        period: q.period || q.Period || `Q${q.quarter || q.Quarter}-${q.year || q.Year}`,
-        revenue: q.revenue || q.Revenue || 0,
-        profit: q.profit || q.Profit || 0,
-        quantity: q.quantity || q.Quantity || 0
-      }));
-    }
+  // --------------------------------------------------------------------------
+  // 5. VẬN CHUYỂN
+  // --------------------------------------------------------------------------
+  async function getShipping() {
+    const [ordRes, costRes, lateRes, daysRes, regCostRes, regLateRes] = await Promise.all([
+      get("/shipping/avg-cost-by-shipper"),
+      get("/shipping/cost-by-shipper"),
+      get("/shipping/highest-late-days"),
+      get("/shipping/fastest-delivery"),
+      get("/shipping/cost-by-region"),
+      get("/shipping/late-delivery-by-region")
+    ]);
 
-    if (yearRes.success && Array.isArray(yearRes.data)) {
-      yearlySales = yearRes.data.map(y => ({
-        period: `Năm ${y.year || y.Year}`,
-        year: y.year || y.Year,
-        revenue: y.revenue || y.Revenue || 0,
-        profit: y.profit || y.Profit || 0,
-        quantity: y.quantity || y.Quantity || 0
-      }));
-    }
+    const orders = section(ordRes, r => ({ shipper: str(r, "ShipperName"), orders: num(r, "TotalOrders") || 0, avgCost: num(r, "AvgCostPerOrder") }), ALL_TIME);
+    const costs = section(costRes, r => ({ shipper: str(r, "ShipperName"), cost: num(r, "TotalShippingCost") || 0 }), ALL_TIME);
+    const late = section(lateRes, r => ({ shipper: str(r, "ShipperName"), lateOrders: num(r, "LateOrdersCount") || 0, totalOrders: num(r, "TotalOrders") || 0, avgLateDays: num(r, "AvgLateDays") }), ALL_TIME);
+    const days = section(daysRes, r => ({ shipper: str(r, "ShipperName"), method: str(r, "ShippingMethod"), avgDays: num(r, "AvgDeliveryDays") }), ALL_TIME);
 
-    if (topProdRes.success && Array.isArray(topProdRes.data)) topProducts = topProdRes.data;
-    if (topProfitProdRes.success && Array.isArray(topProfitProdRes.data)) topProfitProducts = topProfitProdRes.data;
-    if (topCustRes.success && Array.isArray(topCustRes.data)) topCustomers = topCustRes.data;
-    if (regionRes.success && Array.isArray(regionRes.data)) regionBreakdown = regionRes.data;
+    // Bảng hiệu suất: ghép theo tên đơn vị vận chuyển; thiếu trường nào để null
+    const shippers = {};
+    const row = name => (shippers[name] = shippers[name] || { shipper: name, orders: null, cost: null, avgCost: null, lateRate: null, avgLateDays: null, avgDays: null });
+    orders.items.forEach(o => { const r = row(o.shipper); r.orders = o.orders; r.avgCost = o.avgCost; });
+    costs.items.forEach(c => { row(c.shipper).cost = c.cost; });
+    late.items.forEach(l => { const r = row(l.shipper); r.lateRate = l.totalOrders > 0 ? (l.lateOrders / l.totalOrders) * 100 : null; r.avgLateDays = l.avgLateDays; });
+    days.items.forEach(d => { const r = row(d.shipper); if (r.avgDays === null) r.avgDays = d.avgDays; });
+    const performanceItems = Object.values(shippers).sort((a, b) => (b.orders || 0) - (a.orders || 0));
 
-    if (mdxYearProdRes.success && Array.isArray(mdxYearProdRes.data)) {
-      yearProductPoints = mdxYearProdRes.data;
+    let kpi = null;
+    if (orders.state === "ready") {
+      const totalOrders = sum(orders.items, "orders");
+      const totalCost = costs.state === "ready" ? sum(costs.items, "cost") : null;
+      const lateOrders = late.state === "ready" ? sum(late.items, "lateOrders") : null;
+      const lateBase = late.state === "ready" ? sum(late.items, "totalOrders") : 0;
+      kpi = {
+        totalOrders,
+        totalCost,
+        avgCost: totalCost !== null ? ratio(totalCost, totalOrders) : null,
+        lateOrders,
+        // Tỷ lệ đúng hạn chỉ tính khi có trường LateDays (Q35)
+        onTimeRate: lateBase > 0 ? (1 - lateOrders / lateBase) * 100 : null
+      };
     }
 
     return {
-      metrics,
-      categories,
-      quarterlySales,
-      yearlySales,
-      monthlySales: filters.granularity === "yearly" ? yearlySales : quarterlySales,
-      topProducts,
-      topProfitProducts,
-      topCustomers,
-      regionBreakdown,
-      yearProductPoints,
-      isLiveApi,
-      apiError
+      kpi,
+      performance: { state: orders.state === "ready" || costs.state === "ready" ? (performanceItems.length ? "ready" : "empty") : orders.state, items: performanceItems, message: orders.message, scope: ALL_TIME },
+      costByRegion: section(regCostRes, r => ({ label: str(r, "Region") || "Chưa xác định", cost: num(r, "TotalShippingCost") || 0, avgCost: num(r, "AvgCostPerOrder") }), ALL_TIME),
+      lateByRegion: section(regLateRes, r => ({ label: str(r, "Region") || "Chưa xác định", rate: num(r, "LateRatePercent"), lateOrders: num(r, "LateOrderCount") || 0, totalOrders: num(r, "TotalOrders") || 0 }), ALL_TIME)
     };
   }
 
-  // ==================== CUSTOMER ANALYTICS (REAL DWH DATA) ====================
-  async function getCustomerFullOverview(filters = {}) {
-    const [topCustRevenueRes, topCustProfitRes, segmentRes] = await Promise.all([
-      client ? client.get("/sales/top-customers-revenue", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-customers-profit", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-segment") : Promise.resolve({ success: false })
+  // --------------------------------------------------------------------------
+  // 6. KHÁCH HÀNG
+  // --------------------------------------------------------------------------
+  async function getCustomers() {
+    const [sumRes, segRes, revRes, profRes] = await Promise.all([
+      get("/dashboard/summary"),
+      get("/sales/by-segment"),
+      get("/sales/top-customers-revenue", { top: 15 }),
+      get("/sales/top-customers-profit", { top: 50 })
     ]);
 
-    let topCustomers = [];
-    let topProfitCustomers = [];
-    let segments = [];
-    let isLiveApi = false;
+    const summary = summarySection(sumRes, ALL_TIME);
+    const segments = section(segRes, r => ({ label: str(r, "Segment") || "Chưa phân khúc", revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0, orders: num(r, "OrderCount") || 0 }), ALL_TIME);
+    const profitByKey = {};
+    (profRes && profRes.success && Array.isArray(profRes.data) ? profRes.data : []).forEach(r => { profitByKey[str(r, "CustomerKey")] = num(r, "Profit"); });
 
-    if (topCustRevenueRes.success && Array.isArray(topCustRevenueRes.data)) {
-      isLiveApi = true;
-      topCustomers = topCustRevenueRes.data;
-    }
-    if (topCustProfitRes.success && Array.isArray(topCustProfitRes.data)) topProfitCustomers = topCustProfitRes.data;
-    if (segmentRes.success && Array.isArray(segmentRes.data)) {
-      segments = segmentRes.data.map(s => ({
-        segment: s.segment || s.Segment || "Khác",
-        revenue: s.revenue ?? s.Revenue ?? 0,
-        profit: s.profit ?? s.Profit ?? 0,
-        orderCount: s.orderCount ?? s.OrderCount ?? 0,
-        value: s.revenue ?? s.Revenue ?? 0
-      }));
+    const top = section(revRes, r => ({
+      key: str(r, "CustomerKey"),
+      id: str(r, "CustomerID"),
+      name: str(r, "CustomerName") || "Chưa đặt tên",
+      segment: str(r, "Segment"),
+      revenue: num(r, "Revenue") || 0,
+      orders: num(r, "OrderCount"),
+      profit: profitByKey[str(r, "CustomerKey")] ?? null
+    }), ALL_TIME);
+
+    let kpi = null;
+    if (summary.state === "ready") {
+      const s = summary.data;
+      const segTotal = sum(segments.items, "revenue");
+      const topSeg = [...segments.items].sort((a, b) => b.revenue - a.revenue)[0];
+      const top10 = top.items.slice(0, 10);
+      kpi = {
+        customers: s.customers,
+        revenuePerCustomer: ratio(s.revenue, s.customers),
+        ordersPerCustomer: ratio(s.orders, s.customers),
+        topSegment: topSeg ? topSeg.label : null,
+        topSegmentShare: topSeg && segTotal > 0 ? (topSeg.revenue / segTotal) * 100 : null,
+        top10Share: top10.length && s.revenue > 0 ? (sum(top10, "revenue") / s.revenue) * 100 : null
+      };
     }
 
-    return {
-      hasData: true,
-      topCustomers,
-      topProfitCustomers,
-      segments,
-      isLiveApi
-    };
+    return { summary, kpi, segments, top };
   }
 
-  // ==================== PRODUCT ANALYTICS (REAL DWH DATA) ====================
-  async function getProductFullOverview(filters = {}) {
-    const [topProdRevRes, topProdProfitRes, catRes, subCatRes, highDiscountRes] = await Promise.all([
-      client ? client.get("/sales/top-products-revenue", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-products-profit", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-category") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/by-sub-category") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/high-discount-low-profit", { top: 10 }) : Promise.resolve({ success: false })
+  // --------------------------------------------------------------------------
+  // 7. SẢN PHẨM
+  // --------------------------------------------------------------------------
+  async function getProducts() {
+    const [catRes, subRes, revRes, profRes, discRes] = await Promise.all([
+      get("/sales/by-category"),
+      get("/sales/by-sub-category"),
+      get("/sales/top-products-revenue", { top: 15 }),
+      get("/sales/top-products-profit", { top: 50 }),
+      get("/sales/high-discount-low-profit", { top: 10 })
     ]);
 
-    let topRevenueProducts = [];
-    let topProfitProducts = [];
-    let categories = [];
-    let subCategories = [];
-    let highDiscountProducts = [];
-    let isLiveApi = false;
+    const byCategory = section(catRes, mapCategory, ALL_TIME);
+    const subCategories = section(subRes, r => ({ label: str(r, "SubCategory"), category: str(r, "Category"), quantity: num(r, "TotalQuantity") || 0, revenue: num(r, "Revenue") || 0 }), ALL_TIME);
 
-    if (topProdRevRes.success && Array.isArray(topProdRevRes.data)) {
-      isLiveApi = true;
-      topRevenueProducts = topProdRevRes.data;
+    const profitByKey = {};
+    (profRes && profRes.success && Array.isArray(profRes.data) ? profRes.data : []).forEach(r => { profitByKey[str(r, "ProductKey")] = num(r, "Profit"); });
+
+    const top = section(revRes, r => {
+      const profit = profitByKey[str(r, "ProductKey")] ?? null;
+      const revenue = num(r, "Revenue") || 0;
+      return {
+        key: str(r, "ProductKey"),
+        label: str(r, "ProductName") || "Chưa đặt tên",
+        category: str(r, "Category"),
+        subCategory: str(r, "SubCategory"),
+        revenue,
+        quantity: num(r, "Quantity"),
+        profit,
+        margin: profit !== null && revenue > 0 ? (profit / revenue) * 100 : null
+      };
+    }, ALL_TIME);
+
+    let kpi = null;
+    if (byCategory.state === "ready") {
+      const revenue = sum(byCategory.items, "revenue");
+      const profit = sum(byCategory.items, "profit");
+      kpi = {
+        categories: byCategory.items.length,
+        subCategories: subCategories.state === "ready" ? subCategories.items.length : null,
+        revenue,
+        profit,
+        margin: ratio(profit, revenue) !== null ? (profit / revenue) * 100 : null
+      };
     }
-    if (topProdProfitRes.success && Array.isArray(topProdProfitRes.data)) topProfitProducts = topProdProfitRes.data;
-    if (catRes.success && Array.isArray(catRes.data)) categories = catRes.data;
-    if (subCatRes.success && Array.isArray(subCatRes.data)) subCategories = subCatRes.data;
-    if (highDiscountRes.success && Array.isArray(highDiscountRes.data)) highDiscountProducts = highDiscountRes.data;
 
     return {
-      hasData: true,
-      topRevenueProducts,
-      topProfitProducts,
-      categories,
+      kpi,
+      byCategory,
       subCategories,
-      highDiscountProducts,
-      isLiveApi
+      top,
+      lowMargin: section(discRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), discount: num(r, "AvgDiscountPercent"), profit: num(r, "TotalProfit"), revenue: num(r, "TotalRevenue") }), ALL_TIME)
     };
   }
 
-  // ==================== GEOGRAPHY ANALYTICS (REAL DWH DATA) ====================
-  async function getGeographyFullOverview(filters = {}) {
-    const [regionRes, countryProfitRes, cityQtyRes, regionalTrendRes] = await Promise.all([
-      client ? client.get("/sales/by-region") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/profit-by-country") : Promise.resolve({ success: false }),
-      client ? client.get("/sales/top-cities-quantity", { top: 15 }) : Promise.resolve({ success: false }),
-      client ? client.get("/sales/regional-revenue-trend") : Promise.resolve({ success: false })
-    ]);
+  // --------------------------------------------------------------------------
+  // 8. NHÀ CUNG CẤP
+  // --------------------------------------------------------------------------
+  async function getSuppliers() {
+    const res = await get("/purchase/top-suppliers-amount");
+    const suppliers = section(res, r => ({ label: str(r, "SupplierName"), cost: num(r, "TotalPurchaseAmount") || 0, quantity: num(r, "TotalQuantity") || 0 }), ALL_TIME);
+    suppliers.items.sort((a, b) => b.cost - a.cost);
 
-    let regions = [];
-    let countries = [];
-    let topCities = [];
-    let regionalTrend = [];
-    let isLiveApi = false;
-
-    if (regionRes.success && Array.isArray(regionRes.data)) {
-      isLiveApi = true;
-      regions = regionRes.data;
+    let kpi = null;
+    if (suppliers.state === "ready") {
+      const total = sum(suppliers.items, "cost");
+      suppliers.items.forEach(s => { s.share = total > 0 ? (s.cost / total) * 100 : null; s.unitCost = ratio(s.cost, s.quantity); });
+      kpi = {
+        count: suppliers.items.length,
+        totalCost: total,
+        top: suppliers.items[0].label,
+        top1Share: suppliers.items[0].share,
+        top3Share: total > 0 ? (sum(suppliers.items.slice(0, 3), "cost") / total) * 100 : null
+      };
     }
-    if (countryProfitRes.success && Array.isArray(countryProfitRes.data)) countries = countryProfitRes.data;
-    if (cityQtyRes.success && Array.isArray(cityQtyRes.data)) topCities = cityQtyRes.data;
-    if (regionalTrendRes.success && Array.isArray(regionalTrendRes.data)) regionalTrend = regionalTrendRes.data;
+    return { kpi, suppliers };
+  }
 
+  // --------------------------------------------------------------------------
+  // 9. KHU VỰC
+  // --------------------------------------------------------------------------
+  async function getGeography() {
+    const [regRes, countryRes, cityRes, trendRes] = await Promise.all([
+      get("/sales/by-region"),
+      get("/sales/profit-by-country"),
+      get("/sales/top-cities-quantity", { top: 15 }),
+      get("/sales/regional-revenue-trend")
+    ]);
+    const regions = section(regRes, mapRegion, ALL_TIME);
+    regions.items.sort((a, b) => b.revenue - a.revenue);
+    const countries = section(countryRes, r => ({ label: str(r, "Country") || "Chưa xác định", profit: num(r, "Profit") || 0, revenue: num(r, "Revenue") || 0 }), ALL_TIME);
+    countries.items.sort((a, b) => b.profit - a.profit);
     return {
-      hasData: true,
       regions,
       countries,
-      topCities,
-      regionalTrend,
-      isLiveApi
+      cities: section(cityRes, r => ({ label: str(r, "City"), region: str(r, "Region"), quantity: num(r, "TotalQuantity") || 0, revenue: num(r, "Revenue") || 0 }), ALL_TIME),
+      trend: section(trendRes, r => ({ region: str(r, "Region") || "Chưa xác định", year: num(r, "Year"), revenue: num(r, "Revenue") || 0 }), ALL_TIME)
     };
   }
 
-  // ==================== PURCHASE / INVENTORY / SHIPPING / FORECAST SERVICES ====================
-  // ==================== PURCHASE / INVENTORY / SHIPPING / FORECAST SERVICES ====================
-  async function getPurchaseOverview(filters = {}) {
-    const rawYear = filters.year ? String(filters.year) : "2025";
-    const isAllYears = rawYear === "ALL" || rawYear === "All";
-    const validPurchaseYears = ["2022", "2023", "2024", "2025", "ALL", "All"];
-    const hasPurchaseData = validPurchaseYears.includes(rawYear);
+  // --------------------------------------------------------------------------
+  // 10. PHÂN TÍCH CHÉO (Bán - Tồn - Mua - Vận chuyển)
+  // --------------------------------------------------------------------------
+  async function getCrossAnalysis() {
+    const [stockoutRes, overstockRes, effRes] = await Promise.all([
+      get("/cross-analysis/stockout-risk", { top: 15 }),
+      get("/cross-analysis/overstock-risk", { top: 15 }),
+      get("/cross-analysis/shipping-efficiency")
+    ]);
+    return {
+      stockout: section(stockoutRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), sold: num(r, "SoldQuantity") || 0, onHand: num(r, "QuantityOnHand") || 0, risk: str(r, "StockoutRisk") }), ALL_TIME),
+      overstock: section(overstockRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), purchased: num(r, "PurchasedQty") || 0, sold: num(r, "SoldQty") || 0, excess: num(r, "ExcessQty") || 0, note: str(r, "RiskNote") }), ALL_TIME),
+      efficiency: section(effRes, r => ({ label: str(r, "Region") || "Chưa xác định", revenue: num(r, "TotalRevenue") || 0, profit: num(r, "TotalProfit") || 0, shippingCost: num(r, "ShippingCost") || 0, ratio: num(r, "ShippingCostRatioPercent"), netProfit: num(r, "NetProfitAfterShipping") }), ALL_TIME)
+    };
+  }
 
-    // Bảng Fact_Purchase trong DWH_KhangNghi nạp 7,747 đơn đặt hàng PO từ nguồn 2022 - 2025.
-    // Nếu người dùng chọn các năm lịch sử 2012 - 2015, hiển thị hướng dẫn chọn năm 2022-2025.
-    if (!hasPurchaseData) {
+  // --------------------------------------------------------------------------
+  // 11. DỰ BÁO DOANH SỐ (ML.NET)
+  // --------------------------------------------------------------------------
+  async function getForecast(horizon = 6) {
+    const res = await get("/forecast/sales", { horizon });
+    if (!res.success) {
+      return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res), points: [] };
+    }
+    const d = res.data || {};
+    const points = (Array.isArray(pick(d, "Points")) ? pick(d, "Points") : []).map(p => ({
+      label: str(p, "Period"),
+      isFuture: !!pick(p, "IsFuture"),
+      actual: pick(p, "IsFuture") ? null : num(p, "ActualValue"),
+      forecast: pick(p, "IsFuture") ? num(p, "ForecastValue") : null,
+      lower: pick(p, "IsFuture") ? num(p, "LowerBound") : null,
+      upper: pick(p, "IsFuture") ? num(p, "UpperBound") : null
+    }));
+    const modelName = str(d, "ModelName");
+    const futureCount = points.filter(p => p.isFuture).length;
+    return {
+      // Chỉ coi là có kết quả khi mô hình trả về điểm dự báo tương lai
+      state: futureCount > 0 ? "ready" : "empty",
+      message: "",
+      modelName,
+      isFallback: /fallback/i.test(modelName),
+      targetMetric: str(d, "TargetMetric"),
+      mae: num(d, "MeanAbsoluteError"),
+      rmse: num(d, "RootMeanSquaredError"),
+      historyCount: points.length - futureCount,
+      futureCount,
+      points
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 12. TRẠNG THÁI DỮ LIỆU, ETL, SSAS
+  // --------------------------------------------------------------------------
+  async function getSsasStatus() {
+    const res = await get("/ssas/status");
+    if (!res.success || !res.data) {
+      return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    }
+    const s = res.data.data || res.data;
+    return {
+      state: "ready",
+      connected: !!pick(s, "IsServerConnected"),
+      server: str(s, "ServerInstance"),
+      catalog: str(s, "CatalogName"),
+      catalogExists: !!pick(s, "CatalogExists"),
+      cube: str(s, "CubeName"),
+      cubeStatus: str(s, "CubeStatus"),
+      error: str(s, "ErrorMessage"),
+      action: str(s, "ActionRequired")
+    };
+  }
+
+  async function getDataStatus() {
+    const [tablesRes, ssas] = await Promise.all([get("/etl/tables-status"), getSsasStatus()]);
+    const tables = section(tablesRes, r => ({
+      name: str(r, "TableName"),
+      type: str(r, "TableType").toLowerCase() === "fact" ? "Fact" : "Dimension",
+      rows: num(r, "RowCount") || 0,
+      lastUpdated: str(r, "LastUpdated")
+    }), "");
+    tables.items.sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === "Fact" ? -1 : 1));
+    return { tables, ssas, checkedAt: new Date() };
+  }
+
+  // Số liệu gốc toàn giai đoạn cho phân tích giả định
+  async function getSummary() {
+    return summarySection(await get("/dashboard/summary"), ALL_TIME);
+  }
+
+  async function getEtlLogs(limit = 50) {
+    const res = await get("/etl/logs", { limit });
+    return section(res, r => ({
+      id: num(r, "LogID"),
+      start: str(r, "StartTime"),
+      end: str(r, "EndTime"),
+      status: str(r, "Status"),
+      rows: num(r, "RowsInserted"),
+      error: str(r, "ErrorMessage"),
+      by: str(r, "TriggeredBy")
+    }), "");
+  }
+
+  // Kiểm tra nhanh kết nối DWH cho nhãn trạng thái trên topbar (mọi vai trò đều gọi được)
+  async function getConnectionStatus() {
+    const res = await get("/dashboard/summary");
+    if (!res.success) return { state: "error", message: failMessage(res) };
+    return { state: num(res.data, "TotalOrders") > 0 ? "ready" : "empty" };
+  }
+
+  // --------------------------------------------------------------------------
+  // 13. SSAS / MDX
+  // --------------------------------------------------------------------------
+  async function getMdxCatalog() {
+    const res = await get("/ssas/catalog-40");
+    if (!res.success) return { state: res.status === 403 ? "forbidden" : "error", items: [], message: failMessage(res) };
+    const list = Array.isArray(res.data && res.data.data) ? res.data.data : [];
+    const items = list.map(q => ({
+      id: str(q, "Id"),
+      order: num(q, "OrderNumber"),
+      section: str(q, "Section"),
+      title: str(q, "Title"),
+      purpose: str(q, "BusinessPurpose"),
+      operation: str(q, "OperationType"),
+      mdx: str(q, "MdxQuery"),
+      verified: str(q, "VerificationStatus") === "VERIFIED",
+      factTable: str(q, "SourceFactTable")
+    })).sort((a, b) => (a.order || 0) - (b.order || 0));
+    return { state: items.length ? "ready" : "empty", items, message: "" };
+  }
+
+  // Thực thi MDX; phân biệt lỗi kết nối SSAS với truy vấn không có kết quả
+  async function executeMdx(mdxQuery) {
+    if (!client) return { state: "error", message: "API client chưa sẵn sàng" };
+    const res = await client.post("/ssas/query", { mdxQuery });
+    const body = res.data || {};
+    if (res.success && body.success !== false) {
+      const rows = Array.isArray(body.data) ? body.data : [];
       return {
-        hasData: false,
-        status: "NO DATA FOR YEAR",
-        year: rawYear,
-        availableYears: ["2025", "2024", "2023", "2022", "ALL"],
-        suggestedYear: "2025",
-        message: `Trong Kho dữ liệu DWH_KhangNghi, phân hệ Mua hàng (Fact_Purchase) lưu trữ 7,747 đơn PO với tổng chi phí 167.76 tỷ VNĐ thuộc giai đoạn 2022–2025. Năm ${rawYear} chưa có đơn mua hàng phát sinh.`,
-        metrics: {
-          totalPurchaseCost: 0,
-          poCount: 0,
-          purchasedQty: 0,
-          weightedUnitCost: 0,
-          activeSuppliers: 0,
-          avgPOValue: 0,
-          priorCostChange: 0,
-          priorPOChange: 0,
-          priorQtyChange: 0
-        },
-        trend: [],
-        supplierSpend: [],
-        supplierConcentration: { top1SharePct: 0, top1Supplier: "N/A", top3SharePct: 0, top5SharePct: 0 },
-        categorySpend: [],
-        manufacturerAnalysis: [],
-        costVariance: [],
-        supplierCategoryMatrix: [],
-        ordersTable: [],
-        insights: [`Năm ${rawYear} thuộc chu kỳ bán hàng lịch sử, chưa có giao dịch mua hàng. Vui lòng chọn Năm 2022–2025 hoặc 'Tất cả năm' để xem dữ liệu mua hàng thực tế.`],
-        alerts: [],
-        vsSales: { purchaseCost: 0, salesRevenue: 9711406, costToRevRatio: 0, grossProfit: 1161364 },
-        vsInventory: { recentlyPurchasedQty: 0, criticalItemsCount: 50, totalStockVal: 18500000, lowStockCount: 50 },
-        isLiveApi: true
+        state: rows.length ? "ready" : "empty",
+        rows,
+        columns: Array.isArray(body.columns) && body.columns.length ? body.columns : (rows[0] ? Object.keys(rows[0]) : []),
+        timeMs: body.executionTimeMs ?? null
       };
     }
-
-    const selectedYearNum = isAllYears ? null : parseInt(rawYear, 10);
-
-    if (client) {
-      const [supAmountRes, topProdRes, priceTrendRes, byRegionRes, ordersRes, byCatRes] = await Promise.all([
-        client.get("/purchase/top-suppliers-amount"),
-        client.get("/purchase/top-purchased-products", { top: 10 }),
-        client.get("/purchase/price-trend"),
-        client.get("/purchase/by-region"),
-        client.get("/purchase/orders-summary", selectedYearNum ? { year: selectedYearNum } : {}),
-        client.get("/purchase/by-category", selectedYearNum ? { year: selectedYearNum } : {})
-      ]);
-
-      const suppliers = (supAmountRes.success && Array.isArray(supAmountRes.data)) ? supAmountRes.data : [];
-      const poOrders = (ordersRes.success && Array.isArray(ordersRes.data)) ? ordersRes.data : [];
-
-      if (suppliers.length > 0) {
-        // Nếu lọc theo năm cụ thể, tính tổng từ các đơn PO của năm đó; nếu Tất cả năm thì tính từ toàn bộ NCC
-        const totalPurchaseCost = (!isAllYears && poOrders.length > 0)
-          ? poOrders.reduce((sum, p) => sum + (p.totalCost || p.TotalCost || 0), 0)
-          : suppliers.reduce((sum, s) => sum + (s.totalPurchaseAmount || s.TotalPurchaseAmount || 0), 0) || 167762507000;
-
-        const purchasedQty = (!isAllYears && poOrders.length > 0)
-          ? poOrders.reduce((sum, p) => sum + (p.totalQuantity || p.TotalQuantity || 0), 0)
-          : suppliers.reduce((sum, s) => sum + (s.totalQuantity || s.TotalQuantity || 0), 0) || 388170;
-
-        const poCount = (!isAllYears && poOrders.length > 0)
-          ? poOrders.length
-          : 7747; // Toàn bộ 7,747 đơn PO thực tế trong Fact_Purchase
-
-        const weightedUnitCost = purchasedQty > 0 ? Number((totalPurchaseCost / purchasedQty).toFixed(2)) : 0;
-        const avgPOValue = poCount > 0 ? Math.round(totalPurchaseCost / poCount) : 0;
-
-        // Xếp hạng & Tỷ trọng nhà cung cấp
-        const top1Cost = suppliers[0]?.totalPurchaseAmount || suppliers[0]?.TotalPurchaseAmount || 0;
-        const top3Cost = suppliers.slice(0, 3).reduce((sum, s) => sum + (s.totalPurchaseAmount || s.TotalPurchaseAmount || 0), 0);
-
-        const supplierConcentration = {
-          top1SharePct: totalPurchaseCost > 0 ? Number((top1Cost / totalPurchaseCost * 100).toFixed(1)) : 20.9,
-          top1Supplier: suppliers[0]?.supplierName || suppliers[0]?.SupplierName || "Siemens",
-          top3SharePct: totalPurchaseCost > 0 ? Number((top3Cost / totalPurchaseCost * 100).toFixed(1)) : 61.0,
-          top5SharePct: 100.0
-        };
-
-        // Danh sách đơn hàng PO thực tế từ Fact_Purchase
-        const ordersTable = poOrders.map(po => ({
-          id: po.purchaseOrderID || po.PurchaseOrderID,
-          date: po.orderDate || po.OrderDate || "2012-01-01",
-          supplierName: po.supplierName || po.SupplierName,
-          warehouseName: po.warehouseName || po.WarehouseName || "Kho Miền Bắc",
-          lineItems: po.lineItemCount || po.LineItemCount || 0,
-          qty: po.totalQuantity || po.TotalQuantity || 0,
-          unitCost: po.avgUnitCost || po.AvgUnitCost || 0,
-          totalCost: po.totalCost || po.TotalCost || 0
-        }));
-
-        // Chi phí mua hàng theo danh mục từ Fact_Purchase
-        const categorySpend = (byCatRes.success && Array.isArray(byCatRes.data))
-          ? byCatRes.data.map(c => ({
-              name: c.category || c.Category,
-              category: c.category || c.Category,
-              cost: c.totalCost || c.TotalCost || 0,
-              revenue: c.totalCost || c.TotalCost || 0,
-              qty: c.totalQuantity || c.TotalQuantity || 0
-            }))
-          : [];
-
-        // Hãng sản xuất / Nhà cung cấp thiết bị
-        const manufacturerAnalysis = suppliers.map(s => ({
-          name: s.supplierName || s.SupplierName,
-          manufacturer: s.supplierName || s.SupplierName,
-          cost: s.totalPurchaseAmount || s.TotalPurchaseAmount || 0,
-          qty: s.totalQuantity || s.TotalQuantity || 0
-        }));
-
-        // Xu hướng giá nhập & mua hàng
-        const trend = (priceTrendRes.success && Array.isArray(priceTrendRes.data) && priceTrendRes.data.length > 0)
-          ? priceTrendRes.data.map(t => ({
-              period: t.period || t.Period || `T${t.month || 1}/${t.year || 2012}`,
-              cost: (t.avgUnitCost || t.AvgUnitCost || 50) * 1000,
-              qty: 1000
-            }))
-          : suppliers.map(s => ({
-              period: s.supplierName || s.SupplierName,
-              cost: s.totalPurchaseAmount || s.TotalPurchaseAmount,
-              qty: s.totalQuantity || s.TotalQuantity
-            }));
-
-        const vsSales = {
-          purchaseCost: totalPurchaseCost,
-          salesRevenue: 28723535.96,
-          costToRevRatio: Number((totalPurchaseCost / 28723535.96 * 100).toFixed(1)),
-          grossProfit: 3382395.45
-        };
-
-        const vsInventory = {
-          recentlyPurchasedQty: purchasedQty,
-          criticalItemsCount: 50,
-          totalStockVal: 18500000,
-          lowStockCount: 50
-        };
-
-        const normalizedSpend = suppliers.map(s => ({
-          name: s.supplierName || s.SupplierName,
-          supplierName: s.supplierName || s.SupplierName,
-          cost: s.totalPurchaseAmount || s.TotalPurchaseAmount || 0,
-          totalPurchaseAmount: s.totalPurchaseAmount || s.TotalPurchaseAmount || 0,
-          qty: s.totalQuantity || s.TotalQuantity || 0,
-          totalQuantity: s.totalQuantity || s.TotalQuantity || 0
-        }));
-
-        return {
-          hasData: true,
-          status: "AVAILABLE",
-          year: isAllYears ? "ALL" : "2012",
-          metrics: {
-            totalPurchaseCost,
-            poCount,
-            purchasedQty,
-            weightedUnitCost,
-            activeSuppliers: suppliers.length,
-            avgPOValue,
-            priorCostChange: 0.0,
-            priorPOChange: 0.0,
-            priorQtyChange: 0.0
-          },
-          trend,
-          supplierSpend: normalizedSpend,
-          supplierConcentration,
-          categorySpend,
-          manufacturerAnalysis,
-          costVariance: [],
-          supplierCategoryMatrix: [],
-          ordersTable,
-          insights: [
-            `Top 1 Nhà cung cấp (${supplierConcentration.top1Supplier}) chiếm ${supplierConcentration.top1SharePct}% tổng giá trị mua hàng.`,
-            `Tổng chi phí nhập hàng đạt ${totalPurchaseCost.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} trên 3,788 đơn đặt hàng trong DWH.`
-          ],
-          alerts: [],
-          vsSales,
-          vsInventory,
-          isLiveApi: true
-        };
-      }
-    }
-
-    return {
-      hasData: false,
-      status: "NO DATA",
-      message: "Chưa có dữ liệu thực tế trong Bảng Fact_Purchase của Kho dữ liệu DWH_KhangNghi",
-      metrics: { totalPurchaseCost: 0, poCount: 0, purchasedQty: 0, weightedUnitCost: 0, activeSuppliers: 0, avgPOValue: 0, priorCostChange: 0, priorPOChange: 0, priorQtyChange: 0 },
-      trend: [],
-      supplierSpend: [],
-      supplierConcentration: { top1SharePct: 0, top1Supplier: "N/A", top3SharePct: 0, top5SharePct: 0 },
-      categorySpend: [],
-      manufacturerAnalysis: [],
-      costVariance: [],
-      supplierCategoryMatrix: [],
-      ordersTable: [],
-      insights: [],
-      alerts: [],
-      vsSales: { purchaseCost: 0, salesRevenue: 28723535.96, costToRevRatio: 0, grossProfit: 3382395.45 },
-      vsInventory: { recentlyPurchasedQty: 0, criticalItemsCount: 0, totalStockVal: 0, lowStockCount: 0 }
-    };
+    if (res.status === 403) return { state: "forbidden", message: failMessage(res) };
+    const msg = body.message || res.error || "Lỗi thực thi MDX";
+    const isConnection = /oledb|not supported|kết nối|connect|server|MSOLAP|instance|timeout/i.test(msg) || res.status === 0;
+    return { state: isConnection ? "unavailable" : "error", message: msg, timeMs: body.executionTimeMs ?? null };
   }
 
-  async function getInventoryOverview(filters = {}) {
-    if (client) {
-      const [highStockRes, alertsRes, regionStockRes, summaryRes, movementsRes] = await Promise.all([
-        client.get("/inventory/highest-stock", { top: 20 }),
-        client.get("/inventory/alerts", { top: 50 }),
-        client.get("/inventory/by-region"),
-        client.get("/dashboard/summary"),
-        client.get("/inventory/movement-over-time")
-      ]);
-
-      const highStockList = (highStockRes.success && Array.isArray(highStockRes.data)) ? highStockRes.data : [];
-      const alertsList = (alertsRes.success && Array.isArray(alertsRes.data)) ? alertsRes.data : [];
-      const summary = (summaryRes.success && summaryRes.data) ? summaryRes.data : {};
-      const movementsData = (movementsRes.success && Array.isArray(movementsRes.data)) ? movementsRes.data : [];
-
-      if (highStockList.length > 0 || alertsList.length > 0) {
-        const totalOnHand = highStockList.reduce((sum, p) => sum + Math.max(0, p.totalOnHand || p.TotalOnHand || 0), 0) || 1126037;
-        const lowStockCount = summary.lowStockAlertCount || 51279;
-
-        const products = alertsList.map((a, idx) => {
-          const rawStock = a.quantityOnHand ?? a.QuantityOnHand ?? 0;
-          const safeStock = a.reorderLevel ?? a.ReorderLevel ?? 50;
-          const status = (a.statusColor === "Red" || rawStock < safeStock * 0.5) ? "CRITICAL" : (rawStock < safeStock ? "WARNING" : "HEALTHY");
-          return {
-            id: (a.productID && a.productID !== "") ? a.productID : `SKU-${String(idx + 1).padStart(4, '0')}`,
-            name: a.productName || a.ProductName || `Sản phẩm DWH ${idx + 1}`,
-            category: a.category || a.Category || "Thiết bị đóng cắt",
-            subCategory: a.subCategory || a.SubCategory || "Contactor",
-            warehouse: a.location || a.Location || "Kho Tổng Khang Nghị",
-            stock: rawStock,
-            safetyStock: safeStock,
-            deficit: a.deficit || (safeStock - rawStock),
-            price: 125,
-            status: status
-          };
-        });
-
-        const warehouses = (regionStockRes.success && Array.isArray(regionStockRes.data))
-          ? regionStockRes.data.map(r => ({
-              name: r.region || r.Region || "Khu vực",
-              stockValue: Math.abs(r.totalOnHand || r.TotalOnHand || 1000) * 15
-            }))
-          : [];
-
-        const movements = movementsData.map(m => ({
-          month: m.period || m.Period || `T${m.month || m.Month}/${m.year || m.Year}`,
-          period: m.period || m.Period || `T${m.month || m.Month}/${m.year || m.Year}`,
-          opening: Math.max(0, (m.totalQuantityOnHand || m.TotalQuantityOnHand || 0) - (m.totalQuantityIn || m.TotalQuantityIn || 0)),
-          inbound: m.totalQuantityIn ?? m.TotalQuantityIn ?? 0,
-          qtyIn: m.totalQuantityIn ?? m.TotalQuantityIn ?? 0,
-          outbound: m.totalQuantityOut ?? m.TotalQuantityOut ?? 0,
-          qtyOut: m.totalQuantityOut ?? m.TotalQuantityOut ?? 0,
-          closing: m.totalQuantityOnHand ?? m.TotalQuantityOnHand ?? 0,
-          onHand: m.totalQuantityOnHand ?? m.TotalQuantityOnHand ?? 0
-        }));
-
-        return {
-          hasData: true,
-          status: "AVAILABLE",
-          inventoryValue: 18500000,
-          stockOnHand: totalOnHand,
-          lowStockItems: lowStockCount,
-          outOfStockItems: 50,
-          overstockItems: 25,
-          stockCoverageMonths: 3.2,
-          health: { healthyPct: 68, warningPct: 22, criticalPct: 10 },
-          warehouses,
-          movements,
-          products,
-          isLiveApi: true
-        };
-      }
-    }
-
+  // Siêu dữ liệu khối KhangNghi_Cube dùng cho trình dựng truy vấn OLAP
+  function getCubeMetadata() {
     return {
-      hasData: false,
-      status: "NO DATA",
-      message: "Chưa có dữ liệu thực tế trong Bảng Fact_Inventory của Kho dữ liệu DWH_KhangNghi",
-      inventoryValue: 0,
-      stockOnHand: 0,
-      lowStockItems: 0,
-      outOfStockItems: 0,
-      overstockItems: 0,
-      stockCoverageMonths: 0,
-      health: { healthyPct: 0, warningPct: 0, criticalPct: 0 },
-      warehouses: [],
-      movements: [],
-      products: []
-    };
-  }
-
-  async function getShippingOverview(filters = {}) {
-    if (client) {
-      const [shipperOrdersRes, lateShipperRes, regionCostRes, summaryRes] = await Promise.all([
-        client.get("/shipping/orders-by-shipper"),
-        client.get("/shipping/highest-late-days"),
-        client.get("/shipping/cost-by-region"),
-        client.get("/dashboard/summary")
-      ]);
-
-      const shipperOrders = (shipperOrdersRes.success && Array.isArray(shipperOrdersRes.data)) ? shipperOrdersRes.data : [];
-      const summary = (summaryRes.success && summaryRes.data) ? summaryRes.data : {};
-
-      if (shipperOrders.length > 0) {
-        const totalShipments = shipperOrders.reduce((sum, s) => sum + (s.totalOrders || s.orderCount || s.OrderCount || 0), 0) || 51290;
-        const shippingCost = summary.totalShippingCost || shipperOrders.reduce((sum, s) => sum + (s.totalShippingCost || s.TotalShippingCost || 0), 0) || 1358085.70;
-        const avgShippingCost = totalShipments > 0 ? Number((shippingCost / totalShipments).toFixed(2)) : 26.48;
-
-        const shippers = shipperOrders.map(s => {
-          const lateMatch = (lateShipperRes.success && Array.isArray(lateShipperRes.data))
-            ? lateShipperRes.data.find(l => (l.shipperName || l.ShipperName) === (s.shipperName || s.ShipperName))
-            : null;
-          const avgLateDays = lateMatch ? Number((lateMatch.avgLateDays || lateMatch.AvgLateDays || 0).toFixed(1)) : 2.5;
-          return {
-            name: s.shipperName || s.ShipperName || "Standard Class",
-            avgDays: avgLateDays,
-            lateRate: 0.045,
-            status: avgLateDays > 3 ? "WARNING" : "Healthy"
-          };
-        });
-
-        const regionPerformance = (regionCostRes.success && Array.isArray(regionCostRes.data))
-          ? regionCostRes.data.map(r => ({
-              region: r.region || r.Region || "Khu vực",
-              cost: r.shippingCost || r.TotalShippingCost || 0,
-              shipments: Math.round((r.shippingCost || r.TotalShippingCost || 1000) / 26)
-            }))
-          : [];
-
-        const slaMonitor = [
-          { name: "Đúng hạn (On-Time)", value: 94.6 },
-          { name: "Giao trễ (Late SLA)", value: 5.4 }
-        ];
-
-        return {
-          hasData: true,
-          status: "AVAILABLE",
-          totalShipments,
-          shippingCost,
-          avgDeliveryDays: 3.8,
-          onTimeRate: 94.6,
-          lateShipments: 2770,
-          avgShippingCost,
-          regionPerformance,
-          slaMonitor,
-          shippers,
-          lateDeliveries: [
-            { orderId: "ORD-2015-9921", shipper: "Standard Class", expectedDelivery: "2015-11-10", actualDelivery: "2015-11-13", delayDays: 3 },
-            { orderId: "ORD-2015-8845", shipper: "Second Class", expectedDelivery: "2015-10-22", actualDelivery: "2015-10-24", delayDays: 2 }
-          ],
-          isLiveApi: true
-        };
-      }
-    }
-
-    return {
-      hasData: false,
-      status: "NO DATA",
-      message: "Chưa có dữ liệu thực tế trong Bảng Fact_Shipping của Kho dữ liệu DWH_KhangNghi",
-      totalShipments: 0,
-      shippingCost: 0,
-      avgDeliveryDays: 0,
-      onTimeRate: 0,
-      lateShipments: 0,
-      avgShippingCost: 0,
-      regionPerformance: [],
-      slaMonitor: [],
-      shippers: [],
-      lateDeliveries: []
-    };
-  }
-
-  async function getInventoryFullOverview(filters) { return getInventoryOverview(filters); }
-  async function getShippingFullOverview(filters) { return getShippingOverview(filters); }
-  async function getSupplierFullOverview(filters = {}) {
-    if (client) {
-      const res = await client.get("/purchase/top-suppliers-amount");
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        const suppliers = res.data;
-        const totalCost = suppliers.reduce((sum, s) => sum + (s.totalPurchaseAmount || s.TotalPurchaseAmount || 0), 0) || 61115314;
-        const totalQty = suppliers.reduce((sum, s) => sum + (s.totalQuantity || s.TotalQuantity || 0), 0) || 1126037;
-        const spend = suppliers.map((s, idx) => {
-          const name = s.supplierName || s.SupplierName || "Nhà cung cấp";
-          const cost = s.totalPurchaseAmount || s.TotalPurchaseAmount || 0;
-          const share = totalCost > 0 ? Number((cost / totalCost * 100).toFixed(1)) : 20;
-          return {
-            id: `NCC-${String(idx + 1).padStart(3, '0')}`,
-            name: name,
-            supplier: name,
-            country: "Việt Nam",
-            cost: cost,
-            sharePct: share,
-            share: share
-          };
-        });
-
-        return {
-          hasData: true,
-          status: "AVAILABLE",
-          totalSuppliers: suppliers.length,
-          purchaseCost: totalCost,
-          purchasedQty: totalQty,
-          avgUnitCost: totalQty > 0 ? Math.round(totalCost / totalQty) : 432188,
-          topSupplier: suppliers[0]?.supplierName || suppliers[0]?.SupplierName || "Công ty Thiết bị điện An Thịnh",
-          spend,
-          isLiveApi: true
-        };
-      }
-    }
-    return {
-      hasData: false,
-      status: "NO DATA",
-      message: "Chưa có dữ liệu thực tế trong Bảng Dim_Supplier của Kho dữ liệu DWH_KhangNghi",
-      totalSuppliers: 0,
-      purchaseCost: 0,
-      purchasedQty: 0,
-      avgUnitCost: 0,
-      topSupplier: "N/A",
-      spend: []
-    };
-  }
-
-  async function getProductDetails(productId) {
-    if (client) {
-      const res = await client.get("/sales/top-products-revenue", { top: 50 });
-      if (res.success && Array.isArray(res.data)) {
-        const found = res.data.find(p => (p.productKey || p.ProductKey || p.productID) === productId);
-        if (found) return found;
-      }
-    }
-    return { id: productId || "SP-001", name: "Canon ImageCLASS LBP2900", category: "Thiết bị Văn phòng", subcategory: "Máy in Laser", price: 245, margin: 24.5, stock: 12, safetyStock: 25 };
-  }
-
-  async function getPurchasePODetails(poId) {
-    if (client) {
-      const res = await client.get(`/purchase/order-detail/${encodeURIComponent(poId)}`, { top: 20 });
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        const first = res.data[0];
-        const totalCost = res.data.reduce((sum, item) => sum + (item.totalCost || item.TotalCost || 0), 0);
-        const totalQty = res.data.reduce((sum, item) => sum + (item.purchaseQuantity || item.PurchaseQuantity || 0), 0);
-        return {
-          id: first.purchaseOrderID || first.PurchaseOrderID || poId,
-          supplierName: first.supplierName || first.SupplierName || "Siemens",
-          warehouseName: first.warehouseName || first.WarehouseName || "Kho Miền Bắc",
-          date: first.orderDate || first.OrderDate || "2012-01-01",
-          productName: first.productName || first.ProductName,
-          productId: first.productID || first.ProductID,
-          category: first.category || first.Category,
-          subcategory: first.subCategory || first.SubCategory,
-          manufacturer: first.supplierName || first.SupplierName,
-          qty: totalQty,
-          unitCost: totalQty > 0 ? Number((totalCost / totalQty).toFixed(2)) : 0,
-          totalCost: totalCost,
-          lineItems: res.data.map(item => ({
-            productId: item.productID || item.ProductID,
-            productName: item.productName || item.ProductName,
-            category: item.category || item.Category,
-            subcategory: item.subCategory || item.SubCategory,
-            qty: item.purchaseQuantity || item.PurchaseQuantity,
-            unitCost: item.unitCost || item.UnitCost,
-            totalCost: item.totalCost || item.TotalCost
-          }))
-        };
-      }
-    }
-    return {
-      id: poId || "PO-INIT-SUP-1",
-      supplierName: "N/A",
-      warehouseName: "Kho Miền Bắc",
-      date: "2012-01-01",
-      productName: "Không tìm thấy chi tiết",
-      productId: "N/A",
-      category: "N/A",
-      subcategory: "N/A",
-      manufacturer: "N/A",
-      qty: 0,
-      unitCost: 0,
-      totalCost: 0,
-      lineItems: []
-    };
-  }
-
-  async function getCrossAnalysisOverview(metricX = "revenue", metricY = "inventoryVal", groupBy = "category") {
-    if (client) {
-      const res = await client.get("/cross-analysis/stockout-risk", { top: 15 });
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        const items = res.data;
-        const matrixData = items.map(it => {
-          const sold = it.soldQuantity ?? it.SoldQuantity ?? 0;
-          const onHand = Math.max(0, it.quantityOnHand ?? it.QuantityOnHand ?? 0);
-          const isHighRisk = ((it.stockoutRisk || it.StockoutRisk || "").toLowerCase()).includes("rất cao");
-          return {
-            name: it.productName || it.ProductName || "Sản phẩm",
-            category: it.category || it.Category || "Danh mục",
-            x: sold,
-            y: onHand,
-            z: isHighRisk ? 35 : 20,
-            risk: it.stockoutRisk || it.StockoutRisk || "Bình thường"
-          };
-        });
-
-        const highRiskCount = items.filter(it => ((it.stockoutRisk || it.StockoutRisk || "").toLowerCase()).includes("rất cao")).length;
-        const topCat = items[0]?.category || items[0]?.Category || "Thiết bị";
-        const relationshipSummary = `Phát hiện ${items.length} mặt hàng bán chạy có nguy cơ thiếu hàng (trong đó ${highRiskCount} mặt hàng mức rủi ro "Rất cao"). Nhóm hàng "${topCat}" cần ưu tiên bổ sung tồn kho ngay lập tức.`;
-
-        return {
-          hasData: true,
-          status: "AVAILABLE",
-          relationshipSummary,
-          matrixData,
-          items,
-          isLiveApi: true
-        };
-      }
-    }
-
-    return {
-      hasData: false,
-      status: "NO DATA",
-      relationshipSummary: "Không có dữ liệu phân tích chéo từ hệ thống DWH.",
-      matrixData: [],
-      items: []
-    };
-  }
-
-  async function getForecastOverview(horizon = 6, category = null) {
-    if (client) {
-      const hMonths = parseInt(horizon) || 6;
-      let url = `/forecast/sales?horizon=${hMonths}`;
-      if (category && category !== "ALL" && category !== "All Categories") {
-        url += `&category=${encodeURIComponent(category)}`;
-      }
-      const res = await client.get(url);
-      if (res.success && res.data && Array.isArray(res.data.points)) {
-        const series = res.data.points.map(pt => ({
-          month: pt.period || pt.Period || "",
-          revenue: pt.isFuture ? null : (pt.actualValue ?? pt.ActualValue ?? 0),
-          forecast: pt.forecastValue ?? pt.ForecastValue ?? 0,
-          upper: pt.upperBound ?? pt.UpperBound ?? 0,
-          lower: pt.lowerBound ?? pt.LowerBound ?? 0,
-          isFuture: !!pt.isFuture
-        }));
-        return {
-          hasData: true,
-          modelName: res.data.modelName || "ML.NET SSA (Singular Spectrum Analysis)",
-          targetMetric: res.data.targetMetric || "Doanh thu bán hàng (VNĐ)",
-          series: series,
-          isLiveApi: true
-        };
-      }
-    }
-    return {
-      hasData: true,
-      series: [
-        { month: "T7", revenue: 420, forecast: 415, upper: 440, lower: 390 },
-        { month: "T8", revenue: 460, forecast: 455, upper: 480, lower: 430 },
-        { month: "T9", revenue: 480, forecast: 475, upper: 505, lower: 445 },
-        { month: "T10", revenue: 510, forecast: 505, upper: 535, lower: 475 },
-        { month: "T11", revenue: 530, forecast: 525, upper: 560, lower: 490 },
-        { month: "T12", revenue: 590, forecast: 585, upper: 625, lower: 545 },
-        { month: "T1 (Dự báo)", revenue: null, forecast: 615, upper: 655, lower: 575 },
-        { month: "T2 (Dự báo)", revenue: null, forecast: 625, upper: 670, lower: 580 }
+      cube: "KhangNghi_Cube",
+      measures: [
+        { id: "[Measures].[Sales Amount]", name: "Doanh thu" },
+        { id: "[Measures].[Profit Amount]", name: "Lợi nhuận" },
+        { id: "[Measures].[Quantity]", name: "Số lượng bán" },
+        { id: "[Measures].[Discount Amount]", name: "Chiết khấu" },
+        { id: "[Measures].[Shipping Cost]", name: "Chi phí vận chuyển" },
+        { id: "[Measures].[Total Cost]", name: "Chi phí mua hàng" },
+        { id: "[Measures].[Purchase Quantity]", name: "Số lượng nhập" },
+        { id: "[Measures].[Quantity On Hand]", name: "Tồn kho" }
+      ],
+      levels: [
+        { id: "[Dim Time].[Year]", name: "Năm" },
+        { id: "[Dim Time].[Quarter]", name: "Quý" },
+        { id: "[Dim Time].[Month]", name: "Tháng" },
+        { id: "[Dim Product].[Category]", name: "Danh mục sản phẩm" },
+        { id: "[Dim Product].[Sub Category]", name: "Nhóm sản phẩm" },
+        { id: "[Dim Customer].[Segment]", name: "Phân khúc khách hàng" },
+        { id: "[Dim Location].[Region]", name: "Khu vực" },
+        { id: "[Dim Location].[City]", name: "Thành phố" },
+        { id: "[Dim Sales Channel].[Channel Name]", name: "Kênh bán hàng" },
+        { id: "[Dim Warehouse].[Warehouse Name]", name: "Kho hàng" },
+        { id: "[Dim Supplier].[Supplier Name]", name: "Nhà cung cấp" },
+        { id: "[Dim Shipper].[Shipper Name]", name: "Đơn vị vận chuyển" }
       ]
     };
   }
 
-  async function getSystemStatusOverview() {
-    let tablesStatus = [];
-    let isLiveConnected = false;
-
-    if (client) {
-      const res = await client.get("/etl/tables-status");
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        isLiveConnected = true;
-        const descriptions = {
-          Fact_Sales: "Bảng Fact Bán hàng thực tế (116,756 giao dịch)",
-          Fact_Inventory: "Bảng Fact Tồn kho thực tế (55,067 bản ghi)",
-          Fact_Shipping: "Bảng Fact Vận chuyển & Giao hàng (51,290 đơn)",
-          Fact_Purchase: "Bảng Fact Mua hàng & Nhập kho (3,788 đơn PO)",
-          Dim_Customer: "Danh mục 34,830 Khách hàng & Phân khúc",
-          Dim_Product: "Danh mục 11,365 Sản phẩm & Ngành hàng",
-          Dim_Location: "Danh mục 7,684 Địa điểm, Tỉnh thành & Khu vực",
-          Dim_Time: "Chiều thời gian giao dịch (6,209 ngày)",
-          Dim_Manufacturer: "Danh mục 15 Nhà sản xuất thiết bị",
-          Dim_Employee: "Danh mục 7 Nhân viên kinh doanh",
-          Dim_PaymentMethod: "Danh mục 5 Phương thức thanh toán",
-          Dim_Supplier: "Danh mục 5 Nhà cung cấp thiết bị",
-          Dim_Service: "Danh mục 5 Dịch vụ kỹ thuật",
-          Dim_Warehouse: "Danh mục 4 Kho hàng phân phối",
-          Dim_Shipper: "Danh mục 4 Đơn vị vận chuyển / Ship Mode",
-          Dim_Promotion: "Danh mục 4 Chương trình khuyến mãi",
-          Dim_SalesChannel: "Danh mục 3 Kênh bán hàng (Online, Đại lý, Bán lẻ)"
-        };
-
-        tablesStatus = res.data.map(t => {
-          const name = t.tableName || t.TableName;
-          const type = (t.tableType || t.TableType || "").toUpperCase();
-          const rows = t.rowCount ?? t.RowCount ?? 0;
-          return {
-            name: name,
-            type: type,
-            rows: rows,
-            status: rows > 0 ? "AVAILABLE" : "NO DATA",
-            description: descriptions[name] || `Bảng ${type} trong kho dữ liệu DWH`
-          };
-        });
-      }
-    }
-
-    if (!tablesStatus.length) {
-      tablesStatus = [
-        { name: "Fact_Sales", rows: 116756, status: "AVAILABLE", type: "FACT", description: "Bảng Fact Bán hàng thực tế" },
-        { name: "Fact_Inventory", rows: 55067, status: "AVAILABLE", type: "FACT", description: "Bảng Fact Tồn kho thực tế" },
-        { name: "Fact_Shipping", rows: 51290, status: "AVAILABLE", type: "FACT", description: "Bảng Fact Vận chuyển & Giao hàng" },
-        { name: "Fact_Purchase", rows: 3788, status: "AVAILABLE", type: "FACT", description: "Bảng Fact Mua hàng & Nhập kho" },
-        { name: "Dim_Customer", rows: 34830, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Khách hàng" },
-        { name: "Dim_Product", rows: 11365, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Sản phẩm" },
-        { name: "Dim_Location", rows: 7684, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Địa điểm" },
-        { name: "Dim_Time", rows: 6209, status: "AVAILABLE", type: "DIMENSION", description: "Chiều thời gian" },
-        { name: "Dim_Manufacturer", rows: 15, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Nhà sản xuất" },
-        { name: "Dim_Employee", rows: 7, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Nhân viên" },
-        { name: "Dim_PaymentMethod", rows: 5, status: "AVAILABLE", type: "DIMENSION", description: "Phương thức thanh toán" },
-        { name: "Dim_Supplier", rows: 5, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Nhà cung cấp" },
-        { name: "Dim_Service", rows: 5, status: "AVAILABLE", type: "DIMENSION", description: "Dịch vụ kỹ thuật" },
-        { name: "Dim_Warehouse", rows: 4, status: "AVAILABLE", type: "DIMENSION", description: "Kho hàng phân phối" },
-        { name: "Dim_Shipper", rows: 4, status: "AVAILABLE", type: "DIMENSION", description: "Đơn vị vận chuyển" },
-        { name: "Dim_Promotion", rows: 4, status: "AVAILABLE", type: "DIMENSION", description: "Chương trình khuyến mãi" },
-        { name: "Dim_SalesChannel", rows: 3, status: "AVAILABLE", type: "DIMENSION", description: "Kênh bán hàng" }
-      ];
-    }
-
-    return {
-      databaseName: "DWH_KhangNghi",
-      serverInstance: ".\\MSSQLSERVER2025",
-      isLiveConnected: true,
-      tablesStatus
-    };
-  }
-
-  function exportToCSV(filename, rows) {
-    if (!rows || !rows.length) return;
-    const keys = Object.keys(rows[0]);
-    let csvContent = "data:text/csv;charset=utf-8," + keys.join(",") + "\n";
-    rows.forEach(r => {
-      csvContent += keys.map(k => `"${r[k]}"`).join(",") + "\n";
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
+  // --------------------------------------------------------------------------
+  // 14. TRA CỨU CHI TIẾT (khách hàng, đơn hàng)
+  // --------------------------------------------------------------------------
   async function getCustomerDetail(customerId) {
-    if (!customerId) return { success: false, message: "Natural Key CustomerID is required" };
-    if (!client) return { success: false, message: "API Client not available" };
-
-    const res = await client.get(`/customers/${encodeURIComponent(customerId)}`);
-    if (res.success && res.data) {
-      return { success: true, data: res.data };
-    }
-    console.warn(`[Data Quality Alert] Customer with Natural Key '${customerId}' not found or returned N/A.`);
-    return { success: false, message: res.message || "Customer not found", status: "N/A" };
+    if (!customerId) return { success: false, message: "Thiếu mã khách hàng" };
+    const res = await get(`/customers/${encodeURIComponent(customerId)}`);
+    if (res.success && res.data) return { success: true, data: res.data };
+    return { success: false, message: res.status === 404 ? "Không tìm thấy khách hàng trong DWH." : failMessage(res) };
   }
 
   async function getOrderDetail(orderId) {
-    if (!orderId) return { success: false, message: "Natural Key OrderID is required" };
-    if (!client) return { success: false, message: "API Client not available" };
-
-    const res = await client.get(`/orders/${encodeURIComponent(orderId)}`);
-    if (res.success && res.data) {
-      return { success: true, data: res.data };
-    }
-    console.warn(`[Data Quality Alert] Order with Natural Key '${orderId}' not found or returned N/A.`);
-    return { success: false, message: res.message || "Order not found", status: "N/A" };
+    if (!orderId) return { success: false, message: "Thiếu mã đơn hàng" };
+    const res = await get(`/orders/${encodeURIComponent(orderId)}`);
+    if (res.success && res.data) return { success: true, data: res.data };
+    return { success: false, message: res.status === 404 ? "Không tìm thấy đơn hàng trong DWH." : failMessage(res) };
   }
 
-  // ==================== SSAS OLAP & MDX SERVICES ====================
-  async function getSsasStatus() {
-    if (!client) return { success: false, message: "API Client not available" };
-    const res = await client.get("/ssas/status");
-    if (res.success && res.data) {
-      return res.data;
-    }
-    return {
-      success: false,
-      data: {
-        isServerConnected: false,
-        serverInstance: ".\\SSAS_MULTI",
-        catalogName: "KhangNghi_SSAS",
-        cubeName: "KhangNghi_Cube",
-        cubeStatus: "UNAVAILABLE",
-        errorMessage: res.error || res.message,
-        actionRequired: "Kiểm tra kết nối SSAS và dịch vụ MSOLAP$SSAS_MULTI."
-      }
-    };
-  }
-
-  async function getMdxCatalog() {
-    if (!client) return { success: false, data: [] };
-    const res = await client.get("/ssas/catalog-40");
-    if (res.success && res.data && res.data.data) {
-      return res.data;
-    }
-    return { success: false, data: [] };
-  }
-
-  async function executeMdxQuery(mdxQuery) {
-    if (!client) return { success: false, message: "API Client not available" };
-    const res = await client.post("/ssas/query", { mdxQuery });
-    if (res.success && res.data) {
-      return res.data;
-    }
-    return {
-      success: false,
-      message: res.data?.message || res.message || res.error || "Lỗi thực thi MDX",
-      executionTimeMs: res.data?.executionTimeMs || 0
-    };
-  }
-
-  function getOlapCubeMetadata() {
-    return {
-      cubeName: "KhangNghi_Cube",
-      catalog: "KhangNghi_SSAS",
-      measures: [
-        { id: "[Measures].[Sales Amount]", name: "Sales Amount (Doanh thu)", group: "Fact Sales", format: "currency" },
-        { id: "[Measures].[Profit Amount]", name: "Profit Amount (Lợi nhuận)", group: "Fact Sales", format: "currency" },
-        { id: "[Measures].[Quantity]", name: "Quantity (Số lượng bán)", group: "Fact Sales", format: "number" },
-        { id: "[Measures].[Discount Amount]", name: "Discount Amount (Chiết khấu)", group: "Fact Sales", format: "currency" },
-        { id: "[Measures].[Unit Price]", name: "Unit Price (Đơn giá)", group: "Fact Sales", format: "currency" },
-        { id: "[Measures].[Shipping Cost]", name: "Shipping Cost (Cước vận chuyển)", group: "Fact Shipping", format: "currency" },
-        { id: "[Measures].[Total Cost]", name: "Total Cost (Chi phí mua hàng)", group: "Fact Purchase", format: "currency" },
-        { id: "[Measures].[Purchase Quantity]", name: "Purchase Quantity (Số lượng nhập)", group: "Fact Purchase", format: "number" },
-        { id: "[Measures].[Quantity On Hand]", name: "Quantity On Hand (Tồn kho hiện hành)", group: "Fact Inventory", format: "number" }
-      ],
-      dimensions: [
-        {
-          id: "[Dim Time]",
-          name: "Thời gian (Dim Time)",
-          hierarchies: [
-            { id: "[Dim Time].[Year]", name: "Năm (Year)", levels: ["Year", "Quarter", "Month"] },
-            { id: "[Dim Time].[Quarter]", name: "Quý (Quarter)", levels: ["Quarter", "Month"] },
-            { id: "[Dim Time].[Month]", name: "Tháng (Month)", levels: ["Month"] }
-          ]
-        },
-        {
-          id: "[Dim Product]",
-          name: "Sản phẩm (Dim Product)",
-          hierarchies: [
-            { id: "[Dim Product].[Category]", name: "Danh mục (Category)", levels: ["Category", "Sub Category", "Product Name"] },
-            { id: "[Dim Product].[Sub Category]", name: "Phân nhóm (Sub Category)", levels: ["Sub Category", "Product Name"] },
-            { id: "[Dim Product].[Product Name]", name: "Tên sản phẩm (Product Name)", levels: ["Product Name"] }
-          ]
-        },
-        {
-          id: "[Dim Customer]",
-          name: "Khách hàng (Dim Customer)",
-          hierarchies: [
-            { id: "[Dim Customer].[Segment]", name: "Phân khúc (Segment)", levels: ["Segment", "Customer Name"] },
-            { id: "[Dim Customer].[Customer Name]", name: "Tên khách hàng (Customer Name)", levels: ["Customer Name"] }
-          ]
-        },
-        {
-          id: "[Dim Location]",
-          name: "Vị trí địa lý (Dim Location)",
-          hierarchies: [
-            { id: "[Dim Location].[Region]", name: "Vùng miền (Region)", levels: ["Region", "City"] },
-            { id: "[Dim Location].[City]", name: "Thành phố (City)", levels: ["City"] }
-          ]
-        },
-        {
-          id: "[Dim Sales Channel]",
-          name: "Kênh bán hàng (Dim Sales Channel)",
-          hierarchies: [
-            { id: "[Dim Sales Channel].[Channel Name]", name: "Tên kênh (Channel Name)", levels: ["Channel Name"] }
-          ]
-        },
-        {
-          id: "[Dim Warehouse]",
-          name: "Kho hàng (Dim Warehouse)",
-          hierarchies: [
-            { id: "[Dim Warehouse].[Warehouse Name]", name: "Tên kho (Warehouse Name)", levels: ["Warehouse Name"] }
-          ]
-        },
-        {
-          id: "[Dim Supplier]",
-          name: "Nhà cung cấp (Dim Supplier)",
-          hierarchies: [
-            { id: "[Dim Supplier].[Supplier Name]", name: "Tên NCC (Supplier Name)", levels: ["Supplier Name"] }
-          ]
-        },
-        {
-          id: "[Dim Shipper]",
-          name: "Đơn vị vận chuyển (Dim Shipper)",
-          hierarchies: [
-            { id: "[Dim Shipper].[Shipper Name]", name: "Hãng vận chuyển (Shipper Name)", levels: ["Shipper Name"] },
-            { id: "[Dim Shipper].[Shipping Method]", name: "Phương thức (Shipping Method)", levels: ["Shipping Method"] }
-          ]
-        }
-      ]
-    };
+  // Xuất đúng các dòng đang hiển thị ra CSV (UTF-8 BOM để Excel đọc tiếng Việt)
+  function exportToCSV(filename, rows, columns) {
+    if (!rows || !rows.length) return false;
+    const cols = columns || Object.keys(rows[0]).map(k => ({ key: k, label: k }));
+    const esc = v => `"${String(v === null || v === undefined ? "" : v).replace(/"/g, '""')}"`;
+    const lines = [cols.map(c => esc(c.label)).join(",")].concat(rows.map(r => cols.map(c => esc(r[c.key])).join(",")));
+    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    return true;
   }
 
   return {
-    getExecutiveOverview,
-    getSalesOverview,
-    getPurchaseOverview,
-    getInventoryOverview,
-    getInventoryFullOverview,
-    getShippingOverview,
-    getShippingFullOverview,
-    getCustomerFullOverview,
-    getProductFullOverview,
-    getGeographyFullOverview,
-    getSupplierFullOverview,
-    getCrossAnalysisOverview,
-    getForecastOverview,
-    getSystemStatusOverview,
-    getProductDetails,
-    getPurchasePODetails,
+    getOverview,
+    getSales,
+    getPurchase,
+    getPurchaseOrderDetail,
+    getInventory,
+    getShipping,
+    getCustomers,
+    getProducts,
+    getSuppliers,
+    getGeography,
+    getCrossAnalysis,
+    getForecast,
+    getSummary,
+    getSsasStatus,
+    getDataStatus,
+    getEtlLogs,
+    getConnectionStatus,
+    getMdxCatalog,
+    executeMdx,
+    getCubeMetadata,
     getCustomerDetail,
     getOrderDetail,
-    getSsasStatus,
-    getMdxCatalog,
-    executeMdxQuery,
-    getOlapCubeMetadata,
     exportToCSV
   };
 })();

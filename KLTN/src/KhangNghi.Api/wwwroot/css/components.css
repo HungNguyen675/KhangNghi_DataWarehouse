@@ -703,3 +703,233 @@
   margin-left: 6px;
 }
 
+
+/* --------------------------------------------------------------------------
+   BUTTONS (.btn dùng trong index.html và các ô trống)
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn:hover {
+  border-color: var(--border-color-strong);
+  background: var(--bg-surface-secondary);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.22);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.btn-ghost:hover {
+  background: var(--color-primary-light);
+  border-color: transparent;
+}
+
+.btn.active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary);
+}
+
+/* --------------------------------------------------------------------------
+   EMPTY PANEL (Comp.renderNoDataBanner) - chiếm trọn hàng khi nằm trong lưới KPI
+   -------------------------------------------------------------------------- */
+.empty-panel {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 44px 24px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color-strong);
+  background: var(--bg-card);
+}
+
+.empty-panel-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 22px;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.empty-panel-tag {
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.empty-panel-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.empty-panel-desc {
+  max-width: 560px;
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.empty-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   PAGE HEADER & COPILOT FAB
+   -------------------------------------------------------------------------- */
+.page-header {
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  margin-top: 4px;
+  font-size: 13.5px;
+}
+
+/* Nút Copilot nổi: chỉ dùng trên màn hình nhỏ (desktop đã có nút trên topbar) */
+#copilot-trigger {
+  display: none;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 80;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 20px;
+  box-shadow: 0 10px 24px rgba(15, 98, 254, 0.4);
+  cursor: pointer;
+}
+
+#copilot-trigger span {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  #copilot-trigger {
+    display: inline-flex;
+  }
+
+  #app-shell.login-mode ~ #copilot-trigger {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   KPI CARD REFRESH
+   -------------------------------------------------------------------------- */
+.glass-card {
+  padding: 18px 20px;
+}
+
+.kpi-card {
+  min-height: 128px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.kpi-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.kpi-main-value {
+  font-size: 26px;
+  letter-spacing: -0.8px;
+}
+
+.kpi-change-tag {
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+}
+
+.kpi-change-tag.neutral {
+  background: var(--bg-surface-secondary);
+  color: var(--text-muted);
+}
+
+.chart-title {
+  font-size: 14.5px;
+}

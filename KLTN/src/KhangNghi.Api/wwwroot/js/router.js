@@ -95,6 +95,8 @@ window.KhangNghiRouter = (function () {
       if (sidebar) sidebar.style.display = "flex";
       if (topbar) topbar.style.display = "flex";
     }
+    // Đóng sidebar dạng ngăn kéo trên mobile sau khi chọn trang
+    if (sidebar) sidebar.classList.remove("mobile-open");
 
     // 2. Hide all view sections, activate target view
     document.querySelectorAll(".view-section").forEach(el => {
@@ -134,31 +136,38 @@ window.KhangNghiRouter = (function () {
     const breadcrumbCurrent = document.getElementById("breadcrumb-current");
     
     const meta = {
-      "login": { cat: "Bảo mật / Security", title: "Hệ thống đăng nhập / Login System" },
-      "403": { cat: "Bảo mật / Security", title: "403 Truy cập bị từ chối / Access Denied" },
-      "404": { cat: "Hệ thống / System", title: "404 Không tìm thấy trang / Not Found" },
-      "overview": { cat: "Tổng quan / Executive Overview", title: "Tổng quan / Executive Overview" },
-      "sales": { cat: "Phân tích kinh doanh / Business Analytics", title: "Bán hàng / Sales" },
-      "purchase": { cat: "Phân tích kinh doanh / Business Analytics", title: "Mua hàng / Purchase" },
-      "inventory": { cat: "Phân tích kinh doanh / Business Analytics", title: "Tồn kho / Inventory" },
-      "shipping": { cat: "Phân tích kinh doanh / Business Analytics", title: "Vận chuyển / Shipping" },
-      "customer": { cat: "Phân tích đối tượng / Master Analysis", title: "Khách hàng / Customers" },
-      "product": { cat: "Phân tích đối tượng / Master Analysis", title: "Sản phẩm / Products" },
-      "supplier": { cat: "Phân tích đối tượng / Master Analysis", title: "Nhà cung cấp / Suppliers" },
-      "geography": { cat: "Phân tích đối tượng / Master Analysis", title: "Khu vực / Geography" },
-      "cross-analysis": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích chéo / Cross Analysis" },
-      "olap-explorer": { cat: "Mô hình đa chiều / OLAP & MDX", title: "OLAP Cube Explorer / Khám phá Khối Đa Chiều" },
-      "mdx-studio": { cat: "Mô hình đa chiều / OLAP & MDX", title: "MDX Query Studio & Thư Viện 40 Truy Vấn" },
-      "forecast": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Dự báo / Forecast" },
-      "what-if": { cat: "Phân tích nâng cao / Advanced Analytics", title: "Phân tích giả định / What-If" },
-      "question-explorer": { cat: "Trí tuệ dữ liệu / Data Intelligence", title: "Câu hỏi BI / BI Questions" },
-      "system-status": { cat: "Hệ thống / System", title: "Trạng thái dữ liệu / Data Status" },
-      "etl-logs": { cat: "Hệ thống / System", title: "Nhật ký ETL / ETL Logs" },
-      "settings": { cat: "Hệ thống / System", title: "Cài đặt / Settings" }
+      "login": { cat: "Bảo mật", title: "Đăng nhập" },
+      "403": { cat: "Bảo mật", title: "Truy cập bị từ chối" },
+      "404": { cat: "Hệ thống", title: "Không tìm thấy trang" },
+      "overview": { cat: "Tổng quan", title: "Tổng quan" },
+      "sales": { cat: "Kinh doanh", title: "Bán hàng" },
+      "purchase": { cat: "Kinh doanh", title: "Mua hàng" },
+      "inventory": { cat: "Kinh doanh", title: "Tồn kho" },
+      "shipping": { cat: "Kinh doanh", title: "Vận chuyển" },
+      "customer": { cat: "Đối tượng", title: "Khách hàng" },
+      "product": { cat: "Đối tượng", title: "Sản phẩm" },
+      "supplier": { cat: "Đối tượng", title: "Nhà cung cấp" },
+      "geography": { cat: "Đối tượng", title: "Khu vực" },
+      "cross-analysis": { cat: "Phân tích nâng cao", title: "Phân tích chéo" },
+      "olap-explorer": { cat: "OLAP & AI", title: "Khám phá OLAP" },
+      "mdx-studio": { cat: "OLAP & AI", title: "MDX Studio" },
+      "forecast": { cat: "Phân tích nâng cao", title: "Dự báo doanh số" },
+      "what-if": { cat: "Phân tích nâng cao", title: "Phân tích giả định" },
+      "question-explorer": { cat: "Phân tích nâng cao", title: "Câu hỏi phân tích" },
+      "system-status": { cat: "Hệ thống", title: "Trạng thái dữ liệu" },
+      "etl-logs": { cat: "Hệ thống", title: "Nhật ký ETL" },
+      "settings": { cat: "Hệ thống", title: "Cài đặt" }
     };
 
-    const item = meta[route] || { cat: "Dashboard", title: "Analytics" };
-    if (breadcrumbCategory) breadcrumbCategory.textContent = item.cat;
+    const item = meta[route] || { cat: "", title: "" };
+    // Không lặp lại khi nhóm trùng tên trang (vd. Tổng quan)
+    const showCat = item.cat && item.cat !== item.title;
+    if (breadcrumbCategory) {
+      breadcrumbCategory.textContent = showCat ? item.cat : "";
+      breadcrumbCategory.hidden = !showCat;
+      const sep = breadcrumbCategory.nextElementSibling;
+      if (sep) sep.hidden = !showCat;
+    }
     if (breadcrumbCurrent) breadcrumbCurrent.textContent = item.title;
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -183,24 +192,21 @@ window.KhangNghiRouter = (function () {
     roleEls.forEach(el => el.textContent = user.roleTitle);
     deptEls.forEach(el => el.textContent = user.department);
 
+    const roleSelect = document.getElementById("demo-role-select");
+    if (roleSelect) roleSelect.value = user.role;
+
     // Sidebar Items Visibility based on RBAC Permissions & Status Badges
     document.querySelectorAll("#sidebar .nav-item").forEach(el => {
       const href = el.getAttribute("href") || "";
       const routeKey = href.replace("#/", "");
       const requiredPerm = ROUTE_PERMISSIONS[routeKey];
+      // Tooltip gốc của trình duyệt cho sidebar thu gọn (tooltip CSS bị vùng cuộn của menu cắt mất)
+      if (el.dataset.tooltip) el.title = el.dataset.tooltip;
       
       if (!requiredPerm || auth.hasPermission(requiredPerm)) {
         el.style.display = "flex";
       } else {
         el.style.display = "none";
-      }
-
-      // Đảm bảo các phân hệ có dữ liệu DWH thực tế (Purchase, Inventory, Shipping, Suppliers) luôn hiển thị LIVE DWH
-      const badge = el.querySelector(".nav-badge");
-      if (badge && (routeKey === "purchase" || routeKey === "inventory" || routeKey === "shipping" || routeKey === "supplier")) {
-        badge.textContent = "LIVE DWH";
-        badge.style.background = "rgba(37,162,68,0.15)";
-        badge.style.color = "#25a244";
       }
     });
 
@@ -240,6 +246,7 @@ window.KhangNghiRouter = (function () {
     init,
     updateNavigationUI,
     onRouteChanged,
-    getCurrentRoute
+    getCurrentRoute,
+    ROUTE_PERMISSIONS
   };
 })();

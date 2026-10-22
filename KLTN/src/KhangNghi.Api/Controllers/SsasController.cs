@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ssas")]
+    [Authorize] // Danh mục 40 câu hỏi BI (MDX) mở cho mọi vai trò đã đăng nhập
     public class SsasController : ControllerBase
     {
         private readonly ISsasRepository _ssasRepo;

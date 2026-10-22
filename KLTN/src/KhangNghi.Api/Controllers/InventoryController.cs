@@ -1,11 +1,13 @@
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/inventory")]
+    [Authorize(Policy = "InventoryAccess")]
     public class InventoryController : ControllerBase
     {
         private readonly IDwhAnalyticsRepository _repo;

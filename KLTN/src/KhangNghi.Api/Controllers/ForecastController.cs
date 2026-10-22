@@ -1,12 +1,14 @@
 using System.Threading.Tasks;
 using KhangNghi.Core.DTOs;
 using KhangNghi.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/forecast")]
+    [Authorize] // Biểu đồ dự báo hiển thị trên trang Tổng quan của mọi vai trò
     public class ForecastController : ControllerBase
     {
         private readonly ISalesForecastService _forecastService;

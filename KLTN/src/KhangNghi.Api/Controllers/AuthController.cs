@@ -1,5 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,26 +88,31 @@ namespace KhangNghi.Api.Controllers
             if (user == null || !user.IsActive)
                 return Unauthorized(new { Success = false, Message = "Tài khoản không tồn tại hoặc đã bị khóa!" });
 
-            return Ok(new UserDto
-            {
-                UserID = user.UserID,
-                Username = user.Username,
-                FullName = user.FullName,
-                Email = user.Email,
-                Role = user.Role,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt
-            });
+            return Ok(ToDto(user));
         }
 
+        // Không bao giờ trả PasswordHash ra ngoài API
+        private static UserDto ToDto(SysUser user) => new UserDto
+        {
+            UserID = user.UserID,
+            Username = user.Username,
+            FullName = user.FullName,
+            Email = user.Email,
+            Role = user.Role,
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt
+        };
+
         [HttpGet("users")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userRepo.GetAllAsync();
-            return Ok(users);
+            return Ok(users.Select(ToDto));
         }
 
         [HttpPost("users")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
         {
             var existing = await _userRepo.GetByUsernameAsync(request.Username);
@@ -124,10 +130,11 @@ namespace KhangNghi.Api.Controllers
 
             int id = await _userRepo.CreateUserAsync(newUser, request.Password);
             newUser.UserID = id;
-            return Ok(newUser);
+            return Ok(ToDto(newUser));
         }
 
         [HttpPut("users/{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
         {
             var user = await _userRepo.GetByIdAsync(id);
@@ -139,7 +146,7 @@ namespace KhangNghi.Api.Controllers
             user.IsActive = request.IsActive;
 
             await _userRepo.UpdateUserAsync(user, request.NewPassword);
-            return Ok(user);
+            return Ok(ToDto(user));
         }
 
         [HttpPost("change-password")]
@@ -168,6 +175,7 @@ namespace KhangNghi.Api.Controllers
         }
 
         [HttpDelete("users/{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             bool success = await _userRepo.DeleteUserAsync(id);
