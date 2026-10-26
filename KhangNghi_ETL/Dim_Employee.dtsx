@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/10/2026 2:32:33 PM"
@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_Employee"
   DTS:PackageType="5"
-  DTS:VersionBuild="30"
-  DTS:VersionGUID="{358BBEFE-0861-4B40-9631-5A68EF13C68D}">
+  DTS:VersionBuild="33"
+  DTS:VersionGUID="{DDEFC403-47D7-4D44-B5B7-5F08EE5F2690}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -29,7 +29,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACjVNB/kuh9pVKdOQaqRlpl8xmVs9B7GJoxmntJdRn/FQAAAAAOgAAAAAIAACAAAAByyqZELfDqKIgg/YsnMTeaL6zRFsXUfOzQl+zCWbCiwBAAAABZSheLnE84cf3f6YbmDcaOQAAAAN5El8JS5Xq2I8/D2YuyBG5bcj3wMZSrHfVFvH7G/9ljjvaoSaGOrsnqnghFwAGdIrzG34i0DmkRMKFhqMMzT7s</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD01DE7u5ISqHFJKuk8OsIWsuG31Rhm+Y3YgYj4b4ncugAAAAAOgAAAAAIAACAAAACSeJ2HG7HwJYm3Z0+KgAu6QxulzLVC25UpXBRHQrtvPhAAAAD8kFkm+x3LpaLq7DpFxOkuQAAAAODzWO9z/C4C56COS95tuj4ImMn4JHd2jK9oRIK7awns1EXyBmeRMfCpgKW5lH0O05MG9Gdn/D0MRdGEQGlO+U0</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package-{03EFF312-9DCA-4393-8E06-A8CAF9FA9B01}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Employee-{EDD93992-CCC4-4105-804A-743E4B2311E4}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACznyt8J11e+4hPqi49FLEqxTRz+aygED+p9SY8L6znigAAAAAOgAAAAAIAACAAAAAQU/tGXbVob8FdMx+K02DwHSTgM5J7YfPUWO28j17TgRAAAABZ/LguGtOHtn7Axx5dWJplQAAAAEenrLvS8LFjmuOQaatxvVZe90PQ1QJEyFpJt+vbOWydIBLrIS5Z8ZMkAEZy67u0n2Tm3e09aR7pZQA97CTeh8A</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACy5hKpvghAsSJ1mwBEWwO4DogEUHRcciKXZixwQg7mpwAAAAAOgAAAAAIAACAAAAAe9o0NPVJH8kOwTZOHiGnEc618ltrGCgdKhICUXDrP8RAAAAAG67hNqNR+/ye2ThgRByROQAAAAD63vNk+WLvWkT8J1aJWlC/Ib/sP+1ziQL3yQWdYbH/HO7pJVeAv4iDt548rRRwUJB1fTLBXC44miNTyIYUfguI</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -63,7 +63,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABdq7D2EDiCHg1cC722N29t3jnawOfdGkSeZSEhOQQNqwAAAAAOgAAAAAIAACAAAADLLbjY9Z6Zvob8tUZ1Ji1iThTtF3qN+AMsFLuOtnz6LBAAAABAYhAVFNq77E92eDjx1f6cQAAAAMFSm1U0k/+YPAJzaSJLx/QMy7PNr3VIz4i7R8QjYc81rncq3fPSwLGFm/7cgWx5UE2n6C8/AGteSFAAypyfKBM</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACGn2/sTjKyyTbOk2h5q2dgxWhJvHa03piFHv65z034jwAAAAAOgAAAAAIAACAAAABdlYMC7b6VDKhkr4R1QtnzDxlVa8sw2iyBKWKsTHkb9BAAAAAdy8UXjHLFDWw3WJUVNLfHQAAAALPafpDBNelEJYB1U2oz2mUIbJ2YgDibvn7XCVRiJQU3Tl9QGj/VNBQopry1nHUVn76B4zS03fhvUQe9QpmOEVE</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -900,7 +900,7 @@ SELECT
     CAST('SALE_' + CAST(EmployeeID AS VARCHAR(10)) AS NVARCHAR(50)) AS EmployeeID, 
     CAST(EmployeeName AS NVARCHAR(255)) AS EmployeeName,
     CAST(N'Bán Hàng' AS NVARCHAR(255)) AS Department
-FROM KhangNghi_OLTP.dbo.Employees
+FROM KhangNghi_OLTP_VN_DRAFT.dbo.Employees
 
 UNION 
 
@@ -909,8 +909,8 @@ SELECT
     CAST('PUR_' + CAST(e.EmployeeID AS VARCHAR(10)) AS NVARCHAR(50)) AS EmployeeID, 
     CAST(e.EmployeeName AS NVARCHAR(255)) AS EmployeeName,
     CAST(d.DepartmentName AS NVARCHAR(255)) AS Department
-FROM KhangNghi_Purchasing_OLTP.dbo.Employees e
-LEFT JOIN KhangNghi_Purchasing_OLTP.dbo.Departments d ON e.DepartmentID = d.DepartmentID;</property>
+FROM KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Employees e
+LEFT JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Departments d ON e.DepartmentID = d.DepartmentID;</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -1083,7 +1083,7 @@ LEFT JOIN KhangNghi_Purchasing_OLTP.dbo.Departments d ON e.DepartmentID = d.Depa
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="238.571429079284,150.647058691481" />
+          TopLeft="329.285714986676,211.05882334441" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -1099,7 +1099,11 @@ LEFT JOIN KhangNghi_Purchasing_OLTP.dbo.Departments d ON e.DepartmentID = d.Depa
         <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\OLE DB Destination"
-          TopLeft="392.142857977626,301.294117382963" />
+          TopLeft="417.857143746651,311.235293844837" />
+        <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Data Flow Task\OLE DB Command"
+          TopLeft="161.714280166187,324.894117451333" />
         <NodeLayout
           Size="149.6,41.6"
           Id="Package\Data Flow Task\OLE DB Source"
@@ -1148,25 +1152,73 @@ LEFT JOIN KhangNghi_Purchasing_OLTP.dbo.Departments d ON e.DepartmentID = d.Depa
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Lookup No Match Output]"
-          TopLeft="475.085715146332,240.423529237488">
+          TopLeft="490.295238981706,240.423529237488">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,60.8705881454747"
+              EndConnector="12.761904764945,70.8117646073494"
               Start="0,0"
-              End="0,53.3705881454747">
+              End="12.761904764945,63.3117646073494">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,53.3705881454747" />
+                    End="0,24.9189304410434" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,24.9189304410434"
+                    Point2="0,28.9189304410434"
+                    Point3="4,28.9189304410434" />
+                  <mssgle:LineSegment
+                    End="8.76190476494503,28.9189304410434" />
+                  <mssgle:CubicBezierSegment
+                    Point1="8.76190476494503,28.9189304410434"
+                    Point2="12.761904764945,28.9189304410434"
+                    Point3="12.761904764945,32.9189304410434" />
+                  <mssgle:LineSegment
+                    End="12.761904764945,63.3117646073494" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-55.80638671875,20.8806065727373,111.6127734375,11.609375"
+              BoundingBox="-49.4254343362775,33.9189304410434,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Lookup Match Output]"
+          TopLeft="455.361905648372,240.423529237488">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-211.247625482185,84.470588213845"
+              Start="0,0"
+              End="-211.247625482185,76.970588213845">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,30.4970793824374" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,30.4970793824374"
+                    Point2="0,34.4970793824374"
+                    Point3="-4,34.4970793824374" />
+                  <mssgle:LineSegment
+                    End="-207.247625482185,34.4970793824374" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-207.247625482185,34.4970793824374"
+                    Point2="-211.247625482185,34.4970793824374"
+                    Point3="-211.247625482185,38.4970793824374" />
+                  <mssgle:LineSegment
+                    End="-211.247625482185,76.970588213845" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-153.815199459843,39.4970793824374,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -1224,46 +1276,6 @@ LEFT JOIN KhangNghi_Purchasing_OLTP.dbo.Departments d ON e.DepartmentID = d.Depa
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Data Flow Task\OLE DB Command"
-          TopLeft="161.714280166187,324.894117451333" />
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Lookup Match Output]"
-          TopLeft="455.361905648372,240.423529237488">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-211.247625482185,84.470588213845"
-              Start="0,0"
-              End="-211.247625482185,76.970588213845">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,30.4970793824374" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,30.4970793824374"
-                    Point2="0,34.4970793824374"
-                    Point3="-4,34.4970793824374" />
-                  <mssgle:LineSegment
-                    End="-207.247625482185,34.4970793824374" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-207.247625482185,34.4970793824374"
-                    Point2="-211.247625482185,34.4970793824374"
-                    Point3="-211.247625482185,38.4970793824374" />
-                  <mssgle:LineSegment
-                    End="-211.247625482185,76.970588213845" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-153.815199459843,39.4970793824374,96.3827734375,11.609375"
-              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>

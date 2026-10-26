@@ -121,10 +121,8 @@ namespace KhangNghi.Infrastructure.Repositories
                     {
                         new SysUser { Username = "admin", FullName = "Quản Trị Viên Hệ Thống", Email = "admin@khangnghi.com.vn", Role = "Admin", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@KhangNghi2026#") },
                         new SysUser { Username = "giamdoc", FullName = "Ban Giám Đốc Khang Nghị", Email = "ceo@khangnghi.com.vn", Role = "Director", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Ceo@KhangNghi2026!") },
-                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "SalesManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Sales@KhangNghi2026$") },
-                        new SysUser { Username = "muahang", FullName = "Trưởng Phòng Mua Hàng", Email = "purchase@khangnghi.com.vn", Role = "PurchaseManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Purchase@KhangNghi2026#") },
-                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "InventoryManager", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Warehouse@KhangNghi2026%") },
-                        new SysUser { Username = "vanchuyen", FullName = "Trưởng Phòng Logistics", Email = "shipping@khangnghi.com.vn", Role = "ShippingStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Shipping@KhangNghi2026&") }
+                        new SysUser { Username = "kinhdoanh", FullName = "Trưởng Phòng Kinh Doanh", Email = "sales@khangnghi.com.vn", Role = "SalesStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Sales@KhangNghi2026$") },
+                        new SysUser { Username = "kho", FullName = "Trưởng Phòng Quản Lý Kho", Email = "kho@khangnghi.com.vn", Role = "InventoryStaff", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Warehouse@KhangNghi2026%") }
                     };
 
                     const string upsertSql = @"

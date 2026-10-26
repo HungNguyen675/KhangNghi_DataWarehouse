@@ -27,13 +27,18 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("avg-cost-by-shipper")]
         public async Task<IActionResult> GetAvgCostByShipper() => Ok(await _repo.Q33_AvgShippingCostByShipperAsync());
 
-        // Q34: Đơn vị vận chuyển có thời gian giao hàng trung bình nhanh nhất
+        // Q34: Thời gian từ đặt hàng đến xuất giao; không phải thời gian khách nhận hàng.
         [HttpGet("fastest-delivery")]
+        [HttpGet("order-to-dispatch-days")]
         public async Task<IActionResult> GetFastestDelivery() => Ok(await _repo.Q34_FastestDeliveryShippersAsync());
 
         // Q35: Đơn vị vận chuyển có số ngày giao trễ trung bình cao nhất
         [HttpGet("highest-late-days")]
-        public async Task<IActionResult> GetHighestLateDays() => Ok(await _repo.Q35_HighestLateDaysShippersAsync());
+        public IActionResult GetHighestLateDays() => UnprocessableEntity(new
+        {
+            code = "DELIVERY_OUTCOME_UNAVAILABLE",
+            message = "Nguồn chưa có ngày hẹn nhận và ngày nhận thực tế để tính số ngày giao trễ."
+        });
 
         // Q36: Khu vực có chi phí vận chuyển cao nhất
         [HttpGet("cost-by-region")]
@@ -41,6 +46,10 @@ namespace KhangNghi.Api.Controllers
 
         // Q37: Khu vực thường xuyên xảy ra giao hàng trễ
         [HttpGet("late-delivery-by-region")]
-        public async Task<IActionResult> GetLateDeliveryByRegion() => Ok(await _repo.Q37_LateDeliveryRateByRegionAsync());
+        public IActionResult GetLateDeliveryByRegion() => UnprocessableEntity(new
+        {
+            code = "DELIVERY_OUTCOME_UNAVAILABLE",
+            message = "Nguồn chưa có ngày hẹn nhận và ngày nhận thực tế để tính tỷ lệ giao trễ."
+        });
     }
 }

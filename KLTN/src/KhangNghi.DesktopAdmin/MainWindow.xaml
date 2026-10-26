@@ -1,320 +1,424 @@
-﻿<Window x:Class="KhangNghi.DesktopAdmin.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:KhangNghi.DesktopAdmin"
-        mc:Ignorable="d"
-        Title="Hệ Thống Quản Trị Kho Dữ Liệu Khang Nghị - Administrator Desktop" 
-        Height="720" Width="1140" 
-        MinHeight="600" MinWidth="900"
-        WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BackgroundBrush}">
-
-    <Grid>
-        <!-- MAIN APPLICATION LAYOUT (HIDDEN UNTIL LOGGED IN) -->
-        <Grid x:Name="MainAppGrid" Visibility="Collapsed">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- LEFT SIDEBAR -->
-            <Border Grid.Column="0" Background="{StaticResource SidebarBgBrush}">
-                <DockPanel LastChildFill="True">
-                    <!-- App Brand Header -->
-                    <StackPanel DockPanel.Dock="Top" Margin="20,25,20,30">
-                        <TextBlock Text="KHANG NGHỊ DWH" Foreground="White" FontSize="18" FontWeight="Bold" />
-                        <TextBlock Text="Administrator Control Panel" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="SemiBold" Margin="0,3,0,0" />
-                    </StackPanel>
-
-                    <!-- User Profile & Logout at Bottom -->
-                    <Border DockPanel.Dock="Bottom" Background="#0A0F1D" Padding="15,12" Margin="10">
-                        <StackPanel>
-                            <TextBlock Text="Đang đăng nhập: admin" Foreground="White" FontWeight="SemiBold" FontSize="12" />
-                            <TextBlock Text="Vai trò: Quản trị viên (Admin)" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,2,0,8" />
-                            <Button Content="Đăng xuất" Background="#334155" FontSize="12" Padding="8,5" Click="BtnLogout_Click" />
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Nav Navigation Menu -->
-                    <StackPanel Margin="10,0">
-                        <Button x:Name="NavOverview" Content="📊  Tổng Quan Hệ Thống" HorizontalContentAlignment="Left" Padding="16,12" Margin="0,4" Background="Transparent" Foreground="#E2E8F0" Click="Nav_Click" Tag="PanelOverview" />
-                        <Button x:Name="NavUsers" Content="👥  Quản Trị Người Dùng" HorizontalContentAlignment="Left" Padding="16,12" Margin="0,4" Background="Transparent" Foreground="#E2E8F0" Click="Nav_Click" Tag="PanelUsers" />
-                        <Button x:Name="NavDatabase" Content="🗄️  Cài Đặt &amp; Kết Nối CSDL" HorizontalContentAlignment="Left" Padding="16,12" Margin="0,4" Background="Transparent" Foreground="#E2E8F0" Click="Nav_Click" Tag="PanelDatabase" />
-                        <Button x:Name="NavEtl" Content="⚡  Kích Hoạt Luồng ETL" HorizontalContentAlignment="Left" Padding="16,12" Margin="0,4" Background="{StaticResource PrimaryBrush}" Foreground="White" Click="Nav_Click" Tag="PanelEtl" />
-                        <Button x:Name="NavSchedule" Content="⏰  Lập Lịch Tự Động" HorizontalContentAlignment="Left" Padding="16,12" Margin="0,4" Background="Transparent" Foreground="#E2E8F0" Click="Nav_Click" Tag="PanelSchedule" />
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-
-            <!-- MAIN CONTENT PANELS -->
-            <Grid Grid.Column="1" Margin="25">
-                <!-- 1. PANEL: TỔNG QUAN HỆ THỐNG -->
-                <Grid x:Name="PanelOverview" Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Tổng Quan Trạng Thái Kho Dữ Liệu" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,20" />
-
-                    <!-- Quick KPI Cards -->
-                    <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,20">
-                        <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Fact Bán Hàng (Orders)" Foreground="{StaticResource TextMutedBrush}" FontSize="12" />
-                                <TextBlock x:Name="TxtFactOrderCount" Text="..." FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" Margin="0,5,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="White" CornerRadius="8" Padding="15" Margin="5,0,5,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Fact Vận Chuyển" Foreground="{StaticResource TextMutedBrush}" FontSize="12" />
-                                <TextBlock x:Name="TxtFactShippingCount" Text="..." FontSize="22" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" Margin="0,5,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="White" CornerRadius="8" Padding="15" Margin="5,0,5,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Fact Mua Hàng" Foreground="{StaticResource TextMutedBrush}" FontSize="12" />
-                                <TextBlock x:Name="TxtFactPurchaseCount" Text="..." FontSize="22" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,5,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="White" CornerRadius="8" Padding="15" Margin="10,0,0,0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Fact Tồn Kho" Foreground="{StaticResource TextMutedBrush}" FontSize="12" />
-                                <TextBlock x:Name="TxtFactInventoryCount" Text="..." FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </UniformGrid>
-
-                    <!-- Table of Tables Status -->
-                    <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="Chi Tiết Số Lượng Dữ Liệu Từng Bảng (DWH Tables)" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,15" />
-                            <DataGrid x:Name="GridDwhTables" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" HeadersVisibility="Column" GridLinesVisibility="Horizontal">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Tên Bảng" Binding="{Binding TableName}" Width="250" />
-                                    <DataGridTextColumn Header="Phân Loại" Binding="{Binding TableType}" Width="150" />
-                                    <DataGridTextColumn Header="Tổng Số Bản Ghi" Binding="{Binding RowCount, StringFormat={}{0:N0}}" Width="*" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </DockPanel>
-                    </Border>
-                </Grid>
-
-                <!-- 2. PANEL: QUẢN TRỊ NGƯỜI DÙNG -->
-                <Grid x:Name="PanelUsers" Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Quản Trị Người Dùng &amp; Phân Quyền Hệ Thống" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,20" />
-
-                    <!-- User DataGrid -->
-                    <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,15">
-                        <DataGrid x:Name="GridUsers" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" SelectionChanged="GridUsers_SelectionChanged">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID" Binding="{Binding UserID}" Width="60" />
-                                <DataGridTextColumn Header="Tên Đăng Nhập" Binding="{Binding Username}" Width="150" />
-                                <DataGridTextColumn Header="Họ Và Tên" Binding="{Binding FullName}" Width="220" />
-                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200" />
-                                <DataGridTextColumn Header="Vai Trò / Quyền" Binding="{Binding Role}" Width="150" />
-                                <DataGridCheckBoxColumn Header="Kích Hoạt" Binding="{Binding IsActive}" Width="100" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Border>
-
-                    <!-- Add/Edit Form -->
-                    <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="Thông Tin Chi Tiết Người Dùng" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="Tên đăng nhập:" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4" />
-                                    <TextBox x:Name="TxtUserUsername" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="5,0,10,0">
-                                    <TextBlock Text="Họ và tên:" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4" />
-                                    <TextBox x:Name="TxtUserFullName" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Margin="5,0,10,0">
-                                    <TextBlock Text="Vai trò (Role):" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4" />
-                                    <ComboBox x:Name="CmbUserRole" Padding="8,7" SelectedIndex="0">
-                                        <ComboBoxItem Content="Admin" />
-                                        <ComboBoxItem Content="Director" />
-                                        <ComboBoxItem Content="InventoryManager" />
-                                        <ComboBoxItem Content="ShippingStaff" />
-                                    </ComboBox>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3" VerticalAlignment="Bottom" Orientation="Horizontal">
-                                    <Button Content="Thêm Mới" Margin="5,0" Click="BtnAddUser_Click" />
-                                    <Button Content="Cập Nhật" Margin="5,0" Background="#10B981" Click="BtnUpdateUser_Click" />
-                                    <Button Content="Xóa" Margin="5,0" Background="#EF4444" Click="BtnDeleteUser_Click" />
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-
-                <!-- 3. PANEL: KẾT NỐI & CÀI ĐẶT CSDL -->
-                <Grid x:Name="PanelDatabase" Visibility="Collapsed">
-                    <StackPanel>
-                        <TextBlock Text="Cấu Hình Kết Nối Kho Dữ Liệu SQL Server" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,20" />
-
-                        <Border Background="White" CornerRadius="8" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,20">
-                            <StackPanel>
-                                <TextBlock Text="Chuỗi kết nối (Connection String):" FontWeight="SemiBold" Margin="0,0,0,8" />
-                                <TextBox x:Name="TxtConnectionString" Text="http://localhost:5000" Margin="0,0,0,15" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="Kiểm tra API" Click="BtnTestConnection_Click" Margin="0,0,10,0" />
-                                    <Button Content="Lưu URL" Background="#10B981" Click="BtnSaveConnection_Click" />
-                                </StackPanel>
-                                <TextBlock x:Name="TxtConnectionResult" Text="Sẵn sàng Kiểm tra API..." Margin="0,15,0,0" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-                <!-- 4. PANEL: KÍCH HOẠT LUỒNG ETL -->
-                <Grid x:Name="PanelEtl" Visibility="Visible">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="180" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Kích Hoạt &amp; Giám Sát Luồng Nạp Dữ Liệu (ETL Pipeline)" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,20" />
-
-                    <!-- Trigger Control Card -->
-                    <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,15">
-                        <StackPanel>
-                            <TextBlock Text="Tệp nguồn Excel vận hành của Khang Nghị:" FontWeight="SemiBold" Margin="0,0,0,6" />
-                            <Grid Margin="0,0,0,15">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox x:Name="TxtExcelSourcePath" Text="d:\VS_source\KLTN\Data.xlsx" />
-                                <Button Grid.Column="1" Content="Duyệt Tệp..." Margin="10,0,0,0" Background="#475569" Click="BtnBrowseExcel_Click" />
-                            </Grid>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                <Button x:Name="BtnRunEtl" Content="🚀  KÍCH HOẠT NẠP DỮ LIỆU ETL" Background="{StaticResource PrimaryBrush}" FontSize="14" Padding="20,12" Click="BtnRunEtl_Click" />
-                                <TextBlock x:Name="TxtEtlStatus" Text="Sẵn sàng nạp dữ liệu..." VerticalAlignment="Center" Margin="20,0,0,0" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" />
-                            </StackPanel>
-
-                            <ProgressBar x:Name="EtlProgressBar" Height="8" IsIndeterminate="False" Value="0" Maximum="100" Margin="0,5,0,0" />
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Console Logs -->
-                    <Border Grid.Row="2" Background="#0F172A" CornerRadius="8" Padding="15" Margin="0,0,0,15">
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="Console Log Tiến Trình Nạp Dữ Liệu Trực Tiếp:" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8" />
-                            <ScrollViewer x:Name="ScrollLog">
-                                <TextBlock x:Name="TxtConsoleLog" Foreground="#38BDF8" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap" />
-                            </ScrollViewer>
-                        </DockPanel>
-                    </Border>
-
-                    <!-- History Execution Log Grid -->
-                    <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="15" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="Lịch Sử Thực Thi ETL (Sys_EtlLog)" FontWeight="SemiBold" Margin="0,0,0,10" />
-                            <DataGrid x:Name="GridEtlHistory" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Mã Log" Binding="{Binding LogID}" Width="70" />
-                                    <DataGridTextColumn Header="Thời Gian Bắt Đầu" Binding="{Binding StartTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" Width="160" />
-                                    <DataGridTextColumn Header="Thời Gian Kết Thúc" Binding="{Binding EndTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" Width="160" />
-                                    <DataGridTextColumn Header="Trạng Thái" Binding="{Binding Status}" Width="100" />
-                                    <DataGridTextColumn Header="Số Dòng Nạp" Binding="{Binding RowsInserted, StringFormat={}{0:N0}}" Width="120" />
-                                    <DataGridTextColumn Header="Người Kích Hoạt" Binding="{Binding TriggeredBy}" Width="*" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </DockPanel>
-                    </Border>
-                </Grid>
-
-                <!-- 5. PANEL: LẬP LỊCH TỰ ĐỘNG -->
-                <Grid x:Name="PanelSchedule" Visibility="Collapsed">
-                    <StackPanel>
-                        <TextBlock Text="Cấu Hình Lập Lịch Tự Động (Auto-Scheduler)" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,20" />
-
-                        <Border Background="White" CornerRadius="8" Padding="20" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                            <StackPanel>
-                                <CheckBox x:Name="ChkEnableSchedule" Content="Bật chế độ tự động cập nhật kho dữ liệu định kỳ" FontSize="14" FontWeight="SemiBold" IsChecked="True" Margin="0,0,0,20" />
-
-                                <Grid Margin="0,0,0,20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="150" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                        <TextBlock Text="Tần suất lặp lại:" Margin="0,0,0,5" />
-                                        <ComboBox x:Name="CmbFrequency" SelectedIndex="0" Padding="8,7">
-                                            <ComboBoxItem Content="Mỗi đêm (Daily)" />
-                                            <ComboBoxItem Content="Mỗi 12 tiếng" />
-                                            <ComboBoxItem Content="Mỗi 6 tiếng" />
-                                            <ComboBoxItem Content="Mỗi giờ (Hourly)" />
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" Margin="5,0,10,0">
-                                        <TextBlock Text="Giờ chạy (0 - 23):" Margin="0,0,0,5" />
-                                        <TextBox x:Name="TxtScheduleHour" Text="0" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="2" Margin="5,0,0,0">
-                                        <TextBlock Text="Phút chạy (0 - 59):" Margin="0,0,0,5" />
-                                        <TextBox x:Name="TxtScheduleMinute" Text="0" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="Lưu Cấu Hình Lập Lịch" Click="BtnSaveSchedule_Click" />
-                                </StackPanel>
-
-                                <TextBlock x:Name="TxtScheduleInfo" Text="Hệ thống đã kích hoạt: Lịch chạy kế tiếp vào lúc 00:00 đêm nay." Margin="0,20,0,0" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
+<?xml version='1.0' encoding='UTF-8'?>
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="KhangNghi.DesktopAdmin.MainWindow" mc:Ignorable="d" Title="Khang Nghị | Quản trị kho dữ liệu" Height="900" Width="1380" MinHeight="740" MinWidth="1100" WindowStartupLocation="CenterScreen" FontFamily="Segoe UI" FontSize="13" Background="{StaticResource BackgroundBrush}">
+  <Grid Background="{StaticResource BackgroundBrush}">
+    <Grid x:Name="MainAppGrid" Visibility="Collapsed">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="240"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Border Grid.Column="0" Background="{StaticResource SidebarBgBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+        <DockPanel LastChildFill="True">
+          <StackPanel DockPanel.Dock="Top" Margin="20,28,16,24">
+            <TextBlock Text="KHANG NGHỊ" Foreground="{StaticResource TextDarkBrush}" FontSize="18" FontWeight="SemiBold"/>
+            <TextBlock Text="DATA WAREHOUSE" Foreground="{StaticResource TextMutedBrush}" FontSize="10" Margin="0,6,0,0"/>
+          </StackPanel>
+          <Border DockPanel.Dock="Bottom" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="10">
+            <StackPanel>
+              <TextBlock x:Name="TxtCurrentUsername" Text="Đang đăng nhập: admin" Foreground="{StaticResource TextDarkBrush}" FontWeight="SemiBold" FontSize="12" TextWrapping="Wrap"/>
+              <TextBlock x:Name="TxtCurrentUserRole" Text="Vai trò: Quản trị viên (Admin)" Foreground="{StaticResource TextMutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,5,0,12"/>
+              <Button Content="Đăng xuất" Background="#F3F4F6" Foreground="{StaticResource TextDarkBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" FontSize="13" Padding="10,7" Click="BtnLogout_Click" Style="{StaticResource GalleryButtonStyle}"/>
+            </StackPanel>
+          </Border>
+          <StackPanel Margin="8,0">
+            <Button x:Name="NavOverview" Style="{StaticResource SidebarNavStyle}" Click="Nav_Click" Tag="PanelOverview" Background="{StaticResource SidebarSelectedBrush}" Foreground="{StaticResource PrimaryBrush}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="28"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="Tổng quan" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="1"/>
+              </Grid>
+            </Button>
+            <Button x:Name="NavEtl" Style="{StaticResource SidebarNavStyle}" Click="Nav_Click" Tag="PanelEtl">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="28"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="Điều phối ETL &amp; SSAS" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="1"/>
+              </Grid>
+            </Button>
+            <Button x:Name="NavSchedule" Style="{StaticResource SidebarNavStyle}" Click="Nav_Click" Tag="PanelSchedule">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="28"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="Lập lịch tự động" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="1"/>
+              </Grid>
+            </Button>
+            <Button x:Name="NavPowerBi" Style="{StaticResource SidebarNavStyle}" Click="Nav_Click" Tag="PanelPowerBi">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="28"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="Báo cáo phân tích" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="1"/>
+              </Grid>
+            </Button>
+            <Button x:Name="NavUsers" Style="{StaticResource SidebarNavStyle}" Click="Nav_Click" Tag="PanelUsers">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="28"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock Text="Người dùng &amp; vai trò" VerticalAlignment="Center" TextWrapping="Wrap" Grid.Column="1"/>
+              </Grid>
+            </Button>
+          </StackPanel>
+        </DockPanel>
+      </Border>
+      <Grid Grid.Column="1" Margin="24,20,24,20">
+        <Grid x:Name="PanelOverview" Visibility="Visible">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="178"/>
+          </Grid.RowDefinitions>
+          <DockPanel Grid.Row="0" Margin="0,0,0,15" LastChildFill="True">
+            <Button Content="Làm mới" HorizontalAlignment="Right" Padding="12,6" Background="White" Foreground="{StaticResource TextDarkBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Click="BtnRefreshOverview_Click" DockPanel.Dock="Right" Style="{StaticResource GalleryButtonStyle}"/>
+            <TextBlock Text="Tổng quan" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource TextDarkBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+          </DockPanel>
+          <Border Grid.Row="1" Height="104" CornerRadius="12" Margin="0,0,0,14" ClipToBounds="True">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#EAE3FF" Offset="0"/>
+                <GradientStop Color="#CBBEFF" Offset="1"/>
+              </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <StackPanel Margin="20,10" VerticalAlignment="Center">
+                <TextBlock Text="KHANG NGHỊ / DATA PLATFORM" FontSize="10" FontWeight="SemiBold" Foreground="#51417D"/>
+                <TextBlock Text="Không gian quản trị dữ liệu" FontSize="22" FontWeight="SemiBold" Foreground="#241744" Margin="0,4,0,4" TextWrapping="Wrap"/>
+                <TextBlock Text="Theo dõi kho dữ liệu, điều phối ETL và quản lý lịch chạy tại một nơi." FontSize="12" Foreground="#51417D" TextWrapping="Wrap"/>
+              </StackPanel>
+              <Grid Grid.Column="1" ClipToBounds="True" Margin="0,6,6,6">
+                <Ellipse Width="280" Height="280" Fill="#A692ED" HorizontalAlignment="Right" Margin="0,-60,-80,0" Opacity="0.6"/>
+                <Ellipse Width="200" Height="200" Fill="#8270C9" HorizontalAlignment="Right" Margin="0,15,-20,-80" Opacity="0.6"/>
+                <Border Background="#EDE7FF" BorderBrush="#F8F5FF" BorderThickness="1" CornerRadius="12" Padding="12" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                  <Border.RenderTransform>
+                    <RotateTransform Angle="-9"/>
+                  </Border.RenderTransform>
+                  <TextBlock Text="" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="30" Foreground="#5B4797"/>
+                </Border>
+              </Grid>
             </Grid>
-        </Grid>
-
-        <!-- LOGIN OVERLAY DIALOG (DISPLAYED FIRST) -->
-        <Grid x:Name="LoginOverlay" Background="#0F172A">
-            <Border Background="White" CornerRadius="12" Width="400" Padding="35" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.3" />
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="KHANG NGHỊ DWH" FontSize="20" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center" />
-                    <TextBlock Text="Đăng Nhập Quản Trị Viên (Admin Login)" FontSize="13" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,5,0,25" />
-
-                    <TextBlock Text="Tên đăng nhập:" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5" />
-                    <TextBox x:Name="TxtLoginUsername" Text="admin" Margin="0,0,0,15" />
-
-                    <TextBlock Text="Mật khẩu:" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5" />
-                    <PasswordBox x:Name="TxtLoginPassword" Password="admin123" Margin="0,0,0,20" />
-
-                    <Button Content="ĐĂNG NHẬP HỆ THỐNG" FontSize="14" Padding="0,12" Click="BtnLogin_Click" />
-
-                    <TextBlock x:Name="TxtLoginError" Foreground="{StaticResource DangerBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,15,0,0" TextWrapping="Wrap" />
-                    <TextBlock Text="Tài khoản mặc định: admin / admin123" FontSize="11" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,10,0,0" />
-                </StackPanel>
+          </Border>
+          <UniformGrid Grid.Row="2" Columns="4" Margin="0,0,0,14">
+            <Border Margin="0,0,6,0" Style="{StaticResource CardStyle}" Padding="14,11">
+              <StackPanel>
+                <TextBlock Text="Bán hàng" Foreground="{StaticResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtFactOrderCount" Text="..." FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" Margin="0,5,0,0"/>
+                            </StackPanel>
             </Border>
+            <Border Margin="6,0,6,0" Style="{StaticResource CardStyle}" Padding="14,11">
+              <StackPanel>
+                <TextBlock Text="Vận chuyển" Foreground="{StaticResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtFactShippingCount" Text="..." FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" Margin="0,5,0,0"/>
+                            </StackPanel>
+            </Border>
+            <Border Margin="6,0,6,0" Style="{StaticResource CardStyle}" Padding="14,11">
+              <StackPanel>
+                <TextBlock Text="Mua hàng" Foreground="{StaticResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtFactPurchaseCount" Text="..." FontSize="25" FontWeight="SemiBold" Foreground="#8B5CF6" Margin="0,5,0,0"/>
+                            </StackPanel>
+            </Border>
+            <Border Margin="6,0,0,0" Style="{StaticResource CardStyle}" Padding="14,11">
+              <StackPanel>
+                <TextBlock Text="Tồn kho" Foreground="{StaticResource TextMutedBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="TxtFactInventoryCount" Text="..." FontSize="25" FontWeight="SemiBold" Foreground="#F59E0B" Margin="0,5,0,0"/>
+                            </StackPanel>
+            </Border>
+          </UniformGrid>
+          <Border Grid.Row="3" Margin="0,0,0,14" Style="{StaticResource CardStyle}" Padding="14">
+            <DockPanel>
+              <TextBlock DockPanel.Dock="Top" Text="Các bảng trong kho dữ liệu · 13 chiều và 4 bảng sự kiện" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10" TextWrapping="Wrap"/>
+              <DataGrid x:Name="GridDwhTables" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" HeadersVisibility="Column" GridLinesVisibility="Horizontal" RowHeight="32" ColumnHeaderHeight="32">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Tên Bảng DWH" Binding="{Binding TableName}" Width="250"/>
+                  <DataGridTextColumn Header="Phân Loại" Binding="{Binding TableType}" Width="150"/>
+                  <DataGridTextColumn Header="Số bản ghi" Binding="{Binding RowCount, StringFormat={}{0:N0}}" Width="*" MinWidth="130"/>
+                </DataGrid.Columns>
+              </DataGrid>
+            </DockPanel>
+          </Border>
+          <Border Grid.Row="4" Style="{StaticResource CardStyle}" Padding="14,10">
+            <DockPanel>
+              <TextBlock DockPanel.Dock="Top" Text="Trạng thái khối phân tích SSAS" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6" TextWrapping="Wrap"/>
+              <DataGrid x:Name="GridSsasCubes" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowHeight="30" ColumnHeaderHeight="30">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Tên Cube" Binding="{Binding CubeName}" Width="220"/>
+                  <DataGridTextColumn Header="Trạng Thái" Binding="{Binding State}" Width="130" ElementStyle="{StaticResource StatusTextStyle}"/>
+                  <DataGridTextColumn Header="Thời Điểm Xử Lý Gần Nhất" Binding="{Binding LastProcessed, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" Width="*" MinWidth="130"/>
+                </DataGrid.Columns>
+              </DataGrid>
+            </DockPanel>
+          </Border>
         </Grid>
+        <Grid x:Name="PanelEtl" Visibility="Collapsed">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="145"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <TextBlock Text="Điều phối dữ liệu" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,15" TextWrapping="Wrap"/>
+          <Border Grid.Row="1" Margin="0,0,0,15" Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Chế độ nạp dữ liệu:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                  <RadioButton x:Name="RadIncrementalLoad" Content="Nạp gia tăng" IsChecked="True" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,4,24,4" GroupName="EtlLoadMode"/>
+                  <RadioButton x:Name="RadInitialLoad" Content="Nạp lần đầu (xóa và nạp lại)" FontWeight="SemiBold" Foreground="#DC2626" VerticalAlignment="Center" GroupName="EtlLoadMode" Margin="0,4,0,4"/>
+                </WrapPanel>
+              </Grid>
+              <WrapPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Button x:Name="BtnRunEtl" Content="Chạy ETL" FontSize="13" Padding="20,10" Click="BtnRunEtl_Click" Style="{StaticResource PrimaryActionButtonStyle}" Margin="0,0,10,8" BorderThickness="0"/>
+                <Button x:Name="BtnProcessSsasOnly" Content="Xử lý SSAS" Background="#087F63" FontSize="13" Padding="15,10" Margin="0,0,10,8" Click="BtnProcessSsasOnly_Click" Foreground="White" Style="{StaticResource GalleryButtonStyle}" BorderThickness="0"/>
+                <TextBlock x:Name="TxtEtlStatus" Text="Sẵn sàng thực thi..." VerticalAlignment="Center" Margin="20,0,0,0" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" FontSize="12"/>
+              </WrapPanel>
+              <ProgressBar x:Name="EtlProgressBar" Height="6" IsIndeterminate="False" Value="0" Maximum="100" Margin="0,5,0,0"/>
+            </StackPanel>
+          </Border>
+          <Border Grid.Row="2" Background="#0F172A" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+            <DockPanel>
+              <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <TextBlock Text="Nhật ký thực thi" Foreground="#CCD1E3" FontSize="12" FontWeight="SemiBold"/>
+                <Button Content="Xóa nhật ký" HorizontalAlignment="Right" Padding="8,3" Background="#334155" FontSize="11" Click="BtnClearLog_Click" Foreground="White" Style="{StaticResource GalleryButtonStyle}" BorderThickness="0"/>
+              </DockPanel>
+              <ScrollViewer x:Name="ScrollLog" VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="TxtConsoleLog" Foreground="#38BDF8" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"/>
+              </ScrollViewer>
+            </DockPanel>
+          </Border>
+          <Border Grid.Row="3" Style="{StaticResource CardStyle}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="4*"/>
+              </Grid.ColumnDefinitions>
+              <DockPanel Grid.Column="0" Margin="0,0,10,0">
+                <TextBlock DockPanel.Dock="Top" Text="Lịch sử thực thi" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                <DataGrid x:Name="GridEtlHistory" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" SelectionChanged="GridEtlHistory_SelectionChanged" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowHeight="34">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Đợt #" Binding="{Binding RunNumber}" Width="44"/>
+                    <DataGridTextColumn Header="Loại Nạp" Binding="{Binding LoadType}" Width="90"/>
+                    <DataGridTextColumn Header="Bắt Đầu" Binding="{Binding StartTime, StringFormat={}{0:dd/MM HH:mm:ss}}" Width="132"/>
+                    <DataGridTextColumn Header="Trạng Thái" Binding="{Binding Status}" Width="90" ElementStyle="{StaticResource StatusTextStyle}"/>
+                    <DataGridTextColumn Header="Fact hiện có" Binding="{Binding FactRowCount, StringFormat={}{0:N0}, TargetNullValue=Chưa đo}" Width="105"/>
+                    <DataGridTextColumn Header="Nguồn Gọi" Binding="{Binding TriggeredBy}" Width="*" MinWidth="100"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </DockPanel>
+              <DockPanel Grid.Column="1" Margin="10,0,0,0">
+                <TextBlock DockPanel.Dock="Top" Text="Chi tiết bước thực thi" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                <DataGrid x:Name="GridStepLogs" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowHeight="34">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Bước" Binding="{Binding StepNumber}" Width="45"/>
+                    <DataGridTextColumn Header="Nhiệm Vụ" Binding="{Binding StepName}" Width="150"/>
+                    <DataGridTextColumn Header="Bảng Đích" Binding="{Binding TargetTable}" Width="90"/>
+                    <DataGridTextColumn Header="Trạng Thái" Binding="{Binding Status}" Width="*" MinWidth="130" ElementStyle="{StaticResource StatusTextStyle}"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </DockPanel>
+            </Grid>
+          </Border>
+        </Grid>
+        <Grid x:Name="PanelSchedule" Visibility="Collapsed">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <TextBlock Text="Lập lịch tự động" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,15" TextWrapping="Wrap"/>
+          <Border Grid.Row="1" Margin="0,0,0,15" Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <StackPanel Margin="0,0,0,15">
+                <CheckBox x:Name="ChkEnableSchedule" Content="Bật lịch chạy ETL tự động" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TxtAgentServiceStatus" Text="Trạng thái dịch vụ Agent: Đang kiểm tra..." HorizontalAlignment="Left" FontWeight="SemiBold" Foreground="#475569" VerticalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" FontSize="12"/>
+              <TextBlock Text="Chọn bật/tắt rồi nhấn Lưu lịch. Trạng thái dịch vụ Running không đồng nghĩa ETL đang chạy." FontSize="12" Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/></StackPanel>
+              <Grid Margin="0,0,0,20" HorizontalAlignment="Left" MaxWidth="620">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="300"/>
+                  <ColumnDefinition Width="120"/>
+                  <ColumnDefinition Width="120"/>
+                  <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                  <TextBlock Text="Tần suất" Margin="0,0,0,5"/>
+                  <ComboBox x:Name="CmbFrequency" SelectedIndex="0" Padding="8,7">
+                    <ComboBoxItem Content="Hàng ngày (Daily)"/>
+                    <ComboBoxItem Content="Hàng tuần: Chủ nhật (Weekly)"/>
+                  </ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="5,0,10,0">
+                  <TextBlock Text="Giờ (0–23)" Margin="0,0,0,5"/>
+                  <ComboBox x:Name="TxtScheduleHour" IsEditable="False" IsTextSearchEnabled="True" MaxDropDownHeight="240" SelectedIndex="2" ToolTip="Chọn giờ từ 00 đến 23"><ComboBoxItem Content="00"/><ComboBoxItem Content="01"/><ComboBoxItem Content="02"/><ComboBoxItem Content="03"/><ComboBoxItem Content="04"/><ComboBoxItem Content="05"/><ComboBoxItem Content="06"/><ComboBoxItem Content="07"/><ComboBoxItem Content="08"/><ComboBoxItem Content="09"/><ComboBoxItem Content="10"/><ComboBoxItem Content="11"/><ComboBoxItem Content="12"/><ComboBoxItem Content="13"/><ComboBoxItem Content="14"/><ComboBoxItem Content="15"/><ComboBoxItem Content="16"/><ComboBoxItem Content="17"/><ComboBoxItem Content="18"/><ComboBoxItem Content="19"/><ComboBoxItem Content="20"/><ComboBoxItem Content="21"/><ComboBoxItem Content="22"/><ComboBoxItem Content="23"/></ComboBox>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="5,0,10,0">
+                  <TextBlock Text="Phút (0–59)" Margin="0,0,0,5"/>
+                  <ComboBox x:Name="TxtScheduleMinute" IsEditable="False" IsTextSearchEnabled="True" MaxDropDownHeight="240" SelectedIndex="0" ToolTip="Chọn phút từ 00 đến 59"><ComboBoxItem Content="00"/><ComboBoxItem Content="01"/><ComboBoxItem Content="02"/><ComboBoxItem Content="03"/><ComboBoxItem Content="04"/><ComboBoxItem Content="05"/><ComboBoxItem Content="06"/><ComboBoxItem Content="07"/><ComboBoxItem Content="08"/><ComboBoxItem Content="09"/><ComboBoxItem Content="10"/><ComboBoxItem Content="11"/><ComboBoxItem Content="12"/><ComboBoxItem Content="13"/><ComboBoxItem Content="14"/><ComboBoxItem Content="15"/><ComboBoxItem Content="16"/><ComboBoxItem Content="17"/><ComboBoxItem Content="18"/><ComboBoxItem Content="19"/><ComboBoxItem Content="20"/><ComboBoxItem Content="21"/><ComboBoxItem Content="22"/><ComboBoxItem Content="23"/><ComboBoxItem Content="24"/><ComboBoxItem Content="25"/><ComboBoxItem Content="26"/><ComboBoxItem Content="27"/><ComboBoxItem Content="28"/><ComboBoxItem Content="29"/><ComboBoxItem Content="30"/><ComboBoxItem Content="31"/><ComboBoxItem Content="32"/><ComboBoxItem Content="33"/><ComboBoxItem Content="34"/><ComboBoxItem Content="35"/><ComboBoxItem Content="36"/><ComboBoxItem Content="37"/><ComboBoxItem Content="38"/><ComboBoxItem Content="39"/><ComboBoxItem Content="40"/><ComboBoxItem Content="41"/><ComboBoxItem Content="42"/><ComboBoxItem Content="43"/><ComboBoxItem Content="44"/><ComboBoxItem Content="45"/><ComboBoxItem Content="46"/><ComboBoxItem Content="47"/><ComboBoxItem Content="48"/><ComboBoxItem Content="49"/><ComboBoxItem Content="50"/><ComboBoxItem Content="51"/><ComboBoxItem Content="52"/><ComboBoxItem Content="53"/><ComboBoxItem Content="54"/><ComboBoxItem Content="55"/><ComboBoxItem Content="56"/><ComboBoxItem Content="57"/><ComboBoxItem Content="58"/><ComboBoxItem Content="59"/></ComboBox>
+                </StackPanel>
+                <WrapPanel Grid.Column="0" VerticalAlignment="Bottom" Orientation="Horizontal" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,16,0,0">
+                  <Button Content="Lưu lịch" Style="{StaticResource PrimaryActionButtonStyle}" Padding="15,8" Click="BtnSaveSchedule_Click" Margin="0,0,10,0" BorderThickness="0" x:Name="BtnSaveSchedule"/>
+                  <Button Content="Chạy job ngay" Background="#087F63" Padding="15,8" Click="BtnTriggerJobNow_Click" Foreground="White" Style="{StaticResource GalleryButtonStyle}" BorderThickness="0" x:Name="BtnTriggerScheduleJob"/>
+                </WrapPanel>
+              </Grid>
+              <TextBlock Text="" Visibility="Collapsed" Foreground="#965B00" Background="#FFF4D6" Padding="10,8" Margin="0,0,0,10" FontWeight="SemiBold" TextWrapping="Wrap" x:Name="TxtScheduleDraftState"/><TextBlock x:Name="TxtScheduleInfo" Text="Thông tin lịch: Đang tải..." Foreground="{StaticResource TextMutedBrush}" FontWeight="SemiBold" TextWrapping="Wrap" FontSize="12"/>
+            </StackPanel>
+          </Border>
+          <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+            <DockPanel>
+              <TextBlock DockPanel.Dock="Top" Text="Lịch sử SQL Server Agent" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10" TextWrapping="Wrap"/>
+              <DataGrid x:Name="GridAgentHistory" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowHeight="34">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Mã Lần Chạy" Binding="{Binding InstanceId}" Width="100"/>
+                  <DataGridTextColumn Header="Tên Job" Binding="{Binding JobName}" Width="200"/>
+                  <DataGridTextColumn Header="Bước Thực Thi" Binding="{Binding StepName}" Width="180"/>
+                  <DataGridTextColumn Header="Thời Gian Chạy" Binding="{Binding RunDateTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss}}" Width="160"/>
+                  <DataGridTextColumn Header="Trạng Thái" Binding="{Binding RunStatus}" Width="120" ElementStyle="{StaticResource StatusTextStyle}"/>
+                  <DataGridTextColumn Header="Thời Lượng" Binding="{Binding RunDuration}" Width="110"/>
+                  <DataGridTextColumn Header="Thông Điệp" Binding="{Binding Message}" Width="*" MinWidth="130"/>
+                </DataGrid.Columns>
+              </DataGrid>
+            </DockPanel>
+          </Border>
+        </Grid>
+        <Grid x:Name="PanelPowerBi" Visibility="Collapsed">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+          <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Báo cáo phân tích" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource TextDarkBrush}" TextWrapping="Wrap"/>
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,12,0,0">
+              <Button x:Name="BtnOpenPbixSales" Content="Mở báo cáo kinh doanh" Background="White" Margin="0,0,10,0" Click="BtnOpenPbixSales_Click" Foreground="{StaticResource TextDarkBrush}"/>
+              <Button x:Name="BtnOpenPbixInventory" Content="Mở báo cáo tồn kho" Background="White" Click="BtnOpenPbixInventory_Click" Foreground="{StaticResource TextDarkBrush}"/>
+            </WrapPanel>
+          </StackPanel>
+          <Border Grid.Row="1" Margin="0,0,0,15" Style="{StaticResource CardStyle}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Text="Chọn báo cáo phân tích:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,15,0"/>
+              <StackPanel Grid.Column="1">
+                <RadioButton x:Name="RadReportSales" Content="Kinh doanh &amp; hiệu suất nhân viên" IsChecked="True" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,0,10" GroupName="PbiReportSelection"/>
+                <RadioButton x:Name="RadReportInventory" Content="Tồn kho &amp; cảnh báo" FontWeight="SemiBold" VerticalAlignment="Center" GroupName="PbiReportSelection"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+          <Border Grid.Row="2" ClipToBounds="True" Style="{StaticResource CardStyle}">
+            <Grid>
+              <wv2:WebView2 x:Name="ReportWebView"/>
+              <Border x:Name="PbiLoadingOverlay" Background="#F8FAFC" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <TextBlock Text="Đang tải báo cáo phân tích..." FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                  <ProgressBar Height="4" Width="200" IsIndeterminate="True" Margin="0,10,0,0"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Border>
+        </Grid>
+        <Grid x:Name="PanelUsers" Visibility="Collapsed">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+          <TextBlock Text="Người dùng &amp; vai trò" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource TextDarkBrush}" Margin="0,0,0,15" TextWrapping="Wrap"/>
+          <Border Grid.Row="1" Margin="0,0,0,15" Style="{StaticResource CardStyle}">
+            <DataGrid x:Name="GridUsers" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" Background="Transparent" SelectionChanged="GridUsers_SelectionChanged" GridLinesVisibility="Horizontal" HeadersVisibility="Column" RowHeight="34">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding UserID}" Width="60"/>
+                <DataGridTextColumn Header="Tên Đăng Nhập" Binding="{Binding Username}" Width="150"/>
+                <DataGridTextColumn Header="Họ Và Tên" Binding="{Binding FullName}" Width="220"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
+                <DataGridTextColumn Header="Vai Trò / Phân Quyền" Binding="{Binding Role}" Width="160"/>
+                <DataGridCheckBoxColumn Header="Kích Hoạt" Binding="{Binding IsActive}" Width="100"/>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Border>
+          <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <TextBlock Text="Thông tin người dùng" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,10" TextWrapping="Wrap"/>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                  <TextBlock Text="Tên đăng nhập" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
+                  <TextBox x:Name="TxtUserUsername"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="5,0,10,0">
+                  <TextBlock Text="Họ và tên" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
+                  <TextBox x:Name="TxtUserFullName"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="5,0,10,0">
+                  <TextBlock Text="Vai trò" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
+                  <ComboBox x:Name="CmbUserRole" Padding="8,7" SelectedIndex="0">
+                    <ComboBoxItem Content="Admin"/>
+                    <ComboBoxItem Content="Director"/>
+                    <ComboBoxItem Content="SalesStaff"/>
+                    <ComboBoxItem Content="InventoryStaff"/>
+                  </ComboBox>
+                </StackPanel>
+                <WrapPanel Grid.Column="0" VerticalAlignment="Bottom" Orientation="Horizontal" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,16,0,0">
+                  <Button Content="Thêm người dùng" Margin="5,0" Click="BtnAddUser_Click" Style="{StaticResource PrimaryActionButtonStyle}" BorderThickness="0"/>
+                  <Button Content="Cập nhật" Margin="5,0" Background="#087F63" Click="BtnUpdateUser_Click" Foreground="White" Style="{StaticResource GalleryButtonStyle}" BorderThickness="0"/>
+                  <Button Content="Xóa người dùng" Margin="5,0" Background="#B42336" Click="BtnDeleteUser_Click" Foreground="White" Style="{StaticResource GalleryButtonStyle}" BorderThickness="0"/>
+                </WrapPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Grid>
     </Grid>
+    <Grid x:Name="LoginOverlay" Background="#F1EFF8">
+      <Border Background="White" CornerRadius="12" Width="470" Padding="35" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+        <Border.Effect>
+          <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.3"/>
+        </Border.Effect>
+        <StackPanel>
+          <TextBlock Text="KHANG NGHỊ DWMS" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+          <TextBlock Text="Đăng Nhập Quản Trị &amp; Điều Phối Kho Dữ Liệu" FontSize="13" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,5,0,25" TextWrapping="Wrap"/>
+          <TextBlock Text="Tên đăng nhập:" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5" TextWrapping="Wrap"/>
+          <TextBox x:Name="TxtLoginUsername" Text="admin" Margin="0,0,0,15"/>
+          <TextBlock Text="Mật khẩu:" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5" TextWrapping="Wrap"/>
+          <PasswordBox x:Name="TxtLoginPassword" Password="Admin@KhangNghi2026#" Margin="0,0,0,20"/>
+          <Button Content="Đăng nhập" FontSize="14" Padding="0,12" Click="BtnLogin_Click" Style="{StaticResource PrimaryActionButtonStyle}" BorderThickness="0"/>
+          <TextBlock x:Name="TxtLoginError" Foreground="{StaticResource DangerBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,15,0,0" TextWrapping="Wrap"/>
+
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
 </Window>
-
-

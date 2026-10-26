@@ -116,6 +116,6 @@ namespace KhangNghi.Core.Models
         public int? ShipperKey { get; set; }
         public double ShippingCost { get; set; }
         public int DeliveryDays { get; set; }
-        public int LateDays { get; set; }
+        public int? LateDays { get; set; }
     }
 }

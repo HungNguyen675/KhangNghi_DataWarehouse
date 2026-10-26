@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/10/2026 2:32:33 PM"
@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_Shipper"
   DTS:PackageType="5"
-  DTS:VersionBuild="21"
-  DTS:VersionGUID="{69527A4C-9C22-4968-B2C1-225EB10573DE}">
+  DTS:VersionBuild="24"
+  DTS:VersionGUID="{0AADE7B3-9EFA-4391-A2FA-0513838D79A0}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -29,7 +29,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAKsldAtPhClGrgYvSS9bQf4+XMx/oADeJrJv5jhQazBQAAAAAOgAAAAAIAACAAAACRl5vuFfm/tuy4dhj6mTjKgFSPBM7/iKWe429KI1DakBAAAADN4Ts1pESI/lTl+RdixLSWQAAAAMiCUJgzJN9LwSQf8z2FWK95gmrfiFCbpkM9W41jMSfblKBf6nVlIOQaFIJvmAMzwOKcUaWSyiBbNTbqHkJwTzQ</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAQCjdlX98qn1GSrDbKT/S4Rn2apLnp7ROywj4bxNKxzgAAAAAOgAAAAAIAACAAAADPEIoI1j6EGSgLid725/akNBDEHzL4JEeJO2Rl1ij3fhAAAADF9M09XNNhZvUePWxpQlNCQAAAAK0zC0m1ljQ/tkBoJpgFZKBe8reISTQMyKx0yuiEv0ZDfWUlGa9xUgyhqYWnxa//MOApA1y2DO3+jLK7pCdBydE</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{3AF5B16A-653B-40DE-8360-B6441FB6179A}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Shipper-{397929AD-F183-439F-AEF8-50D320DB6282}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACEisGK/WjNUz/3MCkJe96T4foSs+xwVjqymrLfpqxeWQAAAAAOgAAAAAIAACAAAAB9NHVOnRjM0V6SqOUO5MxkLzVn1uUAXua6A6IIpT2GlBAAAAAWNg76n+6ssjhfbzR8m0clQAAAAMDlSfrl3y9mWzUifiUVAFJKujfmakUV6URNo4XKQWEzYwDvMqbRGmJH0xkVJtg8cxeQSKAWogfk5Jx2rvehBi8</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAC98veRtvwgigSQ3owBOQw6AvRHwp9U/jru/uPYFkqVegAAAAAOgAAAAAIAACAAAAAJm7Eq2JXiRnLwKVkB/aMBg/eGK1YS0LWl22wvV0neQhAAAACjuW2KMnN8ni78nLNc0tmuQAAAABjqh/BXhBI1mAibPDEfk7VAY1MkvWcJNkIO6G0mWexlqo8pdr7RkdNGw1QUq62A4qJk6FeDOjV7lHlJU5D5/fY</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -63,7 +63,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADTBeZyBLI3obhdThOxOatenxcoDH5qwofs9zrq2bt4NwAAAAAOgAAAAAIAACAAAABCJ+o0KE/1iYuxGMXtWWZ8ClaEmBiSQ9NbU1lyz6+ubxAAAAAL+YwOtVG0l2aqdrlSIBP3QAAAACFKPpIsGXxErVSE2WknY5zQTTQ+buYk9sisvaRmAH8GuSpua+LoFjgQkBbKFfuKGGHne+MealX5VnHc92P91TY</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAClniYG3mVNNjn0tgXEOSqd97/0gkOv3uibJNf83yifAgAAAAAOgAAAAAIAACAAAAD1iJF/1nyzzGVzj9VelpaBEkEaAftKMBNn6fnSTH7C9RAAAAAFQ95uyMffBuPS1Mg4YOzjQAAAAPCe3D9H5NwNV2IyIDkGvm26V+FFcqZG2rMIu6ZuX81enE2/rLTCpJF67VXPgU7YMa92L84ZwYZrOumPjtE5mJ0</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -677,7 +677,7 @@ WHERE ShipperID = ?</property>
                   UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
     CAST('SALE_' + CAST([Ship Mode] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ShipperID,
     CAST([Ship Mode] AS NVARCHAR(255)) AS ShipperName,
-    CAST(NULL AS NVARCHAR(50)) AS ShippingMethod,
+    CAST([Ship Mode] AS NVARCHAR(50)) AS ShippingMethod,
     CAST(NULL AS NVARCHAR(50)) AS ServiceLevel
 FROM dbo.Stg_KhangNghiData
 WHERE [Ship Mode] IS NOT NULL
@@ -870,7 +870,7 @@ GROUP BY [Ship Mode]</property>
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="312.857143523133,193.47058806571" />
+          TopLeft="342.142857871189,218.705882161237" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -880,6 +880,10 @@ GROUP BY [Ship Mode]</property>
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Data Flow Task\OLE DB Command"
+          TopLeft="278.857137558411,244.599999874654" />
+        <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\OLE DB Destination"
           TopLeft="486.42857246405,237.05882332162" />
@@ -888,13 +892,13 @@ GROUP BY [Ship Mode]</property>
           Id="Package\Data Flow Task\OLE DB Source"
           TopLeft="91.7142800171761,233.647056360764" />
         <NodeLayout
-          Size="112.8,41.6"
-          Id="Package\Data Flow Task\Lookup"
-          TopLeft="455.000000968576,95.5882352103309" />
-        <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
           TopLeft="175.000000372528,81.8235293400438" />
+        <NodeLayout
+          Size="112.8,41.6"
+          Id="Package\Data Flow Task\Lookup"
+          TopLeft="455.000000968576,95.5882352103309" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="166.514280017176,233.647056360764">
@@ -966,44 +970,6 @@ GROUP BY [Ship Mode]</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Derived Column Output]"
-          TopLeft="327.800000372528,102.623529340044">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="127.200000596047,13.7647058702871"
-              Start="0,0"
-              End="119.700000596047,13.7647058702871">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="59.6000002980236,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="59.6000002980236,0"
-                    Point2="63.6000002980236,0"
-                    Point3="63.6000002980236,4" />
-                  <mssgle:LineSegment
-                    End="63.6000002980236,9.76470587028706" />
-                  <mssgle:CubicBezierSegment
-                    Point1="63.6000002980236,9.76470587028706"
-                    Point2="63.6000002980236,13.7647058702871"
-                    Point3="67.6000002980236,13.7647058702871" />
-                  <mssgle:LineSegment
-                    End="119.700000596047,13.7647058702871" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Data Flow Task\OLE DB Command"
-          TopLeft="278.857137558411,244.599999874654" />
-        <EdgeLayout
           Id="Package\Data Flow Task.Paths[Lookup Match Output]"
           TopLeft="493.933334301909,137.188235210331">
           <EdgeLayout.Curve>
@@ -1039,22 +1005,43 @@ GROUP BY [Ship Mode]</property>
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Derived Column Output]"
+          TopLeft="327.800000372528,102.623529340044">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="127.200000596047,13.7647058702871"
+              Start="0,0"
+              End="119.700000596047,13.7647058702871">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="59.6000002980236,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="59.6000002980236,0"
+                    Point2="63.6000002980236,0"
+                    Point3="63.6000002980236,4" />
+                  <mssgle:LineSegment
+                    End="63.6000002980236,9.76470587028706" />
+                  <mssgle:CubicBezierSegment
+                    Point1="63.6000002980236,9.76470587028706"
+                    Point2="63.6000002980236,13.7647058702871"
+                    Point3="67.6000002980236,13.7647058702871" />
+                  <mssgle:LineSegment
+                    End="119.700000596047,13.7647058702871" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Destination">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\OLE DB Source">
     <Properties>
@@ -1088,6 +1075,19 @@ GROUP BY [Ship Mode]</property>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>

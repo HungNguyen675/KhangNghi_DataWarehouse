@@ -337,17 +337,37 @@ window.analyticsService = (function () {
 
   async function getShippingOverview(filters = {}) {
     if (client) {
-      const res = await client.get("/shipping/orders-by-shipper", filters);
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      // Current shipping endpoints return the complete DWH snapshot, without filters.
+      const [res, costs, days, regions] = await Promise.all([
+        client.get("/shipping/orders-by-shipper"),
+        client.get("/shipping/cost-by-shipper"),
+        client.get("/shipping/order-to-dispatch-days"),
+        client.get("/shipping/cost-by-region")
+      ]);
+      if ([res, costs, days, regions].every(r => r.success && Array.isArray(r.data)) && res.data.length > 0) {
+        const read = (r, camel, pascal) => r[camel] ?? r[pascal];
+        const name = r => read(r, "shipperName", "ShipperName");
+        const grouped = new Map();
+        res.data.forEach(r => grouped.set(name(r), (grouped.get(name(r)) || 0) + Number(read(r, "totalOrders", "TotalOrders"))));
+        const shippers = [...grouped].map(([shipper, count]) => ({
+          name: shipper, shipments: count,
+          cost: Number(read(costs.data.find(r => name(r) === shipper) || {}, "totalShippingCost", "TotalShippingCost") ?? 0),
+          avgDays: read(days.data.find(r => name(r) === shipper) || {}, "avgDeliveryDays", "AvgDeliveryDays") ?? null
+        }));
+        const totalShipments = shippers.reduce((n, r) => n + r.shipments, 0);
+        const shippingCost = shippers.reduce((n, r) => n + r.cost, 0);
         return {
           hasData: true,
           status: "AVAILABLE",
-          totalShipments: res.data.length,
-          shippingCost: 0,
-          avgDeliveryDays: 0,
-          onTimeRate: 0,
-          lateShipments: 0,
-          avgShippingCost: 0
+          totalShipments,
+          shippingCost,
+          avgDeliveryDays: shippers.every(r => r.avgDays !== null) ? Number((shippers.reduce((n, r) => n + Number(r.avgDays) * r.shipments, 0) / totalShipments).toFixed(1)) : null,
+          onTimeRate: null,
+          lateShipments: null,
+          avgShippingCost: totalShipments ? shippingCost / totalShipments : null,
+          shippers,
+          regionPerformance: regions.data.map(r => ({ region: read(r, "region", "Region"), cost: read(r, "totalShippingCost", "TotalShippingCost") })),
+          lateDeliveries: [], slaMonitor: []
         };
       }
     }
@@ -445,27 +465,21 @@ window.analyticsService = (function () {
   }
 
   async function getSystemStatusOverview() {
-    const summaryRes = client ? await client.get("/dashboard/summary") : { success: false };
-    const liveConnected = summaryRes.success;
+    const statusRes = client ? await client.get("/etl/tables-status") : { success: false, error: "API Client không khả dụng" };
+    const tables = Array.isArray(statusRes.data) ? statusRes.data : [];
 
     return {
       databaseName: "DWH_KhangNghi",
       serverInstance: ".\\MSSQLSERVER2025",
-      isLiveConnected: liveConnected,
-      tablesStatus: [
-        { name: "Fact_Sales", rows: liveConnected ? 65466 : 0, status: "AVAILABLE", type: "FACT", description: "Bảng Fact Bán hàng thực tế" },
-        { name: "Dim_Customer", rows: liveConnected ? 17415 : 0, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục 17,415 Khách hàng" },
-        { name: "Dim_Location", rows: liveConnected ? 3856 : 0, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục 3,856 Địa điểm/Khu vực" },
-        { name: "Dim_Product", rows: liveConnected ? 3788 : 0, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục 3,788 Sản phẩm & Phân loại" },
-        { name: "Dim_Time", rows: liveConnected ? 1430 : 0, status: "AVAILABLE", type: "DIMENSION", description: "Thời gian 2012-2015 (1,430 ngày)" },
-        { name: "Dim_Manufacturer", rows: liveConnected ? 5 : 0, status: "AVAILABLE", type: "DIMENSION", description: "Danh mục Nhà sản xuất" },
-        { name: "Fact_Purchase", rows: 0, status: "NO DATA", type: "FACT", description: "Chưa có dữ liệu mua hàng trong Excel nguồn" },
-        { name: "Fact_Inventory", rows: 0, status: "NO DATA", type: "FACT", description: "Chưa có dữ liệu kiểm kê tồn kho" },
-        { name: "Fact_Shipping", rows: 0, status: "NO DATA", type: "FACT", description: "Chưa có dữ liệu chi tiết vận chuyển" },
-        { name: "Dim_Supplier", rows: 0, status: "NO DATA", type: "DIMENSION", description: "Chưa có danh mục Nhà cung cấp" },
-        { name: "Dim_Shipper", rows: 0, status: "NO DATA", type: "DIMENSION", description: "Chưa có danh mục Đơn vị vận chuyển" },
-        { name: "Dim_Warehouse", rows: 0, status: "NO DATA", type: "DIMENSION", description: "Chưa có danh mục Kho hàng" }
-      ]
+      isLiveConnected: statusRes.success,
+      connectionError: statusRes.success ? null : (statusRes.error || "Không lấy được trạng thái bảng DWH."),
+      tablesStatus: tables.map(table => ({
+        name: table.tableName || table.TableName,
+        rows: Number(table.rowCount ?? table.RowCount ?? 0),
+        status: "AVAILABLE",
+        type: (table.tableType || table.TableType || "Dimension").toUpperCase() === "FACT" ? "FACT" : "DIMENSION",
+        description: (table.tableType || table.TableType || "Dimension") === "Fact" ? "Bảng sự kiện trong kho dữ liệu" : "Bảng chiều trong kho dữ liệu"
+      }))
     };
   }
 

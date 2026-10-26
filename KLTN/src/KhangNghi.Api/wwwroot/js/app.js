@@ -527,18 +527,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const kpiEl = document.getElementById("shipping-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
-        ${Comp.renderKpiCard({ id: "shp-count", label: "Số đơn vận chuyển", value: data.totalShipments, changePct: 8.4, icon: "🚚", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "shp-cost", label: "Chi phí vận chuyển", value: data.shippingCost, changePct: 2.3, icon: "⛽" })}
-        ${Comp.renderKpiCard({ id: "shp-days", label: "Thời gian giao hàng trung bình", value: data.avgDeliveryDays, changePct: -4.2, icon: "⏱️", isCurrency: false, unit: " ngày" })}
-        ${Comp.renderKpiCard({ id: "shp-ontime", label: "Tỷ lệ giao đúng hạn", value: data.onTimeRate, changePct: 1.5, icon: "✅", isCurrency: false, unit: "%" })}
-        ${Comp.renderKpiCard({ id: "shp-late", label: "Số đơn giao trễ", value: data.lateShipments, changePct: -12.5, icon: "🛑", isCurrency: false })}
-        ${Comp.renderKpiCard({ id: "shp-avgcost", label: "Chi phí vận chuyển trung bình", value: data.avgShippingCost, changePct: -1.2, icon: "🏷️", unit: "/đơn" })}
+        ${Comp.renderKpiCard({ id: "shp-count", label: "Số đơn xuất giao", value: data.totalShipments, icon: "🚚", isCurrency: false })}
+        ${Comp.renderKpiCard({ id: "shp-cost", label: "Chi phí vận chuyển", value: data.shippingCost, icon: "⛽" })}
+        ${Comp.renderKpiCard({ id: "shp-days", label: "Thời gian từ đặt đến xuất giao", value: data.avgDeliveryDays, icon: "⏱️", isCurrency: false, unit: " ngày" })}
+        ${Comp.renderKpiCard({ id: "shp-avgcost", label: "Chi phí vận chuyển trung bình", value: data.avgShippingCost, icon: "🏷️", unit: "/đơn" })}
       `;
     }
 
     setTimeout(() => {
       Charts.renderRevenueTrend("chart-shp-trend", (data.regionPerformance || []).map(r => ({ label: r.region, cost: r.cost, qty: r.shipments })), { metric: 'cost' });
-      Charts.renderSlaDonut("chart-shp-donut", data.slaMonitor);
+      const slaChart = document.getElementById("chart-shp-donut");
+      if (slaChart) slaChart.innerHTML = '<p>Chưa có ngày hẹn nhận và ngày nhận thực tế để đánh giá giao đúng hạn.</p>';
     }, 50);
 
     // Shipper Performance Table
@@ -547,9 +546,9 @@ document.addEventListener("DOMContentLoaded", function () {
       shpBody.innerHTML = (data.shippers || []).map(s => `
         <tr>
           <td><strong>${s.name}</strong></td>
-          <td>${s.avgDays} ngày</td>
-          <td><strong style="color:${s.lateRate > 0.05 ? 'var(--color-danger)' : 'var(--color-success)'}">${(s.lateRate * 100).toFixed(1)}%</strong></td>
-          <td>${Comp.renderStatusBadge(s.status === 'Healthy' ? 'HEALTHY' : 'WARNING')}</td>
+          <td>${s.avgDays === null ? 'Chưa xác định' : s.avgDays + ' ngày'}</td>
+          <td>${s.shipments}</td>
+          <td>${Number(s.cost).toLocaleString('vi-VN')} đ</td>
         </tr>
       `).join('');
     }
@@ -557,15 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Late Deliveries Table
     const lateBody = document.getElementById("shipping-late-table-body");
     if (lateBody) {
-      lateBody.innerHTML = (data.lateDeliveries || []).map(l => `
-        <tr>
-          <td><strong style="color:var(--color-primary);">${l.orderId}</strong></td>
-          <td>${l.shipper}</td>
-          <td>${l.expectedDelivery}</td>
-          <td>${l.actualDelivery}</td>
-          <td><span class="badge badge-danger">+${l.delayDays} ngày</span></td>
-        </tr>
-      `).join('');
+      lateBody.innerHTML = '<tr><td colspan="5">Chưa có dữ liệu ngày hẹn nhận và ngày nhận thực tế để xác định đơn giao trễ.</td></tr>';
     }
   }
 
@@ -921,7 +912,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = await Svc.getSystemStatusOverview();
     const body = document.getElementById("system-etl-table-body");
     if (body) {
-      body.innerHTML = (data.tablesStatus || []).map(t => `
+      const tables = data.tablesStatus || [];
+      body.innerHTML = tables.length ? tables.map(t => `
         <tr>
           <td><strong style="color:var(--color-primary);">${t.name}</strong></td>
           <td><span class="badge ${t.type === 'FACT' ? 'badge-info' : 'badge-secondary'}" style="padding:2px 8px; font-size:10px;">${t.type}</span></td>
@@ -929,7 +921,9 @@ document.addEventListener("DOMContentLoaded", function () {
           <td>${t.description}</td>
           <td><span class="badge ${t.status === 'AVAILABLE' ? 'badge-healthy' : 'badge-warning'}" style="padding:2px 8px; font-size:10px; background:${t.status === 'AVAILABLE' ? 'rgba(37,162,68,0.15)' : 'rgba(243,156,18,0.15)'}; color:${t.status === 'AVAILABLE' ? '#25a244' : '#f39c12'};">${t.status === 'AVAILABLE' ? 'Đã kết nối' : t.status}</span></td>
         </tr>
-      `).join('');
+      `).join('') : `
+        <tr><td colspan="5" class="text-muted">${data.connectionError || 'Chưa nhận được danh sách bảng từ DWH.'}</td></tr>
+      `;
     }
   }
 

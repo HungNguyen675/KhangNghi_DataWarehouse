@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using KhangNghi.Core.Configuration;
 using KhangNghi.Infrastructure.Data;
 using KhangNghi.Infrastructure.Repositories;
 using KhangNghi.Infrastructure.Services;
@@ -19,6 +20,9 @@ var connectionString = builder.Configuration.GetConnectionString("DwhConnection"
 
 builder.Services.AddSingleton<IDatabaseConnectionFactory>(_ => new DatabaseConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton(builder.Configuration.GetSection("EtlSettings").Get<EtlSettingsOptions>() ?? new EtlSettingsOptions());
+builder.Services.AddScoped<ISsasProcessingService, SsasProcessingService>();
+builder.Services.AddScoped<IEtlOrchestratorService, EtlOrchestratorService>();
 builder.Services.AddScoped<IEtlService, EtlService>();
 builder.Services.AddScoped<IDwhAnalyticsRepository, DwhAnalyticsRepository>();
 builder.Services.AddScoped<ISalesForecastService, SalesForecastService>();
@@ -103,6 +107,7 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Khởi tạo tài khoản mặc định
+if (builder.Configuration.GetValue<bool>("Bootstrap:EnsureDefaultUsers"))
 using (var scope = app.Services.CreateScope())
 {
     var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();

@@ -26,8 +26,8 @@ namespace KhangNghi.Infrastructure.Data
             }
             else
             {
-                // Mặc định kết nối tới SQLEXPRESS trên máy cục bộ
-                _connectionString = "Server=localhost\\SQLEXPRESS;Database=DWH_KhangNghi;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=15;";
+                // Mặc định kết nối tới Default Instance cục bộ (.)
+                _connectionString = "Server=.;Database=DWH_KhangNghi;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=30;";
             }
         }
 

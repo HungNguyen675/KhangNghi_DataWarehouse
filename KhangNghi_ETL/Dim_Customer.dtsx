@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_Customer"
   DTS:PackageType="5"
-  DTS:VersionBuild="27"
-  DTS:VersionGUID="{814F0FD2-55DB-4FBA-BF24-B0B7F3C76908}">
+  DTS:VersionBuild="30"
+  DTS:VersionGUID="{F527FDE1-4AC6-4FC2-B55C-EB81AE9BE825}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -29,7 +29,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABlTRnywUbbc40lJ727KQ0t2X/j2pCp1trgkDbi5NkCBQAAAAAOgAAAAAIAACAAAABYi/NUFWJUl6kwkwTF23o95tfJOmUzyFNOJKyWacGkNhAAAADG8MnZkjYVpdeb9Ldmis7xQAAAAIrBwTxFLdUmyR/NBDg1e9YcI5GTARr3hlOxaqbYA0Z/S++N/KKTH2OW4jAdl6Unzx1Lz+C5D1bE3V1D5BQG1kE</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAoF7IOIkV0XlROa+XG7z8w6Sfkdj0fT1PBmTaK4ZpTEAAAAAAOgAAAAAIAACAAAABxGnmG7ycqQVlZYyBVkSCJai5mqqHPzhwOxCtaI3vReRAAAABvZSNacdB1dJC1T5qe+ZfwQAAAAM/j3uecozBUK8mxq4eBjbTAxNYhb2oM21Zf48BXqgvOL7MQj9NZK3KbXI8/dmDvHx5uVPbfeSSXvosZKSJVlx4</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{79730CCF-F19C-4A49-9539-DE9D26FEDE85}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package-{03EFF312-9DCA-4393-8E06-A8CAF9FA9B01}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABo6fkM7ckD4mq7MO/biqLacLDgaJ1xAEJI8fVOvy2ObwAAAAAOgAAAAAIAACAAAAA4qI4BcdeOr1FRvpWmgME7Uo5VAoTdldA3eTpRZQhCfhAAAAAK+0lKfh0VMAtf9dPeUVYiQAAAADh9/qzHjrOHuBgghiEaqX8aR043G/lJhbG4um6gNakjdDDmzUjoIMLzaSJ71nFMcUtmnQccu/CJ4KsEg8L6/GE</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABUus79kG3C46SDD3+vi6wYZSssUgiAC0AscEwBMcWVOAAAAAAOgAAAAAIAACAAAABXQPbnRNmQsjSIXBYT3XdAuNva3SIBC41x4908HnMZLhAAAABCsUZW7nwEQpTdHVX6tjakQAAAALAak3DHNYYmxThsacxICYseWQCEzTrbaCRxfStdmhaoVzrcKmKZ7gofaWyHnQLT8kLu0rkV7mnU6kuZk3Z5ZQA</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -63,7 +63,7 @@
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABVEsnnzIQG4gpnolwI7tlfXeXIDhpoqUvLcEfioppGswAAAAAOgAAAAAIAACAAAAA7FCK/mdvp3QRtX/kMVQROZ6hrd1cdC5xEJKCl7KtxVBAAAACjutUHWV7eHCxayNrGxXlXQAAAANewfueV0tLixxn4HnSFAyh8j1sNx/XAw/OLlqDodv8bdr6PQzNyKIzjJkgauVDXGP9NwXb3ZL33Xp3WHp4qm0c</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAvOvxN/CIAxV/FX/CwR9LdCT5v8P7jDIc9610mdxSEQQAAAAAOgAAAAAIAACAAAACVp73VV0o1Uv5rspJEwZXN2zqD3LPxCvV38guMrqcQXxAAAADYi19EPDneyyPfKCTWB3SOQAAAAPwyFBqb45VV6wPdQOBARLLT3NVL2nnGpag03HgMmZ98hHjD2uLuyomYE91dCeYWWXoKggg9XfcKO+nssGeQ5l8</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -76,11 +76,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-Dim_KhachHang-{293D5AFD-942D-4C99-8063-E4E8AFA887B5}HungNguyen.NapDuLieu_Bai01.sa;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Customer-{7EC7D88C-8596-465E-BADB-3D863D26AC73}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADLKvjVMGX0ZtenXzdzy7K8O6wsTVIXuxp8dZZ0avwe4QAAAAAOgAAAAAIAACAAAAB1GlB9zu2i/XkweAZuPKZQLbtQDLnDWzkot5UrHbWq4BAAAABZLG1vaDht2djSW0kvHxf5QAAAACAnUvAOWBNA0hyZ4ZQUUdx4RoUsp5C7XPsDxFEHsj5ce1cmLcYNxpqP9ZGLEdg5ciVBgBJNFhACulUubA6XiNE</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD3cpYA3s6/ASdjy2KoiJeyY0l4jYA8bVTOJ9gmGE3yYwAAAAAOgAAAAAIAACAAAABwTvTf9wrVYtQE6bJlGWLuUTunz0rMK6g4tcnTprSSrBAAAAATh5zpaH9bX9OzxYa4O3O7QAAAAGWem4u67d6Ut3U27d39WY9QXpUQeCMZmrZUlcH2tCj3l7UbpBeB1GRQigmAqx0FL94xKccHbh7Z7at4waLSq1s</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -393,14 +393,13 @@
                   description="Specifies the SQL statement that generates the lookup table."
                   expressionType="Notify"
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[Dim_Customer]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [CustomerKey],[CustomerID],[CustomerName],[Segment],[SourceSystem],[CreatedDate],[UpdatedDate],[CustomerType] FROM dbo.Dim_Customer WHERE IsCurrent=1</property>
                 <property
                   dataType="System.String"
                   description="Specifies a SQL statement that uses parameters to generate the lookup table."
                   expressionType="Notify"
                   name="SqlCommandParam"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[Dim_Customer]) [refTable]
-where [refTable].[CustomerID] = ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [CustomerKey],[CustomerID],[CustomerName],[Segment],[SourceSystem],[CreatedDate],[UpdatedDate],[CustomerType] FROM dbo.Dim_Customer WHERE IsCurrent=1 AND CustomerID=?</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the type of connection used to access the reference dataset."
@@ -431,7 +430,7 @@ where [refTable].[CustomerID] = ?</property>
                 <property
                   dataType="System.String"
                   description="Indicates whether to reference metadata in an XML format."
-                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="CustomerKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CustomerID" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CustomerName" dataType="DT_WSTR" length="255" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Segment" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="SourceSystem" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CreatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="UpdatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CustomerType" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="CustomerKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="CustomerID" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="CustomerName" dataType="DT_WSTR" length="255" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="Segment" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="SourceSystem" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="CreatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="UpdatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="CustomerType" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0" /&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
                 <property
                   containsID="true"
                   dataType="System.String"
@@ -539,9 +538,7 @@ where [refTable].[CustomerID] = ?</property>
                   description="The SQL command to be executed."
                   expressionType="Notify"
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE dbo.Dim_Customer
-SET CustomerName = ?, Segment = ?, UpdatedDate = GETDATE()
-WHERE CustomerID = ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">EXEC etl.usp_RestoreCustomerSCD @CustomerName=?,@Segment=?,@CustomerID=?;</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -568,30 +565,30 @@ WHERE CustomerID = ?</property>
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="CustomerName"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@CustomerName]"
                       lineageId="Package\Data Flow Task\Aggregate.Outputs[Aggregate Output 1].Columns[CustomerName]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[Segment]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="Segment"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@Segment]"
                       lineageId="Package\Data Flow Task\Aggregate.Outputs[Aggregate Output 1].Columns[Segment]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[CustomerID]"
                       cachedDataType="wstr"
                       cachedLength="50"
                       cachedName="CustomerID"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@CustomerID]"
                       lineageId="Package\Data Flow Task\Aggregate.Outputs[Aggregate Output 1].Columns[CustomerID]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@CustomerName]"
                       dataType="wstr"
                       length="255"
-                      name="Param_0">
+                      name="@CustomerName">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -600,10 +597,10 @@ WHERE CustomerID = ?</property>
                       </properties>
                     </externalMetadataColumn>
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@Segment]"
                       dataType="wstr"
-                      length="50"
-                      name="Param_1">
+                      length="100"
+                      name="@Segment">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -612,10 +609,10 @@ WHERE CustomerID = ?</property>
                       </properties>
                     </externalMetadataColumn>
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@CustomerID]"
                       dataType="wstr"
                       length="50"
-                      name="Param_2">
+                      name="@CustomerID">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -810,6 +807,30 @@ WHERE CustomerID = ?</property>
                       dataType="wstr"
                       length="100"
                       name="CustomerType" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ValidFrom]"
+                      dataType="dbTimeStamp2"
+                      name="ValidFrom"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ValidTo]"
+                      dataType="dbTimeStamp2"
+                      name="ValidTo"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IsCurrent]"
+                      dataType="bool"
+                      name="IsCurrent" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HistoryBasis]"
+                      dataType="wstr"
+                      length="30"
+                      name="HistoryBasis" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ObservedAt]"
+                      dataType="dbTimeStamp2"
+                      name="ObservedAt"
+                      scale="7" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -863,12 +884,7 @@ WHERE CustomerID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('SALE_' + CAST([Customer ID] AS NVARCHAR(50)) AS NVARCHAR(50)) AS CustomerID,
-    CAST([Customer Name] AS NVARCHAR(255)) AS CustomerName,
-    CAST([Segment] AS NVARCHAR(255)) AS Segment
-FROM dbo.Stg_KhangNghiData
-WHERE [Customer ID] IS NOT NULL;</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CAST(N'SALE_'+s.[Customer ID] AS nvarchar(50)) CustomerID,CAST(m.CustomerName AS nvarchar(255)) CustomerName,CAST(m.Segment AS nvarchar(255)) Segment FROM dbo.Stg_KhangNghiData s JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Customers m ON m.CustomerID=s.[Customer ID]</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -1041,7 +1057,7 @@ WHERE [Customer ID] IS NOT NULL;</property>
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="293.571429196365,172.058823378595" />
+          TopLeft="270.714286290565,182.764705722152" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -1061,11 +1077,11 @@ WHERE [Customer ID] IS NOT NULL;</property>
         <NodeLayout
           Size="112.8,41.6"
           Id="Package\Data Flow Task\Lookup"
-          TopLeft="340.714286439577,150.647058691481" />
+          TopLeft="477.857143874375,149.882352809798" />
         <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\OLE DB Destination"
-          TopLeft="417.857143746652,289.05882327604" />
+          TopLeft="508.571429654045,269.941176233974" />
         <NodeLayout
           Size="126.4,41.6"
           Id="Package\Data Flow Task\Aggregate"
@@ -1073,7 +1089,7 @@ WHERE [Customer ID] IS NOT NULL;</property>
         <NodeLayout
           Size="164.8,41.6"
           Id="Package\Data Flow Task\OLE DB Command"
-          TopLeft="182.142857530591,281.411764459214" />
+          TopLeft="302.857143501846,270.705882115657" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="186.314279900095,84.1529388489505">
@@ -1098,102 +1114,90 @@ WHERE [Customer ID] IS NOT NULL;</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Lookup No Match Output]"
-          TopLeft="414.580953106244,192.247058691481">
+          TopLeft="551.723810541042,191.482352809798">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="88.4761906404081,96.8117645845587"
+              EndConnector="42.0476191130025,78.4588234241755"
               Start="0,0"
-              End="88.4761906404081,89.3117645845587">
+              End="42.0476191130025,70.9588234241755">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,35.5371122499177" />
+                    End="0,28.0419250907122" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,35.5371122499177"
-                    Point2="0,39.5371122499177"
-                    Point3="4,39.5371122499177" />
+                    Point1="0,28.0419250907122"
+                    Point2="0,32.0419250907122"
+                    Point3="4,32.0419250907122" />
                   <mssgle:LineSegment
-                    End="84.4761906404081,39.5371122499177" />
+                    End="38.0476191130025,32.0419250907122" />
                   <mssgle:CubicBezierSegment
-                    Point1="84.4761906404081,39.5371122499177"
-                    Point2="88.4761906404081,39.5371122499177"
-                    Point3="88.4761906404081,43.5371122499177" />
+                    Point1="38.0476191130025,32.0419250907122"
+                    Point2="42.0476191130025,32.0419250907122"
+                    Point3="42.0476191130025,36.0419250907122" />
                   <mssgle:LineSegment
-                    End="88.4761906404081,89.3117645845587" />
+                    End="42.0476191130025,70.9588234241755" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-11.5682913985459,44.5371122499177,111.6127734375,11.609375"
+              BoundingBox="-34.7825771622487,37.0419250907122,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Lookup Match Output]"
-          TopLeft="379.64761977291,192.247058691481">
+          TopLeft="516.790477207709,191.482352809798">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-115.104762242319,89.1647057677334"
+              EndConnector="-131.533333705863,79.2235293058584"
               Start="0,0"
-              End="-115.104762242319,81.6647057677334">
+              End="-131.533333705863,71.7235293058584">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,32.4141176002492" />
+                    End="0,28.3542245556792" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,32.4141176002492"
-                    Point2="0,36.4141176002492"
-                    Point3="-4,36.4141176002492" />
+                    Point1="0,28.3542245556792"
+                    Point2="0,32.3542245556792"
+                    Point3="-4,32.3542245556792" />
                   <mssgle:LineSegment
-                    End="-111.104762242319,36.4141176002492" />
+                    End="-127.533333705863,32.3542245556792" />
                   <mssgle:CubicBezierSegment
-                    Point1="-111.104762242319,36.4141176002492"
-                    Point2="-115.104762242319,36.4141176002492"
-                    Point3="-115.104762242319,40.4141176002492" />
+                    Point1="-127.533333705863,32.3542245556792"
+                    Point2="-131.533333705863,32.3542245556792"
+                    Point3="-131.533333705863,36.3542245556792" />
                   <mssgle:LineSegment
-                    End="-115.104762242319,81.6647057677334" />
+                    End="-131.533333705863,71.7235293058584" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-105.74376783991,41.4141176002492,96.3827734375,11.609375"
+              BoundingBox="-113.958053571682,37.3542245556792,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Derived Column Output]"
-          TopLeft="527.114286673738,112.717646996486">
+          TopLeft="530.685715274057,112.717646996486">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-130.000000234161,37.9294116949948"
+              EndConnector="0,37.164705813312"
               Start="0,0"
-              End="-130.000000234161,30.4294116949948">
+              End="0,29.664705813312">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,14.9647058474974" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,14.9647058474974"
-                    Point2="0,18.9647058474974"
-                    Point3="-4,18.9647058474974" />
-                  <mssgle:LineSegment
-                    End="-126.000000234161,18.9647058474974" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-126.000000234161,18.9647058474974"
-                    Point2="-130.000000234161,18.9647058474974"
-                    Point3="-130.000000234161,22.9647058474974" />
-                  <mssgle:LineSegment
-                    End="-130.000000234161,30.4294116949948" />
+                    End="0,29.664705813312" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1246,7 +1250,7 @@ WHERE [Customer ID] IS NOT NULL;</property>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -1256,7 +1260,7 @@ WHERE [Customer ID] IS NOT NULL;</property>
       <Property>
         <Name>TableInfoObjectType</Name>
         <Value
-          type="q4:int">0</Value>
+          type="q4:string">0</Value>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>

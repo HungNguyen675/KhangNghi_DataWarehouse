@@ -1100,7 +1100,7 @@
         <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
           <div class="page-title-group">
             <h1 class="page-title">Phân tích vận chuyển</h1>
-            <p class="page-subtitle" id="shipping-dynamic-subtitle">Phân tích hiệu quả vận chuyển và SLA giao hàng</p>
+            <p class="page-subtitle" id="shipping-dynamic-subtitle">Phân tích xuất giao và chi phí vận chuyển — toàn bộ dữ liệu đã nạp</p>
           </div>
         </div>
 
@@ -1111,13 +1111,13 @@
         <div class="grid-charts-2" style="margin-bottom:16px;">
           <div class="glass-card chart-card">
             <div class="chart-card-header">
-              <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Xu hướng chi phí vận chuyển</h3>
+              <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color:var(--color-primary);"></i> Chi phí vận chuyển theo khu vực</h3>
             </div>
             <div class="chart-canvas-wrapper" id="chart-shp-trend"></div>
           </div>
           <div class="glass-card chart-card">
             <div class="chart-card-header">
-              <h3 class="chart-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--color-accent);"></i> Tỷ lệ giao đúng hạn SLA</h3>
+              <h3 class="chart-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--color-accent);"></i> Phạm vi dữ liệu xuất giao</h3>
             </div>
             <div class="chart-canvas-wrapper" id="chart-shp-donut"></div>
           </div>
@@ -1127,16 +1127,16 @@
         <div class="grid-charts-2" style="margin-bottom:16px;">
           <div class="glass-card" style="padding:16px;">
             <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
-              <i class="fa-solid fa-truck-fast" style="color:var(--color-primary); margin-right:6px;"></i> Hiệu suất đơn vị vận chuyển & Tỷ lệ SLA
+              <i class="fa-solid fa-truck-fast" style="color:var(--color-primary); margin-right:6px;"></i> Xuất giao theo phương thức vận chuyển
             </h3>
             <div class="table-responsive">
               <table class="enterprise-table" style="font-size:12px;">
                 <thead>
                   <tr>
-                    <th>Đơn Vị Vận Chuyển</th>
-                    <th>Thời Gian TB</th>
-                    <th>Tỷ Lệ Trễ</th>
-                    <th>Trạng Thái SLA</th>
+                    <th>Phương Thức</th>
+                    <th>Đặt Đến Xuất Giao TB</th>
+                    <th>Số Đơn</th>
+                    <th>Tổng Chi Phí</th>
                   </tr>
                 </thead>
                 <tbody id="shipping-shippers-table-body"></tbody>
@@ -1146,7 +1146,7 @@
 
           <div class="glass-card" style="padding:16px;">
             <h3 style="font-size:13.5px; font-weight:700; margin-bottom:12px; color:var(--text-main);">
-              <i class="fa-solid fa-circle-exclamation" style="color:var(--color-danger); margin-right:6px;"></i> Phân tích đơn hàng giao trễ SLA
+              <i class="fa-solid fa-circle-exclamation" style="color:var(--color-danger); margin-right:6px;"></i> Thông tin giao trễ chưa được thu thập
             </h3>
             <div class="table-responsive">
               <table class="enterprise-table" style="font-size:12px;">

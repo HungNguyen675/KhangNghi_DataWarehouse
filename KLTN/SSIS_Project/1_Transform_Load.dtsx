@@ -1,72 +1,16 @@
-﻿<?xml version="1.0"?>
-<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
-  DTS:refId="Package"
-  DTS:CreationDate="9/15/2026 11:35:34 PM"
-  DTS:CreationName="Microsoft.Package"
-  DTS:CreatorComputerName="LAPTOP-D95IAAHC"
-  DTS:CreatorName="LAPTOP-D95IAAHC\ACER"
-  DTS:DTSID="{90FFBE21-9422-415A-A646-A6D97CA1253D}"
-  DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="17.0.1016.0"
-  DTS:LocaleID="1066"
-  DTS:ObjectName="1_Transform_Load"
-  DTS:PackageType="5"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{D620337C-65B5-45DE-8CBD-7170641A41BE}">
-  <DTS:Property
-    DTS:Name="PackageFormatVersion">8</DTS:Property>
-  <DTS:ConnectionManagers>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{6316D5BE-630B-43EF-960A-BE3487BC521E}"
-      DTS:ObjectName="LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi">
+<?xml version='1.0' encoding='utf-8'?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" DTS:refId="Package" DTS:CreationDate="9/20/2026 9:38:27 AM" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="HUNGNGUYEN" DTS:CreatorName="HUNGNGUYEN\xehoi" DTS:DTSID="{12531412-DA2E-439B-9438-1C2BB29C123A}" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="17.0.1016.0" DTS:LocaleID="1066" DTS:ObjectName="Legacy_Retired" DTS:PackageType="5" DTS:VersionBuild="16" DTS:VersionGUID="{906BD06F-D7DA-490D-B170-6AA346A1C6C2}" DTS:Description="VN Initial/Incremental atomic runtime; source CT checkpoint commits with all data." DTS:ProtectionLevel="0" DTS:MaxConcurrentExecutables="1">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers><DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[VN_DWH]" DTS:CreationName="OLEDB" DTS:DTSID="{9213242C-1839-4E49-AB4D-7D0502138655}" DTS:ObjectName="VN_DWH">
       <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=LAPTOP-D95IAAHC\SQLEXPRESS;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-1_Transform_Load-{6316D5BE-630B-43EF-960A-BE3487BC521E}LAPTOP-D95IAAHC\SQLEXPRESS.DWH_KhangNghi;Auto Translate=False;" />
+        <DTS:ConnectionManager DTS:ConnectRetryCount="1" DTS:ConnectRetryInterval="5" DTS:ConnectionString="Data Source=HungNguyen;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=KhangNghi-VN-ETL;">
+          <DTS:Password DTS:Name="Password" Sensitive="1" Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACJF3nj5Z+UQKdCWrtURW8dVeb92yn5bzyeOOGgMBDpXQAAAAAOgAAAAAIAACAAAAB6gzhvbUAk7pSVN13sU51nIQHpfBD3GKgv49m94gqVrxAAAAB7rfQCiTDTKuKpNMDEymgiQAAAAOGduFP4+zTM5RKMg9FDxHHsm2wXmpK2V3MJju2oDTedEJMmPdfyubDAV2YeYelkFfPX4ccnLQd2Ikr3SGxbmEo</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
-  </DTS:ConnectionManagers>
-  <DTS:Variables />
-  <DTS:Executables>
-    <DTS:Executable
-      DTS:refId="Package\Execute SQL Task"
-      DTS:CreationName="Microsoft.ExecuteSQLTask"
-      DTS:Description="Execute SQL Task"
-      DTS:DTSID="{6B5C5A51-4D19-451C-A68D-B1860B6199FB}"
-      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Execute SQL Task"
-      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+    </DTS:ConnectionManagers><DTS:Variables><DTS:Variable DTS:CreationName="" DTS:DTSID="{A7D9E418-3E9F-4535-A137-4D281B2B9213}" DTS:Namespace="User" DTS:ObjectName="LoadType"><DTS:VariableValue DTS:DataType="8">Incremental</DTS:VariableValue></DTS:Variable><DTS:Variable DTS:CreationName="" DTS:DTSID="{79AB2C3A-DFEB-457B-B33C-3454AAADE150}" DTS:Namespace="User" DTS:ObjectName="RunToken"><DTS:VariableValue DTS:DataType="8" /></DTS:Variable></DTS:Variables><DTS:Executables><DTS:Executable DTS:refId="Package\Run atomic VN load" DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{24B50D3B-898C-4DB5-8B43-2EA08A5FB26E}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="Run atomic VN load" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2025; © 2025 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1" DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
-        <SQLTask:SqlTaskData
-          SQLTask:Connection="{6316D5BE-630B-43EF-960A-BE3487BC521E}"
-          SQLTask:SqlStatementSource="EXEC dbo.sp_SSIS_ETL_Load;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
-      </DTS:ObjectData>
+        <SQLTask:SqlTaskData SQLTask:Connection="{9213242C-1839-4E49-AB4D-7D0502138655}" SQLTask:ResultType="ResultSetType_None" SQLTask:SqlStatementSource="THROW 51000,'Legacy package retired. Run Master_ETL, Initial_Load_VN or Incremental_Load_VN; do not execute individual old packages.',1;" /></DTS:ObjectData>
     </DTS:Executable>
-  </DTS:Executables>
-  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
-<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
-<!--If you manually edit this section and make a mistake, you can delete it. -->
-<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
-<Objects
-  Version="8">
-  <!--Each node below will contain properties that do not affect runtime behavior.-->
-  <Package
-    design-time-name="Package">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
-        <NodeLayout
-          Size="162.4,41.6"
-          Id="Package\Execute SQL Task"
-          TopLeft="193.571428983491,93.2941175652829" />
-      </GraphLayout>
-    </LayoutInfo>
-  </Package>
-</Objects>]]></DTS:DesignTimeProperties>
-</DTS:Executable>
+    </DTS:Executables></DTS:Executable>
