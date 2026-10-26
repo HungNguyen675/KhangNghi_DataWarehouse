@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
     draw("chart-ov-trend", d.byYear, () => Charts.line("chart-ov-trend", d.byYear.items.map(y => String(y.year)), [
       { name: "Doanh thu", data: d.byYear.items.map(y => y.revenue) },
       { name: "Lợi nhuận", data: d.byYear.items.map(y => y.profit) }
-    ], { format: CUR }));
+    ], { format: CUR, onClick: filters.year === "ALL" ? openYearDetail : null }));
     draw("chart-ov-category", d.byCategory, () => Charts.donut("chart-ov-category", d.byCategory.items, { value: "revenue", format: CUR }));
     draw("chart-ov-region", d.byRegion, () => Charts.bar("chart-ov-region", [...d.byRegion.items].sort((a, b) => b.revenue - a.revenue), { value: "revenue", format: CUR, horizontal: true, max: 12, seriesName: "Doanh thu", height: 360 }));
   }
@@ -241,6 +241,90 @@ document.addEventListener("DOMContentLoaded", function () {
   // --------------------------------------------------------------------------
   // 2. BÁN HÀNG
   // --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
+  // CHI TIẾT NĂM - bấm vào mốc năm trên biểu đồ để xem doanh thu, lợi nhuận đến từ đâu
+  // --------------------------------------------------------------------------
+  const pctOf = (part, total) => (total ? (part / total) * 100 : null);
+  const marginOf = (profit, revenue) => (revenue ? (profit / revenue) * 100 : null);
+  const fmtOrDash = (v, format) => (v === null || v === undefined || Number.isNaN(v) ? null : Comp.formatValue(v, format));
+
+  // Thêm tỷ trọng doanh thu và biên lợi nhuận; giữ nguyên thứ tự API trả về
+  function withShares(items) {
+    const total = items.reduce((acc, i) => acc + i.revenue, 0);
+    return items.map(i => ({ ...i, share: pctOf(i.revenue, total), margin: marginOf(i.profit, i.revenue) }));
+  }
+
+  function breakdownTable(rows, title) {
+    return Comp.renderTable([
+      { label: title, render: r => Comp.escapeHtml(r.label) },
+      { label: "Doanh thu", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.revenue, CUR) || "—") },
+      { label: "% doanh thu", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.share, "percent") || "—") },
+      { label: "Lợi nhuận", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.profit, CUR) || "—") },
+      { label: "Biên LN", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.margin, "percent") || "—") },
+      { label: "SL bán", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.quantity, "number") || "—") }
+    ], rows, { empty: "Không có dữ liệu." });
+  }
+
+  function productTable(rows) {
+    return Comp.renderTable([
+      { label: "#", align: "right", render: r => r.rank },
+      { label: "Sản phẩm", render: r => Comp.escapeHtml(r.label) },
+      { label: "Danh mục", render: r => Comp.escapeHtml(r.category) },
+      { label: "Doanh thu", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.revenue, CUR) || "—") },
+      { label: "Lợi nhuận", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.profit, CUR) || "—") },
+      { label: "Biên LN", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.margin, "percent") || "—") },
+      { label: "SL bán", align: "right", render: r => Comp.escapeHtml(fmtOrDash(r.quantity, "number") || "—") }
+    ], rows, { empty: "Không có sản phẩm." });
+  }
+
+  // Câu tóm tắt: doanh thu, lợi nhuận cả năm; danh mục chiếm tỷ trọng lớn nhất; quý cao nhất
+  function yearSummary(year, s, categories, quarters) {
+    const parts = [`Năm ${year} đạt doanh thu ${fmtOrDash(s.revenue, CUR)}, lợi nhuận ${fmtOrDash(s.profit, CUR)}, biên lợi nhuận ${fmtOrDash(s.margin, "percent")}.`];
+    const topCat = categories[0];
+    if (topCat) parts.push(`Danh mục đóng góp nhiều nhất là ${topCat.label} với ${fmtOrDash(topCat.share, "percent")} doanh thu.`);
+    const bestQ = quarters.reduce((a, q) => (!a || q.revenue > a.revenue ? q : a), null);
+    if (bestQ) parts.push(`Quý có doanh thu cao nhất là ${bestQ.label} (${fmtOrDash(bestQ.revenue, CUR)}).`);
+    return parts.join(" ");
+  }
+
+  function renderYearDetail(d) {
+    if (d.summary.state !== "ready") {
+      return Comp.renderState(d.summary.state, { message: d.summary.message || `Không có dữ liệu năm ${d.year}.`, compact: true });
+    }
+    const s = d.summary.data;
+    const categories = withShares(d.categories.items);
+    const regions = withShares(d.regions.items);
+    const quarters = withShares(d.quarters.items);
+    const products = d.products.items.map((p, i) => ({ ...p, rank: i + 1, margin: marginOf(p.profit, p.revenue) }));
+    const metrics = [
+      ["Doanh thu", s.revenue, CUR],
+      ["Lợi nhuận", s.profit, CUR],
+      ["Biên lợi nhuận", s.margin, "percent"],
+      ["Số đơn hàng", s.orders, "number"],
+      ["Số lượng bán", s.quantity, "number"],
+      ["Khách hàng", s.customers, "number"]
+    ];
+    return `
+      <p class="detail-summary">${Comp.escapeHtml(yearSummary(d.year, s, categories, quarters))}</p>
+      <div class="detail-grid">${metrics.map(([label, v, format]) => Comp.field(label, fmtOrDash(v, format))).join("")}</div>
+      <h3 class="detail-section-title">Doanh thu theo quý</h3>
+      ${breakdownTable(quarters, "Quý")}
+      <h3 class="detail-section-title">Đóng góp theo danh mục</h3>
+      ${breakdownTable(categories, "Danh mục")}
+      <h3 class="detail-section-title">Đóng góp theo khu vực</h3>
+      ${breakdownTable(regions, "Khu vực")}
+      <h3 class="detail-section-title">Sản phẩm bán chạy nhất</h3>
+      ${productTable(products)}`;
+  }
+
+  async function openYearDetail(label) {
+    const year = parseInt(label, 10);
+    if (!year) return;
+    const body = Comp.openModal("year-detail-modal", `Chi tiết năm ${year}`, "Doanh thu, lợi nhuận và nguồn đóng góp trong năm");
+    const d = await Svc.getYearDetail(year);
+    body.innerHTML = renderYearDetail(d);
+  }
+
   async function renderSales(filters, isCurrent) {
     setKpis("sales-kpis", Comp.renderSkeletonCards(5));
     setLoading(["chart-sal-trend", "chart-sal-category", "chart-sal-top-rev", "chart-sal-top-prof", "sales-table"]);
@@ -271,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
     draw("chart-sal-trend", d.trend, () => Charts.line("chart-sal-trend", d.trend.items.map(t => t.label), [
       { name: "Doanh thu", data: d.trend.items.map(t => t.revenue) },
       { name: "Lợi nhuận", data: d.trend.items.map(t => t.profit) }
-    ], { format: CUR }), `Không có doanh thu${yearText(filters)}.`);
+    ], { format: CUR, onClick: filters.year === "ALL" ? openYearDetail : null }), `Không có doanh thu${yearText(filters)}.`);
     draw("chart-sal-category", d.byCategory, () => Charts.donut("chart-sal-category", d.byCategory.items, { value: "revenue", format: CUR }));
     draw("chart-sal-top-rev", d.topByRevenue, () => Charts.bar("chart-sal-top-rev", d.topByRevenue.items, { value: "revenue", format: CUR, horizontal: true, max: 10, seriesName: "Doanh thu" }));
     draw("chart-sal-top-prof", d.topByProfit, () => Charts.bar("chart-sal-top-prof", d.topByProfit.items, { value: "profit", format: CUR, horizontal: true, max: 10, seriesName: "Lợi nhuận", colorIndex: 1 }));
@@ -1214,7 +1298,7 @@ document.addEventListener("DOMContentLoaded", function () {
       : `<i class="fa-solid fa-spinner fa-spin"></i> Đang truy vấn dữ liệu…`;
     const loading = chatAppend("bot", loadingHtml);
 
-    const res = await window.KhangNghiApiClient.get("/nlq/query", { q: text });
+    const res = await window.KhangNghiApiClient.get("/nlq/query", { q: text }, { timeout: 60000 });
     loading.remove();
 
     if (!res.success) {

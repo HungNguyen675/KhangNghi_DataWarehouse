@@ -21,6 +21,14 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("by-year")]
         public async Task<IActionResult> GetRevenueByYear() => Ok(await _repo.Q01_RevenueByYearAsync());
 
+        // Chi tiết một năm: doanh thu, lợi nhuận theo danh mục, khu vực và sản phẩm đứng đầu
+        [HttpGet("year-breakdown")]
+        public async Task<IActionResult> GetYearBreakdown([FromQuery] int year)
+        {
+            var (categories, regions, products) = await _repo.GetYearBreakdownAsync(year);
+            return Ok(new { Categories = categories, Regions = regions, Products = products });
+        }
+
         // Q02: Doanh thu thay đổi theo quý
         [HttpGet("by-quarter")]
         [Authorize(Policy = "SalesAccess")]

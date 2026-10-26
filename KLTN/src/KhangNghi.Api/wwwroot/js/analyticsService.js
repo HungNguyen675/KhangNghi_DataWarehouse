@@ -708,6 +708,47 @@ window.analyticsService = (function () {
   }
 
   // --------------------------------------------------------------------------
+  // 13b. CHI TIẾT MỘT NĂM (bấm mốc năm trên biểu đồ)
+  // --------------------------------------------------------------------------
+  const mapBreakdown = key => r => ({
+    label: str(r, key) || "Chưa xác định",
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0,
+    quantity: num(r, "Quantity") || 0
+  });
+
+  const mapYearProduct = r => ({
+    label: str(r, "ProductName") || "Chưa đặt tên",
+    category: str(r, "Category") || "Chưa phân loại",
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0,
+    quantity: num(r, "Quantity") || 0
+  });
+
+  const mapQuarter = r => ({
+    label: str(r, "Period") || `Q${num(r, "Quarter")}/${num(r, "Year")}`,
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0
+  });
+
+  async function getYearDetail(year) {
+    const [sumRes, breakRes, quarterRes] = await Promise.all([
+      get("/dashboard/summary", { year }),
+      get("/sales/year-breakdown", { year, top: 10 }),
+      get("/sales/by-quarter", { year })
+    ]);
+    const pickList = key => ({ success: breakRes.success, status: breakRes.status, error: breakRes.error, data: breakRes.success && breakRes.data ? breakRes.data[key] : [] });
+    return {
+      year,
+      summary: summarySection(sumRes, scopeLabel(year)),
+      quarters: section(quarterRes, mapQuarter, scopeLabel(year)),
+      categories: section(pickList("categories"), mapBreakdown("Category"), scopeLabel(year)),
+      regions: section(pickList("regions"), mapBreakdown("Region"), scopeLabel(year)),
+      products: section(pickList("products"), mapYearProduct, scopeLabel(year))
+    };
+  }
+
+  // --------------------------------------------------------------------------
   // 14. TRA CỨU CHI TIẾT (khách hàng, đơn hàng)
   // --------------------------------------------------------------------------
   async function getCustomerDetail(customerId) {
@@ -764,6 +805,7 @@ window.analyticsService = (function () {
     getCubeMetadata,
     getCustomerDetail,
     getOrderDetail,
+    getYearDetail,
     exportToCSV
   };
 })();

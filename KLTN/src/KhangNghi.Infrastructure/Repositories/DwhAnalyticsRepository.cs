@@ -69,6 +69,9 @@ namespace KhangNghi.Infrastructure.Repositories
         Task<IEnumerable<dynamic>> Q39_HighPurchaseLowSalesRiskAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q40_RevenueVsShippingEfficiencyAsync();
 
+        // Chi tiết doanh thu, lợi nhuận trong một năm (drill-down từ biểu đồ)
+        Task<(IEnumerable<dynamic> Categories, IEnumerable<dynamic> Regions, IEnumerable<dynamic> Products)> GetYearBreakdownAsync(int year, int top = 10);
+
         // Dữ liệu huấn luyện ML.NET
         Task<IEnumerable<dynamic>> GetMonthlySalesForTrainingAsync(string? category = null);
     }
@@ -192,27 +195,27 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q06_TopProductsByRevenueAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
                                    ROUND(SUM(f.SalesAmount), 2) AS Revenue, SUM(f.Quantity) AS Quantity
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
                 GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
                 ORDER BY Revenue DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q07_TopProductsByProfitAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
                 GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
                 ORDER BY Profit DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q08_RevenueByCategoryAsync()
@@ -244,8 +247,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q10_HighDiscountLowProfitProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductName, p.Category, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductName, p.Category, 
                                    ROUND(AVG(f.DiscountAmount) * 100, 1) AS AvgDiscountPercent, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS TotalProfit,
                                    ROUND(SUM(f.SalesAmount), 2) AS TotalRevenue
@@ -254,31 +257,31 @@ namespace KhangNghi.Infrastructure.Repositories
                 GROUP BY p.ProductName, p.Category
                 HAVING AVG(f.DiscountAmount) > 0.15
                 ORDER BY TotalProfit ASC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q11_TopCustomersByRevenueAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
+            const string sql = @"
+                SELECT TOP (@Top) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.SalesAmount), 2) AS Revenue, COUNT(DISTINCT f.OrderID) AS OrderCount
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
                 GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Revenue DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q12_TopCustomersByProfitAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
+            const string sql = @"
+                SELECT TOP (@Top) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
                 GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Profit DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q13_RevenueBySegmentAsync()
@@ -330,12 +333,12 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q17_TopCitiesByQuantityAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) l.City, l.Region, SUM(f.Quantity) AS TotalQuantity, ROUND(SUM(f.SalesAmount), 2) AS Revenue
+            const string sql = @"
+                SELECT TOP (@Top) l.City, l.Region, SUM(f.Quantity) AS TotalQuantity, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Location l WITH (NOLOCK) ON f.LocationKey = l.LocationKey
                 GROUP BY l.City, l.Region ORDER BY TotalQuantity DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q18_RegionalRevenueTrendAsync()
@@ -406,8 +409,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q23_TopPurchasedProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
+            const string sql = @"
+                SELECT TOP (@Top) 
                     pr.ProductName,
                     ISNULL(pr.Category, N'Vật tư thiết bị') AS Category,
                     ROUND(SUM(p.TotalCost), 2) AS TotalPurchaseAmount,
@@ -417,14 +420,14 @@ namespace KhangNghi.Infrastructure.Repositories
                 WHERE pr.ProductName IS NOT NULL
                 GROUP BY pr.ProductName, pr.Category
                 ORDER BY TotalPurchaseAmount DESC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q24_PurchasePriceTrendAsync(string? productName = null)
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT TOP 30 
+                SELECT
                     pr.ProductName,
                     CONCAT(t.Month, '/', t.Year) AS Period, t.Year, t.Month,
                     ROUND(AVG(p.UnitCost), 2) AS AvgUnitCost
@@ -442,14 +445,15 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT 
+                SELECT
                     w.WarehouseName,
-                    w.WarehouseName AS Region,
+                    ISNULL(l.Region, N'Không xác định') AS Region,
                     ROUND(SUM(p.TotalCost), 2) AS TotalImportValue,
                     SUM(p.PurchaseQuantity) AS TotalQuantity
                 FROM dbo.Fact_Purchase p
                 JOIN dbo.Dim_Warehouse w ON p.WarehouseKey = w.WarehouseKey
-                GROUP BY w.WarehouseName 
+                LEFT JOIN dbo.Dim_Location l ON p.LocationKey = l.LocationKey
+                GROUP BY w.WarehouseName, ISNULL(l.Region, N'Không xác định')
                 ORDER BY TotalImportValue DESC";
             return await db.QueryAsync(sql);
         }
@@ -482,8 +486,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<PurchaseOrderDetailDto>> GetPurchaseOrderDetailAsync(string orderId, int top = 50)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top})
+            const string sql = @"
+                SELECT TOP (@Top)
                     p.PurchaseOrderID,
                     CONVERT(varchar(10), t.FullDate, 120) AS OrderDate,
                     s.SupplierName,
@@ -505,7 +509,7 @@ namespace KhangNghi.Infrastructure.Repositories
                     AND pr_ref.ProductName IS NOT NULL
                 WHERE p.PurchaseOrderID = @OrderId
                 ORDER BY p.TotalCost DESC";
-            return await db.QueryAsync<PurchaseOrderDetailDto>(sql, new { OrderId = orderId });
+            return await db.QueryAsync<PurchaseOrderDetailDto>(sql, new { OrderId = orderId, Top = top });
         }
 
         public async Task<IEnumerable<PurchaseCategorySpendDto>> GetPurchaseCategorySpendAsync(int? year = null)
@@ -530,32 +534,32 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q26_HighestStockProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
+            const string sql = @"
+                SELECT TOP (@Top) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
                                    AVG(i.ReorderLevel) AS AvgReorderLevel
                 FROM dbo.Fact_Inventory i
                 JOIN dbo.Dim_Product pr ON i.ProductKey = pr.ProductKey
                 GROUP BY pr.ProductName, pr.Category ORDER BY TotalOnHand DESC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q27_LowestStockProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
+            const string sql = @"
+                SELECT TOP (@Top) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
                                    AVG(i.ReorderLevel) AS AvgReorderLevel
                 FROM dbo.Fact_Inventory i
                 JOIN dbo.Dim_Product pr ON i.ProductKey = pr.ProductKey
                 GROUP BY pr.ProductName, pr.Category ORDER BY TotalOnHand ASC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync(int top = 50)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top})
+            const string sql = @"
+                SELECT TOP (@Top)
                     pr.ProductKey, 
                     pr.ProductName, 
                     pr.Category, 
@@ -579,7 +583,7 @@ namespace KhangNghi.Infrastructure.Repositories
                 JOIN dbo.Dim_Location l ON i.LocationKey = l.LocationKey
                 WHERE i.QuantityOnHand < i.ReorderLevel
                 ORDER BY Deficit DESC";
-            return await db.QueryAsync<InventoryAlertDto>(sql);
+            return await db.QueryAsync<InventoryAlertDto>(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q29_StockByRegionAsync()
@@ -698,8 +702,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q38_HighSalesLowStockRiskAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
+            const string sql = @"
+                SELECT TOP (@Top) 
                     p.ProductKey, p.ProductName, p.Category, 
                     SUM(o.Quantity) AS SoldQuantity, 
                     ISNULL(inv.OnHand, 0) AS QuantityOnHand,
@@ -713,14 +717,14 @@ namespace KhangNghi.Infrastructure.Repositories
                     ON p.ProductKey = inv.ProductKey
                 GROUP BY p.ProductKey, p.ProductName, p.Category, inv.OnHand
                 ORDER BY SoldQuantity DESC, QuantityOnHand ASC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q39_HighPurchaseLowSalesRiskAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
+            const string sql = @"
+                SELECT TOP (@Top) 
                     p.ProductKey, p.ProductName, p.Category, 
                     ISNULL(pur.PurQty, 0) AS PurchasedQty, 
                     ISNULL(ord.SoldQty, 0) AS SoldQty, 
@@ -733,7 +737,7 @@ namespace KhangNghi.Infrastructure.Repositories
                     ON p.ProductKey = ord.ProductKey
                 WHERE ISNULL(pur.PurQty, 0) > ISNULL(ord.SoldQty, 0)
                 ORDER BY ExcessQty DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
 
@@ -766,6 +770,50 @@ namespace KhangNghi.Infrastructure.Repositories
                 LEFT JOIN RegionShipping rsh ON rs.Region = rsh.Region
                 ORDER BY rs.TotalRevenue DESC";
             return await db.QueryAsync(sql, commandTimeout: 30);
+        }
+
+        // ==================== CHI TIẾT DOANH THU, LỢI NHUẬN TRONG MỘT NĂM ====================
+        public async Task<(IEnumerable<dynamic> Categories, IEnumerable<dynamic> Regions, IEnumerable<dynamic> Products)> GetYearBreakdownAsync(int year, int top = 10)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT p.Category,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                WHERE t.Year = @Year
+                GROUP BY p.Category
+                ORDER BY Revenue DESC;
+
+                SELECT l.Region,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Location l WITH (NOLOCK) ON f.LocationKey = l.LocationKey
+                WHERE t.Year = @Year
+                GROUP BY l.Region
+                ORDER BY Revenue DESC;
+
+                SELECT TOP (@Top) p.ProductName, p.Category,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                WHERE t.Year = @Year
+                GROUP BY p.ProductKey, p.ProductName, p.Category
+                ORDER BY Revenue DESC";
+            using var multi = await db.QueryMultipleAsync(sql, new { Year = year, Top = top }, commandTimeout: 60);
+            var categories = await multi.ReadAsync();
+            var regions = await multi.ReadAsync();
+            var products = await multi.ReadAsync();
+            return (categories, regions, products);
         }
 
         // ==================== DỮ LIỆU HUẤN LUYỆN ML ====================

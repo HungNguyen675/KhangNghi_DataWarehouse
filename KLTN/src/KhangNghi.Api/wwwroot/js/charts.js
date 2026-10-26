@@ -111,7 +111,7 @@ window.KhangNghiCharts = (function () {
   //   series: [{ name, data: [number|null] }]
   // --------------------------------------------------------------------------
   function line(id, labels, series, opts = {}) {
-    const { format = "number", height = 300, area = false, colorOffset = 0 } = opts;
+    const { format = "number", height = 300, area = false, colorOffset = 0, onClick = null } = opts;
     if (!labels || !labels.length || !series || !series.length) return null;
     const t = theme();
     const o = base(t, area ? "area" : "line", height);
@@ -119,6 +119,11 @@ window.KhangNghiCharts = (function () {
     o.colors = series.map((s, i) => s.color || t.colors[(i + colorOffset) % t.colors.length]);
     o.stroke = { width: 2, curve: "smooth" };
     o.markers = { size: labels.length <= 16 ? 4 : 0, strokeWidth: 2, strokeColors: t.surface, hover: { size: 6 } };
+    if (onClick) {
+      // Mốc lớn hơn để dễ bấm; bấm vào mốc trả về nhãn và vị trí của mốc
+      o.markers.size = 6;
+      o.chart.events = { click: (e, ctx, cfg) => { if (cfg.dataPointIndex >= 0) onClick(labels[cfg.dataPointIndex], cfg.dataPointIndex); } };
+    }
     o.fill = area ? { type: "gradient", gradient: { opacityFrom: 0.28, opacityTo: 0.02 } } : { type: "solid" };
     o.xaxis = { categories: labels, labels: { rotate: -30, hideOverlappingLabels: true, style: { fontSize: "11px" } }, axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false } };
     o.yaxis = { labels: { formatter: v => fmt(v, format), style: { fontSize: "11px" } } };
