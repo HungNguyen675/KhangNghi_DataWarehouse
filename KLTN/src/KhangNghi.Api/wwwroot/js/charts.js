@@ -76,7 +76,7 @@ window.KhangNghiCharts = (function () {
   // CỘT (dọc hoặc ngang) - một chuỗi số liệu
   // --------------------------------------------------------------------------
   function bar(id, items, opts = {}) {
-    const { value = "value", label = "label", format = "number", horizontal = false, max = 12, seriesName = "", height = 300, colorIndex = 0, onClick = null } = opts;
+    const { value = "value", label = "label", format = "number", horizontal = false, max = 12, seriesName = "", height = 300, colorIndex = 0, colorOf = null, onClick = null } = opts;
     const data = (items || []).slice(0, max);
     if (!data.length) return null;
     const t = theme();
@@ -86,6 +86,11 @@ window.KhangNghiCharts = (function () {
     // Ít thanh thì thu hẹp độ dày để không thành khối lớn
     const thick = data.length <= 2 ? "28%" : data.length <= 4 ? "45%" : "62%";
     o.plotOptions = { bar: { horizontal, borderRadius: 4, borderRadiusApplication: "end", barHeight: thick, columnWidth: data.length <= 2 ? "30%" : "55%" } };
+    // colorOf(item) -> màu riêng từng thanh (vd. theo tình trạng)
+    if (colorOf) {
+      o.colors = data.map(colorOf);
+      o.plotOptions.bar.distributed = true;
+    }
     o.xaxis = {
       categories: data.map(d => (horizontal ? shorten(d[label], 24) : shorten(d[label], 16))),
       labels: { formatter: v => (horizontal ? fmt(v, format) : v), style: { fontSize: "11px" } },
@@ -138,7 +143,7 @@ window.KhangNghiCharts = (function () {
   // TRÒN (donut) - tối đa maxSlices phần, phần còn lại gộp "Khác"
   // --------------------------------------------------------------------------
   function donut(id, items, opts = {}) {
-    const { value = "value", label = "label", format = "number", maxSlices = 6, height = 300, onClick = null } = opts;
+    const { value = "value", label = "label", format = "number", maxSlices = 6, height = 300, colorOf = null, onClick = null } = opts;
     const rows = (items || []).filter(d => Number(d[value]) > 0).sort((a, b) => b[value] - a[value]);
     if (!rows.length) return null;
     const t = theme();
@@ -152,7 +157,7 @@ window.KhangNghiCharts = (function () {
     const o = base(t, "donut", height);
     o.series = slices.map(d => Number(d[value]));
     o.labels = slices.map(d => d[label]);
-    o.colors = slices.map((d, i) => (d.isOther ? t.other : t.colors[i % t.colors.length]));
+    o.colors = slices.map((d, i) => (d.isOther ? t.other : colorOf ? colorOf(d) : t.colors[i % t.colors.length]));
     o.stroke = { width: 2, colors: [t.surface] };
     o.legend = { position: "bottom", fontSize: "12px", labels: { colors: t.text }, markers: { size: 6 } };
     o.plotOptions = {
@@ -205,5 +210,50 @@ window.KhangNghiCharts = (function () {
     return mount(id, o);
   }
 
-  return { bar, line, donut, forecast, destroy, theme };
+  // --------------------------------------------------------------------------
+  // CỘT NHÓM (Grouped Bar) - nhiều chuỗi theo danh mục
+  //   categories: ["Quý 1", "Quý 2", "Quý 3", "Quý 4"]
+  //   series: [{ name: "Kênh A", data: [10, 20, 30, 40] }]
+  // --------------------------------------------------------------------------
+  function groupedBar(id, categories, series, opts = {}) {
+    const { format = "number", height = 280, horizontal = false } = opts;
+    if (!categories || !categories.length || !series || !series.length) return null;
+    const t = theme();
+    const o = base(t, "bar", height);
+    o.series = series;
+    o.colors = series.map((s, i) => s.color || t.colors[i % t.colors.length]);
+    o.plotOptions = {
+      bar: {
+        horizontal,
+        borderRadius: 4,
+        borderRadiusApplication: "end",
+        columnWidth: "55%"
+      }
+    };
+    o.xaxis = {
+      categories,
+      labels: { style: { fontSize: "11px", colors: t.text } },
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    };
+    o.yaxis = {
+      labels: {
+        formatter: v => fmt(v, format),
+        style: { fontSize: "11px", colors: t.text }
+      }
+    };
+    o.tooltip.shared = true;
+    o.tooltip.intersect = false;
+    o.tooltip.y = { formatter: v => (v === null || v === undefined ? "—" : fmt(v, format)) };
+    o.legend = {
+      show: true,
+      position: "bottom",
+      fontSize: "12px",
+      labels: { colors: t.text },
+      markers: { size: 6 }
+    };
+    return mount(id, o);
+  }
+
+  return { bar, line, donut, forecast, groupedBar, destroy, theme, mount };
 })();
