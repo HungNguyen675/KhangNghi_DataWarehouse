@@ -15,8 +15,8 @@ window.KhangNghiRouter = (function () {
     "supplier": "suppliers.view",
     "geography": "geography.view",
     "cross-analysis": "crossAnalysis.view",
+    "multi-dim": "crossAnalysis.view",
     "olap-explorer": "crossAnalysis.view",
-    "mdx-studio": "crossAnalysis.view",
     "forecast": "forecast.view",
     "what-if": "whatIf.view",
     "question-explorer": "biQuestions.view",
@@ -52,6 +52,18 @@ window.KhangNghiRouter = (function () {
         return;
       }
       renderRoute("login");
+      return;
+    }
+
+    // Redirect mdx-studio to question-explorer
+    if (rawHash === "mdx-studio") {
+      window.location.hash = "#/question-explorer";
+      return;
+    }
+
+    // Redirect olap-explorer to multi-dim
+    if (rawHash === "olap-explorer") {
+      window.location.hash = "#/multi-dim";
       return;
     }
 
@@ -149,8 +161,8 @@ window.KhangNghiRouter = (function () {
       "supplier": { cat: "Đối tượng", title: "Nhà cung cấp" },
       "geography": { cat: "Đối tượng", title: "Khu vực" },
       "cross-analysis": { cat: "Phân tích nâng cao", title: "Phân tích chéo" },
-      "olap-explorer": { cat: "OLAP & AI", title: "Khám phá OLAP" },
-      "mdx-studio": { cat: "OLAP & AI", title: "MDX Studio" },
+      "multi-dim": { cat: "Phân tích nâng cao", title: "Phân tích đa chiều" },
+      "olap-explorer": { cat: "Phân tích nâng cao", title: "Phân tích đa chiều" },
       "forecast": { cat: "Phân tích nâng cao", title: "Dự báo doanh số" },
       "what-if": { cat: "Phân tích nâng cao", title: "Phân tích giả định" },
       "question-explorer": { cat: "Phân tích nâng cao", title: "Câu hỏi phân tích" },

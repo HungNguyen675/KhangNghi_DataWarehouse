@@ -92,9 +92,9 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             Q("Q37", "Shipping", "Tỷ lệ giao hàng trễ theo khu vực", async (r, a) => await r.Q37_LateDeliveryRateByRegionAsync()),
 
             // Phân tích chéo (Q38 - Q40)
-            Q("Q38", "Cross", "Hàng bán chạy nhưng tồn kho thấp (nguy cơ đứt hàng)", async (r, a) => await r.Q38_HighSalesLowStockRiskAsync(Top(a)), "top"),
-            Q("Q39", "Cross", "Hàng nhập nhiều nhưng bán ít (nguy cơ ứ đọng vốn)", async (r, a) => await r.Q39_HighPurchaseLowSalesRiskAsync(Top(a)), "top"),
-            Q("Q40", "Cross", "So sánh doanh thu với hiệu quả vận chuyển", async (r, a) => await r.Q40_RevenueVsShippingEfficiencyAsync())
+            Q("Q38", "Cross", "Mặt hàng sắp hết hàng: số ngày tồn kho (tồn / bán TB ngày) thấp nhất, dưới 3 ngày", async (r, a) => await r.Q38_HighSalesLowStockRiskAsync(Top(a)), "top"),
+            Q("Q39", "Cross", "Mặt hàng tồn quá nhiều so với sức bán: số ngày tồn kho cao nhất, trên 7 ngày", async (r, a) => await r.Q39_HighPurchaseLowSalesRiskAsync(Top(a)), "top"),
+            Q("Q40", "Cross", "Khu vực tốn phí giao hàng nhiều nhất trên mỗi đồng doanh thu", async (r, a) => await r.Q40_RevenueVsShippingEfficiencyAsync())
         };
 
         public static IReadOnlyList<BiQueryDefinition> ForRole(string? role) =>

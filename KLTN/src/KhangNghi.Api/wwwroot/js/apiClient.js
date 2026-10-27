@@ -62,7 +62,8 @@ window.KhangNghiApiClient = (function () {
     }
 
     const controller = new AbortController();
-    const timeoutMs = options.timeout || 8000;
+    const isAiOrAnalytics = url.includes("/nlq") || url.includes("/copilot") || url.includes("/ssas");
+    const timeoutMs = options.timeout || (isAiOrAnalytics ? 60000 : 10000);
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     config.signal = controller.signal;
 

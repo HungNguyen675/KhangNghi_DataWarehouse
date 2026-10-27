@@ -530,18 +530,29 @@ window.analyticsService = (function () {
   // 10. PHÂN TÍCH CHÉO (Bán - Tồn - Mua - Vận chuyển)
   // --------------------------------------------------------------------------
   async function getCrossAnalysis() {
-    const [stockoutRes, overstockRes, effRes] = await Promise.all([
-      get("/cross-analysis/stockout-risk", { top: 15 }),
-      get("/cross-analysis/overstock-risk", { top: 15 }),
+    // Q38 trả toàn bộ mặt hàng theo số ngày tồn kho (đủ để đếm tình trạng); Q39 chỉ là cùng dữ liệu xếp ngược nên không gọi riêng
+    const [coverRes, effRes] = await Promise.all([
+      get("/cross-analysis/stockout-risk", { top: 5000 }),
       get("/cross-analysis/shipping-efficiency")
     ]);
     return {
-      stockout: section(stockoutRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), sold: num(r, "SoldQuantity") || 0, onHand: num(r, "QuantityOnHand") || 0, risk: str(r, "StockoutRisk") }), ALL_TIME),
-      overstock: section(overstockRes, r => ({ label: str(r, "ProductName"), category: str(r, "Category"), purchased: num(r, "PurchasedQty") || 0, sold: num(r, "SoldQty") || 0, excess: num(r, "ExcessQty") || 0, note: str(r, "RiskNote") }), ALL_TIME),
+      cover: section(coverRes, r => ({ productKey: num(r, "ProductKey"), label: str(r, "ProductName"), category: str(r, "Category"), avgMonthly: num(r, "AvgMonthlySold") || 0, onHand: num(r, "QuantityOnHand") || 0, cover: num(r, "DaysOfCover"), status: str(r, "StockStatus") }), ALL_TIME),
       efficiency: section(effRes, r => ({ label: str(r, "Region") || "Chưa xác định", revenue: num(r, "TotalRevenue") || 0, profit: num(r, "TotalProfit") || 0, shippingCost: num(r, "ShippingCost") || 0, ratio: num(r, "ShippingCostRatioPercent"), netProfit: num(r, "NetProfitAfterShipping") }), ALL_TIME)
     };
   }
 
+  // Số liệu gốc để diễn giải số ngày tồn kho của một mặt hàng
+  async function getStockCoverDetail(productKey) {
+    const res = await get(`/cross-analysis/stock-cover/${encodeURIComponent(productKey)}`);
+    if (!res.success) return { success: false, message: failMessage(res) };
+    const d = res.data || {};
+    const list = key => (Array.isArray(pick(d, key)) ? pick(d, key) : []);
+    return {
+      success: true,
+      stock: list("Stock").map(r => ({ warehouse: str(r, "Warehouse"), city: str(r, "City"), date: str(r, "SnapshotDate"), onHand: num(r, "QuantityOnHand") || 0, reorder: num(r, "ReorderLevel") || 0 })),
+      sales: list("Sales").map(r => ({ year: num(r, "Year"), month: num(r, "Month"), quantity: num(r, "Quantity") || 0 }))
+    };
+  }
   // --------------------------------------------------------------------------
   // 11. DỰ BÁO DOANH SỐ (ML.NET)
   // --------------------------------------------------------------------------
@@ -676,6 +687,38 @@ window.analyticsService = (function () {
     return { state: isConnection ? "unavailable" : "error", message: msg, timeMs: body.executionTimeMs ?? null };
   }
 
+  // --------------------------------------------------------------------------
+  // 13c. QUICK CHART DÀNH CHO CÂU HỎI PHÂN TÍCH (MDX-19 ĐẾN MDX-24)
+  // --------------------------------------------------------------------------
+  async function getQuickChart(mdxId) {
+    if (!client) return { state: "error", message: "API client chưa sẵn sàng" };
+    const res = await client.get(`/ssas/quick-chart/${encodeURIComponent(mdxId)}`);
+    if (!res.success) {
+      return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    }
+    const data = res.data && res.data.data ? res.data.data : res.data;
+    return {
+      state: "ready",
+      data: data
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 13d. PHÂN TÍCH KINH DOANH ĐA CHIỀU (MULTI-DIMENSIONAL ANALYSIS)
+  // --------------------------------------------------------------------------
+  async function getMultiDimAnalysis(measure, row, col) {
+    if (!client) return { state: "error", message: "API client chưa sẵn sàng" };
+    const res = await client.get("/ssas/multidim-analysis", { measure, row, col });
+    if (!res.success) {
+      return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    }
+    const data = res.data && res.data.data ? res.data.data : res.data;
+    return {
+      state: "ready",
+      data: data
+    };
+  }
+
   // Siêu dữ liệu khối KhangNghi_Cube dùng cho trình dựng truy vấn OLAP
   function getCubeMetadata() {
     return {
@@ -704,6 +747,47 @@ window.analyticsService = (function () {
         { id: "[Dim Supplier].[Supplier Name]", name: "Nhà cung cấp" },
         { id: "[Dim Shipper].[Shipper Name]", name: "Đơn vị vận chuyển" }
       ]
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 13b. CHI TIẾT MỘT NĂM (bấm mốc năm trên biểu đồ)
+  // --------------------------------------------------------------------------
+  const mapBreakdown = key => r => ({
+    label: str(r, key) || "Chưa xác định",
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0,
+    quantity: num(r, "Quantity") || 0
+  });
+
+  const mapYearProduct = r => ({
+    label: str(r, "ProductName") || "Chưa đặt tên",
+    category: str(r, "Category") || "Chưa phân loại",
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0,
+    quantity: num(r, "Quantity") || 0
+  });
+
+  const mapQuarter = r => ({
+    label: str(r, "Period") || `Q${num(r, "Quarter")}/${num(r, "Year")}`,
+    revenue: num(r, "Revenue") || 0,
+    profit: num(r, "Profit") || 0
+  });
+
+  async function getYearDetail(year) {
+    const [sumRes, breakRes, quarterRes] = await Promise.all([
+      get("/dashboard/summary", { year }),
+      get("/sales/year-breakdown", { year, top: 10 }),
+      get("/sales/by-quarter", { year })
+    ]);
+    const pickList = key => ({ success: breakRes.success, status: breakRes.status, error: breakRes.error, data: breakRes.success && breakRes.data ? breakRes.data[key] : [] });
+    return {
+      year,
+      summary: summarySection(sumRes, scopeLabel(year)),
+      quarters: section(quarterRes, mapQuarter, scopeLabel(year)),
+      categories: section(pickList("categories"), mapBreakdown("Category"), scopeLabel(year)),
+      regions: section(pickList("regions"), mapBreakdown("Region"), scopeLabel(year)),
+      products: section(pickList("products"), mapYearProduct, scopeLabel(year))
     };
   }
 
@@ -753,6 +837,7 @@ window.analyticsService = (function () {
     getSuppliers,
     getGeography,
     getCrossAnalysis,
+    getStockCoverDetail,
     getForecast,
     getSummary,
     getSsasStatus,
@@ -761,9 +846,12 @@ window.analyticsService = (function () {
     getConnectionStatus,
     getMdxCatalog,
     executeMdx,
+    getQuickChart,
+    getMultiDimAnalysis,
     getCubeMetadata,
     getCustomerDetail,
     getOrderDetail,
+    getYearDetail,
     exportToCSV
   };
 })();

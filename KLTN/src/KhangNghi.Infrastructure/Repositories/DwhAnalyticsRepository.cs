@@ -67,7 +67,14 @@ namespace KhangNghi.Infrastructure.Repositories
         // Nhóm 5: Phân tích chéo (Q38 - Q40)
         Task<IEnumerable<dynamic>> Q38_HighSalesLowStockRiskAsync(int top = 10);
         Task<IEnumerable<dynamic>> Q39_HighPurchaseLowSalesRiskAsync(int top = 10);
+        // Diễn giải số ngày tồn kho của một mặt hàng (drill-down từ Q38/Q39)
+        Task<(IEnumerable<dynamic> Stock, IEnumerable<dynamic> Sales)> GetStockCoverDetailAsync(int productKey);
         Task<IEnumerable<dynamic>> Q40_RevenueVsShippingEfficiencyAsync();
+        Task<object?> GetQuickChartAsync(string id);
+        Task<object?> GetMultiDimAnalysisAsync(string measure, string rowDim, string colDim);
+
+        // Chi tiết doanh thu, lợi nhuận trong một năm (drill-down từ biểu đồ)
+        Task<(IEnumerable<dynamic> Categories, IEnumerable<dynamic> Regions, IEnumerable<dynamic> Products)> GetYearBreakdownAsync(int year, int top = 10);
 
         // Dữ liệu huấn luyện ML.NET
         Task<IEnumerable<dynamic>> GetMonthlySalesForTrainingAsync(string? category = null);
@@ -192,27 +199,27 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q06_TopProductsByRevenueAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
                                    ROUND(SUM(f.SalesAmount), 2) AS Revenue, SUM(f.Quantity) AS Quantity
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
                 GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
                 ORDER BY Revenue DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q07_TopProductsByProfitAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
                 GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
                 ORDER BY Profit DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q08_RevenueByCategoryAsync()
@@ -244,8 +251,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q10_HighDiscountLowProfitProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) p.ProductName, p.Category, 
+            const string sql = @"
+                SELECT TOP (@Top) p.ProductName, p.Category, 
                                    ROUND(AVG(f.DiscountAmount) * 100, 1) AS AvgDiscountPercent, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS TotalProfit,
                                    ROUND(SUM(f.SalesAmount), 2) AS TotalRevenue
@@ -254,31 +261,31 @@ namespace KhangNghi.Infrastructure.Repositories
                 GROUP BY p.ProductName, p.Category
                 HAVING AVG(f.DiscountAmount) > 0.15
                 ORDER BY TotalProfit ASC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q11_TopCustomersByRevenueAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
+            const string sql = @"
+                SELECT TOP (@Top) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.SalesAmount), 2) AS Revenue, COUNT(DISTINCT f.OrderID) AS OrderCount
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
                 GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Revenue DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q12_TopCustomersByProfitAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
+            const string sql = @"
+                SELECT TOP (@Top) c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment, 
                                    ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Customer c WITH (NOLOCK) ON f.CustomerKey = c.CustomerKey
                 GROUP BY c.CustomerKey, c.CustomerID, c.CustomerName, c.Segment ORDER BY Profit DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q13_RevenueBySegmentAsync()
@@ -330,12 +337,12 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q17_TopCitiesByQuantityAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) l.City, l.Region, SUM(f.Quantity) AS TotalQuantity, ROUND(SUM(f.SalesAmount), 2) AS Revenue
+            const string sql = @"
+                SELECT TOP (@Top) l.City, l.Region, SUM(f.Quantity) AS TotalQuantity, ROUND(SUM(f.SalesAmount), 2) AS Revenue
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Location l WITH (NOLOCK) ON f.LocationKey = l.LocationKey
                 GROUP BY l.City, l.Region ORDER BY TotalQuantity DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q18_RegionalRevenueTrendAsync()
@@ -406,8 +413,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q23_TopPurchasedProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
+            const string sql = @"
+                SELECT TOP (@Top) 
                     pr.ProductName,
                     ISNULL(pr.Category, N'Vật tư thiết bị') AS Category,
                     ROUND(SUM(p.TotalCost), 2) AS TotalPurchaseAmount,
@@ -417,14 +424,14 @@ namespace KhangNghi.Infrastructure.Repositories
                 WHERE pr.ProductName IS NOT NULL
                 GROUP BY pr.ProductName, pr.Category
                 ORDER BY TotalPurchaseAmount DESC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q24_PurchasePriceTrendAsync(string? productName = null)
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT TOP 30 
+                SELECT
                     pr.ProductName,
                     CONCAT(t.Month, '/', t.Year) AS Period, t.Year, t.Month,
                     ROUND(AVG(p.UnitCost), 2) AS AvgUnitCost
@@ -442,14 +449,15 @@ namespace KhangNghi.Infrastructure.Repositories
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
-                SELECT 
+                SELECT
                     w.WarehouseName,
-                    w.WarehouseName AS Region,
+                    ISNULL(l.Region, N'Không xác định') AS Region,
                     ROUND(SUM(p.TotalCost), 2) AS TotalImportValue,
                     SUM(p.PurchaseQuantity) AS TotalQuantity
                 FROM dbo.Fact_Purchase p
                 JOIN dbo.Dim_Warehouse w ON p.WarehouseKey = w.WarehouseKey
-                GROUP BY w.WarehouseName 
+                LEFT JOIN dbo.Dim_Location l ON p.LocationKey = l.LocationKey
+                GROUP BY w.WarehouseName, ISNULL(l.Region, N'Không xác định')
                 ORDER BY TotalImportValue DESC";
             return await db.QueryAsync(sql);
         }
@@ -482,8 +490,8 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<PurchaseOrderDetailDto>> GetPurchaseOrderDetailAsync(string orderId, int top = 50)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top})
+            const string sql = @"
+                SELECT TOP (@Top)
                     p.PurchaseOrderID,
                     CONVERT(varchar(10), t.FullDate, 120) AS OrderDate,
                     s.SupplierName,
@@ -505,7 +513,7 @@ namespace KhangNghi.Infrastructure.Repositories
                     AND pr_ref.ProductName IS NOT NULL
                 WHERE p.PurchaseOrderID = @OrderId
                 ORDER BY p.TotalCost DESC";
-            return await db.QueryAsync<PurchaseOrderDetailDto>(sql, new { OrderId = orderId });
+            return await db.QueryAsync<PurchaseOrderDetailDto>(sql, new { OrderId = orderId, Top = top });
         }
 
         public async Task<IEnumerable<PurchaseCategorySpendDto>> GetPurchaseCategorySpendAsync(int? year = null)
@@ -530,32 +538,32 @@ namespace KhangNghi.Infrastructure.Repositories
         public async Task<IEnumerable<dynamic>> Q26_HighestStockProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
+            const string sql = @"
+                SELECT TOP (@Top) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
                                    AVG(i.ReorderLevel) AS AvgReorderLevel
                 FROM dbo.Fact_Inventory i
                 JOIN dbo.Dim_Product pr ON i.ProductKey = pr.ProductKey
                 GROUP BY pr.ProductName, pr.Category ORDER BY TotalOnHand DESC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q27_LowestStockProductsAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
+            const string sql = @"
+                SELECT TOP (@Top) pr.ProductName, pr.Category, SUM(i.QuantityOnHand) AS TotalOnHand,
                                    AVG(i.ReorderLevel) AS AvgReorderLevel
                 FROM dbo.Fact_Inventory i
                 JOIN dbo.Dim_Product pr ON i.ProductKey = pr.ProductKey
                 GROUP BY pr.ProductName, pr.Category ORDER BY TotalOnHand ASC";
-            return await db.QueryAsync(sql);
+            return await db.QueryAsync(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<InventoryAlertDto>> Q28_ReorderLevelAlertsAsync(int top = 50)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top})
+            const string sql = @"
+                SELECT TOP (@Top)
                     pr.ProductKey, 
                     pr.ProductName, 
                     pr.Category, 
@@ -579,7 +587,7 @@ namespace KhangNghi.Infrastructure.Repositories
                 JOIN dbo.Dim_Location l ON i.LocationKey = l.LocationKey
                 WHERE i.QuantityOnHand < i.ReorderLevel
                 ORDER BY Deficit DESC";
-            return await db.QueryAsync<InventoryAlertDto>(sql);
+            return await db.QueryAsync<InventoryAlertDto>(sql, new { Top = top });
         }
 
         public async Task<IEnumerable<dynamic>> Q29_StockByRegionAsync()
@@ -695,49 +703,535 @@ namespace KhangNghi.Infrastructure.Repositories
         }
 
         // ==================== NHÓM 5: PHÂN TÍCH CHÉO ====================
+        // Q38 & Q39 dùng chung thước đo "số ngày tồn kho" (Days of Inventory) = tồn hiện tại / bán TB mỗi ngày (3 tháng gần nhất).
+        // Tồn lấy theo snapshot mới nhất của từng sản phẩm/kho (tồn kho là số đo bán cộng dồn, không cộng qua thời gian).
+        // Chu kỳ nhập hàng theo tuần: trên 7 ngày hoặc không bán được -> Tồn thừa; dưới 3 ngày hoặc dưới mức đặt lại -> Sắp hết.
+        private const string StockCoverSql = @"
+                WITH LatestInv AS (
+                    SELECT ProductKey, QuantityOnHand, ReorderLevel,
+                           ROW_NUMBER() OVER (PARTITION BY ProductKey, WarehouseKey, LocationKey ORDER BY TimeKey DESC) AS rn
+                    FROM dbo.Fact_Inventory WITH (NOLOCK)
+                ),
+                Stock AS (
+                    SELECT ProductKey, SUM(QuantityOnHand) AS OnHand, SUM(ReorderLevel) AS ReorderLevel
+                    FROM LatestInv WHERE rn = 1 GROUP BY ProductKey
+                ),
+                SalesM AS (
+                    SELECT f.ProductKey, t.Year * 12 + t.Month AS YM, f.Quantity
+                    FROM dbo.Fact_Sales f WITH (NOLOCK)
+                    JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                ),
+                LastYM AS (SELECT MAX(YM) AS MaxYM FROM SalesM),
+                Sales AS (
+                    SELECT sm.ProductKey,
+                           SUM(CASE WHEN sm.YM > ly.MaxYM - 3 THEN sm.Quantity ELSE 0 END) / 3.0 AS AvgMonthly
+                    FROM SalesM sm CROSS JOIN LastYM ly
+                    GROUP BY sm.ProductKey
+                ),
+                Base AS (
+                    SELECT p.ProductKey, p.ProductName, p.Category,
+                           ISNULL(s.AvgMonthly, 0) AS AvgMonthly,
+                           ISNULL(st.OnHand, 0) AS OnHand,
+                           ISNULL(st.ReorderLevel, 0) AS ReorderLevel,
+                           ISNULL(st.OnHand, 0) * 30.0 / NULLIF(s.AvgMonthly, 0) AS Cover
+                    FROM dbo.Dim_Product p WITH (NOLOCK)
+                    LEFT JOIN Sales s ON p.ProductKey = s.ProductKey
+                    LEFT JOIN Stock st ON p.ProductKey = st.ProductKey
+                    WHERE ISNULL(s.AvgMonthly, 0) > 0 OR ISNULL(st.OnHand, 0) > 0
+                )
+                SELECT TOP (@Top)
+                    ProductKey, ProductName, Category,
+                    ROUND(AvgMonthly, 0) AS AvgMonthlySold,
+                    OnHand AS QuantityOnHand,
+                    ReorderLevel,
+                    ROUND(Cover, 1) AS DaysOfCover,
+                    CASE
+                        WHEN Cover IS NULL OR Cover > 7 THEN N'Tồn thừa'
+                        WHEN Cover < 3 OR OnHand < ReorderLevel THEN N'Sắp hết'
+                        ELSE N'An toàn'
+                    END AS StockStatus
+                FROM Base";
+
+        // Q38: Mặt hàng nào sắp hết hàng? (số ngày tồn kho ít nhất lên đầu)
         public async Task<IEnumerable<dynamic>> Q38_HighSalesLowStockRiskAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
-                    p.ProductKey, p.ProductName, p.Category, 
-                    SUM(o.Quantity) AS SoldQuantity, 
-                    ISNULL(inv.OnHand, 0) AS QuantityOnHand,
-                    CASE 
-                        WHEN ISNULL(inv.OnHand, 0) < SUM(o.Quantity) * 0.1 THEN N'Rất cao' 
-                        ELSE N'Cao' 
-                    END AS StockoutRisk
-                FROM dbo.Fact_Sales o WITH (NOLOCK)
-                JOIN dbo.Dim_Product p WITH (NOLOCK) ON o.ProductKey = p.ProductKey
-                LEFT JOIN (SELECT ProductKey, SUM(QuantityOnHand) AS OnHand FROM dbo.Fact_Inventory WITH (NOLOCK) GROUP BY ProductKey) inv 
-                    ON p.ProductKey = inv.ProductKey
-                GROUP BY p.ProductKey, p.ProductName, p.Category, inv.OnHand
-                ORDER BY SoldQuantity DESC, QuantityOnHand ASC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            const string sql = StockCoverSql + @"
+                ORDER BY ISNULL(Cover, 9999) ASC, AvgMonthly DESC";
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
         }
 
+        // Q39: Mặt hàng nào tồn quá nhiều so với sức bán? (số ngày tồn kho nhiều nhất lên đầu, không bán được xếp đầu)
         public async Task<IEnumerable<dynamic>> Q39_HighPurchaseLowSalesRiskAsync(int top = 10)
         {
             using var db = _connectionFactory.CreateConnection();
-            string sql = $@"
-                SELECT TOP ({top}) 
-                    p.ProductKey, p.ProductName, p.Category, 
-                    ISNULL(pur.PurQty, 0) AS PurchasedQty, 
-                    ISNULL(ord.SoldQty, 0) AS SoldQty, 
-                    (ISNULL(pur.PurQty, 0) - ISNULL(ord.SoldQty, 0)) AS ExcessQty, 
-                    N'Nguy cơ ứ đọng vốn' AS RiskNote
-                FROM dbo.Dim_Product p WITH (NOLOCK)
-                LEFT JOIN (SELECT ProductKey, SUM(PurchaseQuantity) AS PurQty FROM dbo.Fact_Purchase WITH (NOLOCK) GROUP BY ProductKey) pur 
-                    ON p.ProductKey = pur.ProductKey
-                LEFT JOIN (SELECT ProductKey, SUM(Quantity) AS SoldQty FROM dbo.Fact_Sales WITH (NOLOCK) GROUP BY ProductKey) ord 
-                    ON p.ProductKey = ord.ProductKey
-                WHERE ISNULL(pur.PurQty, 0) > ISNULL(ord.SoldQty, 0)
-                ORDER BY ExcessQty DESC";
-            return await db.QueryAsync(sql, commandTimeout: 60);
+            const string sql = StockCoverSql + @"
+                ORDER BY ISNULL(Cover, 9999) DESC, OnHand DESC";
+            return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
+        }
+
+        // Số liệu gốc của StockCoverSql cho một mặt hàng: tồn mới nhất từng kho + bán từng tháng trong 3 tháng gần nhất
+        public async Task<(IEnumerable<dynamic> Stock, IEnumerable<dynamic> Sales)> GetStockCoverDetailAsync(int productKey)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                WITH LatestInv AS (
+                    SELECT i.*, ROW_NUMBER() OVER (PARTITION BY i.WarehouseKey, i.LocationKey ORDER BY i.TimeKey DESC) AS rn
+                    FROM dbo.Fact_Inventory i WITH (NOLOCK)
+                    WHERE i.ProductKey = @ProductKey
+                )
+                SELECT ISNULL(w.WarehouseName, N'Chưa xác định') AS Warehouse, l.City,
+                       t.FullDate AS SnapshotDate, li.QuantityOnHand, li.ReorderLevel
+                FROM LatestInv li
+                LEFT JOIN dbo.Dim_Warehouse w WITH (NOLOCK) ON li.WarehouseKey = w.WarehouseKey
+                LEFT JOIN dbo.Dim_Location l WITH (NOLOCK) ON li.LocationKey = l.LocationKey
+                LEFT JOIN dbo.Dim_Time t WITH (NOLOCK) ON li.TimeKey = t.TimeKey
+                WHERE li.rn = 1
+                ORDER BY Warehouse;
+
+                WITH SalesM AS (
+                    SELECT f.ProductKey, t.Year * 12 + t.Month AS YM, f.Quantity
+                    FROM dbo.Fact_Sales f WITH (NOLOCK)
+                    JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                ),
+                Months AS (
+                    SELECT MAX(YM) - v.n AS YM FROM SalesM CROSS JOIN (VALUES (0), (1), (2)) v(n) GROUP BY v.n
+                )
+                SELECT (m.YM - 1) / 12 AS [Year], (m.YM - 1) % 12 + 1 AS [Month], ISNULL(SUM(s.Quantity), 0) AS Quantity
+                FROM Months m
+                LEFT JOIN SalesM s ON s.YM = m.YM AND s.ProductKey = @ProductKey
+                GROUP BY m.YM
+                ORDER BY m.YM;";
+            using var multi = await db.QueryMultipleAsync(sql, new { ProductKey = productKey }, commandTimeout: 30);
+            var stock = await multi.ReadAsync();
+            var sales = await multi.ReadAsync();
+            return (stock, sales);
         }
 
 
-        public async Task<IEnumerable<dynamic>> Q40_RevenueVsShippingEfficiencyAsync()
+        
+        public async Task<object?> GetQuickChartAsync(string id)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            var normId = (id ?? string.Empty).Trim().ToUpperInvariant();
+
+            switch (normId)
+            {
+                case "MDX-19":
+                {
+                    const string sql = @"
+                        SELECT e.EmployeeName AS Label,
+                               COALESCE(e.Title, N'Nhân viên kinh doanh') AS SubLabel,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               ROUND(SUM(f.ProfitAmount), 0) AS Profit,
+                               SUM(f.Quantity) AS Quantity,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_Employee e WITH (NOLOCK) ON f.EmployeeKey = e.EmployeeKey
+                        GROUP BY e.EmployeeName, e.Title
+                        ORDER BY Revenue DESC";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-19",
+                        title = "Đánh giá KPI Doanh số bán hàng theo từng Nhân viên",
+                        purpose = "Đánh giá năng suất của đội ngũ bán hàng và tính hoa hồng kinh doanh.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "bar",
+                        dimension = "Nhân viên (Dim_Employee)",
+                        measures = new[] { "Doanh thu", "Lợi nhuận", "Số lượng bán" },
+                        relatedRoute = "sales",
+                        data = rows
+                    };
+                }
+                case "MDX-20":
+                {
+                    const string sql = @"
+                        SELECT p.PromotionName AS Label,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               ROUND(SUM(f.DiscountAmount), 0) AS DiscountAmount,
+                               ROUND(SUM(f.ProfitAmount), 0) AS Profit,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_Promotion p WITH (NOLOCK) ON f.PromotionKey = p.PromotionKey
+                        GROUP BY p.PromotionName
+                        ORDER BY Revenue DESC";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-20",
+                        title = "Đánh giá hiệu quả các chương trình Khuyến mãi",
+                        purpose = "Phân tích lượng tiền chiết khấu (Discount) đã bỏ ra so với doanh thu mang lại của từng đợt khuyến mãi.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "donut",
+                        dimension = "Chương trình khuyến mãi (Dim_Promotion)",
+                        measures = new[] { "Doanh thu", "Chiết khấu", "Lợi nhuận" },
+                        relatedRoute = "sales",
+                        data = rows
+                    };
+                }
+                case "MDX-21":
+                {
+                    const string sql = @"
+                        SELECT m.ManufacturerName AS Label,
+                               COALESCE(m.Country, N'Chưa rõ') AS Country,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               ROUND(SUM(f.ProfitAmount), 0) AS Profit,
+                               SUM(f.Quantity) AS Quantity,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_Manufacturer m WITH (NOLOCK) ON f.ManufacturerKey = m.ManufacturerKey
+                        GROUP BY m.ManufacturerName, m.Country
+                        ORDER BY Revenue DESC";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-21",
+                        title = "Doanh số sản phẩm bán ra theo Hãng sản xuất",
+                        purpose = "Xác định thương hiệu/hãng sản xuất nào đang được thị trường ưa chuộng nhất.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "bar",
+                        dimension = "Hãng sản xuất (Dim_Manufacturer)",
+                        measures = new[] { "Doanh thu", "Số lượng bán" },
+                        relatedRoute = "product",
+                        data = rows
+                    };
+                }
+                case "MDX-22":
+                {
+                    const string sql = @"
+                        SELECT p.Category AS Label,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               ROUND(SUM(f.ProfitAmount), 0) AS Profit,
+                               ROUND(CASE WHEN SUM(f.SalesAmount) = 0 THEN 0 ELSE (SUM(f.ProfitAmount) / SUM(f.SalesAmount)) * 100 END, 2) AS ProfitMarginPct,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                        GROUP BY p.Category
+                        ORDER BY Revenue DESC";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-22",
+                        title = "Tính Tỷ suất lợi nhuận (Profit Margin %) theo Danh mục",
+                        purpose = "Dùng Calculated Member tính toán tỷ lệ Lợi nhuận / Doanh thu tức thời mà không cần can thiệp CSDL.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "bar",
+                        dimension = "Danh mục sản phẩm (Dim_Product)",
+                        measures = new[] { "Doanh thu", "Lợi nhuận", "Tỷ suất LN %" },
+                        relatedRoute = "sales",
+                        data = rows
+                    };
+                }
+                case "MDX-23":
+                {
+                    const string sql = @"
+                        SELECT s.ServiceName AS Label,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_Service s WITH (NOLOCK) ON f.ServiceKey = s.ServiceKey
+                        GROUP BY s.ServiceName
+                        ORDER BY Revenue DESC";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-23",
+                        title = "Phân tích Doanh thu theo Gói Dịch vụ đính kèm",
+                        purpose = "Đo lường doanh thu từ các gói bảo hành, dịch vụ vận chuyển và lắp đặt hoàn thiện.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "bar",
+                        dimension = "Gói dịch vụ (Dim_Service)",
+                        measures = new[] { "Doanh thu" },
+                        relatedRoute = "sales",
+                        data = rows
+                    };
+                }
+                case "MDX-24":
+                {
+                    const string sql = @"
+                        SELECT sc.ChannelName AS Channel,
+                               t.Quarter AS Quarter,
+                               ROUND(SUM(f.SalesAmount), 0) AS Revenue,
+                               COUNT(*) AS OrderCount
+                        FROM dbo.Fact_Sales f WITH (NOLOCK)
+                        JOIN dbo.Dim_SalesChannel sc WITH (NOLOCK) ON f.ChannelKey = sc.ChannelKey
+                        JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                        GROUP BY sc.ChannelName, t.Quarter
+                        ORDER BY sc.ChannelName, t.Quarter";
+                    var rows = await db.QueryAsync(sql, commandTimeout: 60);
+                    return new
+                    {
+                        id = "MDX-24",
+                        title = "Ma trận tích chéo (CROSSJOIN) giữa Kênh bán hàng và Quý trong Năm",
+                        purpose = "Đối chiếu diễn biến doanh thu của từng kênh bán lẻ/online qua các quý trong năm 2026.",
+                        section = "Nhân sự & Khuyến mãi",
+                        chartType = "matrix",
+                        dimension = "Kênh bán hàng (Dim_SalesChannel) x Quý (Dim_Time)",
+                        measures = new[] { "Doanh thu" },
+                        relatedRoute = "cross-analysis",
+                        data = rows
+                    };
+                }
+                default:
+                    return null;
+            }
+        }
+
+        public async Task<object?> GetMultiDimAnalysisAsync(string measure, string rowDim, string colDim)
+        {
+            using var db = _connectionFactory.CreateConnection();
+
+            // 1. Resolve Measure
+            string measureSql;
+            string measureName;
+            string measureFormat = "vnd";
+
+            var mKey = (measure ?? string.Empty).Trim().ToLowerInvariant();
+            if (mKey.Contains("profit") || mKey.Contains("lợi nhuận"))
+            {
+                measureSql = "ROUND(ISNULL(SUM(f.ProfitAmount), 0), 0)";
+                measureName = "Lợi nhuận";
+            }
+            else if (mKey.Contains("quantity") || mKey.Contains("số lượng") || mKey.Contains("sản lượng"))
+            {
+                measureSql = "ISNULL(SUM(f.Quantity), 0)";
+                measureName = "Số lượng bán";
+                measureFormat = "number";
+            }
+            else if (mKey.Contains("discount") || mKey.Contains("chiết khấu"))
+            {
+                measureSql = "ROUND(ISNULL(SUM(f.DiscountAmount), 0), 0)";
+                measureName = "Tiền chiết khấu";
+            }
+            else if (mKey.Contains("shipping") || mKey.Contains("vận chuyển"))
+            {
+                measureSql = "ROUND(ISNULL(SUM(f.ShippingCost), 0), 0)";
+                measureName = "Chi phí vận chuyển";
+            }
+            else
+            {
+                measureSql = "ROUND(ISNULL(SUM(f.SalesAmount), 0), 0)";
+                measureName = "Doanh thu";
+            }
+
+            // 2. Resolve Dimension helper
+            (string selectExpr, string joinClause, string label) ResolveDimension(string dimKey)
+            {
+                var d = (dimKey ?? string.Empty).Trim().ToLowerInvariant();
+                if (d.Contains("channel") || d.Contains("kênh"))
+                    return ("ISNULL(sc.ChannelName, N'Khác')", "JOIN dbo.Dim_SalesChannel sc WITH (NOLOCK) ON f.ChannelKey = sc.ChannelKey", "Kênh bán hàng");
+                if (d.Contains("region") || d.Contains("khu vực"))
+                    return ("ISNULL(loc.Region, N'Khác')", "JOIN dbo.Dim_Location loc WITH (NOLOCK) ON f.LocationKey = loc.LocationKey", "Khu vực");
+                if (d.Contains("city") || d.Contains("thành phố") || d.Contains("tỉnh"))
+                    return ("ISNULL(loc.City, N'Khác')", "JOIN dbo.Dim_Location loc WITH (NOLOCK) ON f.LocationKey = loc.LocationKey", "Thành phố");
+                if (d.Contains("segment") || d.Contains("phân khúc"))
+                    return ("ISNULL(cust.Segment, N'Khác')", "JOIN dbo.Dim_Customer cust WITH (NOLOCK) ON f.CustomerKey = cust.CustomerKey", "Phân khúc khách hàng");
+                if (d.Contains("customer") || d.Contains("khách hàng"))
+                    return ("ISNULL(cust.CustomerName, N'Khách vãng lai')", "JOIN dbo.Dim_Customer cust WITH (NOLOCK) ON f.CustomerKey = cust.CustomerKey", "Khách hàng");
+                if (d.Contains("employee") || d.Contains("nhân viên"))
+                    return ("ISNULL(emp.EmployeeName, N'Nhân viên')", "JOIN dbo.Dim_Employee emp WITH (NOLOCK) ON f.EmployeeKey = emp.EmployeeKey", "Nhân viên");
+                if (d.Contains("manufacturer") || d.Contains("hãng"))
+                    return ("ISNULL(p.Manufacturer, N'Khác')", "JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey", "Hãng sản xuất");
+                if (d.Contains("sub category") || d.Contains("nhóm"))
+                    return ("ISNULL(p.SubCategory, N'Khác')", "JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey", "Nhóm sản phẩm");
+                if (d.Contains("year") || d.Contains("năm"))
+                    return ("CAST(t.Year AS VARCHAR(10))", "JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey", "Năm");
+                if (d.Contains("quarter") || d.Contains("quý"))
+                    return ("CONCAT(N'Quý ', t.Quarter)", "JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey", "Quý");
+                if (d.Contains("month") || d.Contains("tháng"))
+                    return ("CONCAT(N'Tháng ', t.Month)", "JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey", "Tháng");
+                
+                // Mặc định: Category
+                return ("ISNULL(p.Category, N'Khác')", "JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey", "Danh mục sản phẩm");
+            }
+
+            var rowInfo = ResolveDimension(rowDim);
+            var colKeyRaw = (colDim ?? string.Empty).Trim().ToLowerInvariant();
+            bool hasCol = !string.IsNullOrEmpty(colKeyRaw) && colKeyRaw != "none" && colKeyRaw != "không dùng" && colKeyRaw != "khong dung" && colKeyRaw != (rowDim ?? string.Empty).Trim().ToLowerInvariant();
+
+            var joins = new HashSet<string>();
+            joins.Add(rowInfo.joinClause);
+
+            if (hasCol)
+            {
+                var colInfo = ResolveDimension(colDim);
+                joins.Add(colInfo.joinClause);
+                string joinText = string.Join("\n", joins);
+
+                string sql = $@"
+                    SELECT 
+                        {rowInfo.selectExpr} AS RowKey,
+                        {colInfo.selectExpr} AS ColKey,
+                        {measureSql} AS MetricValue
+                    FROM dbo.Fact_Sales f WITH (NOLOCK)
+                    {joinText}
+                    GROUP BY {rowInfo.selectExpr}, {colInfo.selectExpr}
+                    ORDER BY RowKey, ColKey";
+
+                var rawData = (await db.QueryAsync(sql, commandTimeout: 60)).ToList();
+
+                var distinctRows = rawData.Select(x => (string)x.RowKey).Distinct().OrderBy(x => x).ToList();
+                var distinctCols = rawData.Select(x => (string)x.ColKey).Distinct().OrderBy(x => x).ToList();
+
+                // Tạo series cho ApexCharts (mỗi cột là 1 series)
+                var seriesList = new List<object>();
+                foreach (var col in distinctCols)
+                {
+                    var dataPoints = new List<double>();
+                    foreach (var row in distinctRows)
+                    {
+                        var match = rawData.FirstOrDefault(x => (string)x.RowKey == row && (string)x.ColKey == col);
+                        dataPoints.Add(match != null && match.MetricValue != null ? Convert.ToDouble(match.MetricValue) : 0);
+                    }
+                    seriesList.Add(new { name = col, data = dataPoints });
+                }
+
+                // Tạo rows ma trận cho Table
+                var tableRows = new List<Dictionary<string, object>>();
+                double grandTotal = 0;
+                string topRowName = "";
+                double topRowValue = -1;
+
+                foreach (var row in distinctRows)
+                {
+                    var dict = new Dictionary<string, object> { ["RowName"] = row };
+                    double rowSum = 0;
+                    foreach (var col in distinctCols)
+                    {
+                        var match = rawData.FirstOrDefault(x => (string)x.RowKey == row && (string)x.ColKey == col);
+                        double val = match != null && match.MetricValue != null ? Convert.ToDouble(match.MetricValue) : 0;
+                        dict[col] = val;
+                        rowSum += val;
+                    }
+                    dict["Total"] = rowSum;
+                    tableRows.Add(dict);
+
+                    grandTotal += rowSum;
+                    if (rowSum > topRowValue)
+                    {
+                        topRowValue = rowSum;
+                        topRowName = row;
+                    }
+                }
+
+                // Cột table
+                var tableCols = new List<object>
+                {
+                    new { key = "RowName", label = rowInfo.label }
+                };
+                foreach (var col in distinctCols)
+                {
+                    tableCols.Add(new { key = col, label = col, format = measureFormat });
+                }
+                tableCols.Add(new { key = "Total", label = "Tổng cả kỳ", format = measureFormat });
+
+                return new
+                {
+                    isMultiDim = true,
+                    measure = measureName,
+                    measureFormat = measureFormat,
+                    rowLabel = rowInfo.label,
+                    colLabel = colInfo.label,
+                    summary = new
+                    {
+                        total = grandTotal,
+                        topRow = topRowName,
+                        topRowValue = topRowValue,
+                        rowCount = distinctRows.Count,
+                        colCount = distinctCols.Count
+                    },
+                    chart = new
+                    {
+                        type = "groupedBar",
+                        categories = distinctRows,
+                        series = seriesList
+                    },
+                    table = new
+                    {
+                        columns = tableCols,
+                        rows = tableRows
+                    }
+                };
+            }
+            else
+            {
+                // Phân tích 1 chiều
+                string joinText = string.Join("\n", joins);
+                string sql = $@"
+                    SELECT TOP 15
+                        {rowInfo.selectExpr} AS RowKey,
+                        {measureSql} AS MetricValue
+                    FROM dbo.Fact_Sales f WITH (NOLOCK)
+                    {joinText}
+                    GROUP BY {rowInfo.selectExpr}
+                    ORDER BY MetricValue DESC";
+
+                var rawData = (await db.QueryAsync(sql, commandTimeout: 60)).ToList();
+                double grandTotal = 0;
+                foreach (var x in rawData)
+                {
+                    if (x.MetricValue != null) grandTotal += Convert.ToDouble(x.MetricValue);
+                }
+
+                string topLabel = "";
+                double topVal = 0;
+                var items = new List<object>();
+                foreach (var x in rawData)
+                {
+                    string lbl = (string)x.RowKey;
+                    double val = x.MetricValue != null ? Convert.ToDouble(x.MetricValue) : 0;
+                    if (string.IsNullOrEmpty(topLabel))
+                    {
+                        topLabel = lbl;
+                        topVal = val;
+                    }
+                    double pct = grandTotal > 0 ? Math.Round((val / grandTotal) * 100, 1) : 0;
+                    items.Add(new
+                    {
+                        label = lbl,
+                        value = val,
+                        percent = pct
+                    });
+                }
+
+                var tableCols = new List<object>
+                {
+                    new { key = "label", label = rowInfo.label },
+                    new { key = "value", label = measureName, format = measureFormat },
+                    new { key = "percent", label = "Tỷ trọng (%)", format = "percent" }
+                };
+
+                return new
+                {
+                    isMultiDim = false,
+                    measure = measureName,
+                    measureFormat = measureFormat,
+                    rowLabel = rowInfo.label,
+                    colLabel = "Không chia cột",
+                    summary = new
+                    {
+                        total = grandTotal,
+                        topRow = !string.IsNullOrEmpty(topLabel) ? topLabel : "—",
+                        topRowValue = topVal,
+                        rowCount = items.Count,
+                        colCount = 1
+                    },
+                    chart = new
+                    {
+                        type = "bar",
+                        items = items
+                    },
+                    table = new
+                    {
+                        columns = tableCols,
+                        rows = items
+                    }
+                };
+            }
+        }
+
+public async Task<IEnumerable<dynamic>> Q40_RevenueVsShippingEfficiencyAsync()
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
@@ -766,6 +1260,50 @@ namespace KhangNghi.Infrastructure.Repositories
                 LEFT JOIN RegionShipping rsh ON rs.Region = rsh.Region
                 ORDER BY rs.TotalRevenue DESC";
             return await db.QueryAsync(sql, commandTimeout: 30);
+        }
+
+        // ==================== CHI TIẾT DOANH THU, LỢI NHUẬN TRONG MỘT NĂM ====================
+        public async Task<(IEnumerable<dynamic> Categories, IEnumerable<dynamic> Regions, IEnumerable<dynamic> Products)> GetYearBreakdownAsync(int year, int top = 10)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT p.Category,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                WHERE t.Year = @Year
+                GROUP BY p.Category
+                ORDER BY Revenue DESC;
+
+                SELECT l.Region,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Location l WITH (NOLOCK) ON f.LocationKey = l.LocationKey
+                WHERE t.Year = @Year
+                GROUP BY l.Region
+                ORDER BY Revenue DESC;
+
+                SELECT TOP (@Top) p.ProductName, p.Category,
+                       ROUND(SUM(f.SalesAmount), 2) AS Revenue,
+                       ROUND(SUM(f.ProfitAmount), 2) AS Profit,
+                       SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                WHERE t.Year = @Year
+                GROUP BY p.ProductKey, p.ProductName, p.Category
+                ORDER BY Revenue DESC";
+            using var multi = await db.QueryMultipleAsync(sql, new { Year = year, Top = top }, commandTimeout: 60);
+            var categories = await multi.ReadAsync();
+            var regions = await multi.ReadAsync();
+            var products = await multi.ReadAsync();
+            return (categories, regions, products);
         }
 
         // ==================== DỮ LIỆU HUẤN LUYỆN ML ====================
