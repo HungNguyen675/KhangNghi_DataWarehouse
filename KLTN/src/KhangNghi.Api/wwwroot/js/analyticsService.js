@@ -123,11 +123,12 @@ window.analyticsService = (function () {
   // --------------------------------------------------------------------------
   async function getOverview(filters = {}) {
     const year = yearParam(filters);
-    const [sumRes, yearRes, catRes, regRes] = await Promise.all([
+    const [sumRes, yearRes, catRes, regRes, monthRes] = await Promise.all([
       get("/dashboard/summary", year ? { year } : {}),
       get("/sales/by-year"),
       get("/sales/by-category"),
-      get("/sales/by-region")
+      get("/sales/by-region"),
+      get("/sales/by-month")
     ]);
 
     const summary = summarySection(sumRes, scopeLabel(year));
@@ -143,6 +144,7 @@ window.analyticsService = (function () {
         quantity: yoyChange(byYear.items, year, "quantity")
       },
       byYear,
+      byMonth: section(monthRes, r => ({ year: num(r, "Year"), month: num(r, "Month"), revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0 }), ALL_TIME),
       byCategory: section(catRes, mapCategory, ALL_TIME),
       byRegion: section(regRes, mapRegion, ALL_TIME)
     };
@@ -153,10 +155,10 @@ window.analyticsService = (function () {
   // --------------------------------------------------------------------------
   async function getSales(filters = {}) {
     const year = yearParam(filters);
-    const [sumRes, yearRes, quarterRes, revProdRes, profProdRes, catRes] = await Promise.all([
+    const [sumRes, yearRes, monthRes, revProdRes, profProdRes, catRes] = await Promise.all([
       get("/dashboard/summary", year ? { year } : {}),
       get("/sales/by-year"),
-      year ? get("/sales/by-quarter", { year }) : Promise.resolve(null),
+      get("/sales/by-month"),
       get("/sales/top-products-revenue", { top: 15 }),
       get("/sales/top-products-profit", { top: 15 }),
       get("/sales/by-category")
@@ -170,10 +172,8 @@ window.analyticsService = (function () {
     const byYear = section(yearRes, mapYear, ALL_TIME);
     byYear.items.sort((a, b) => a.year - b.year);
 
-    // Có chọn năm -> xu hướng theo quý của năm đó; không chọn -> theo năm
-    const trend = year
-      ? section(quarterRes, r => ({ label: str(r, "Period") || `Q${num(r, "Quarter")}/${num(r, "Year")}`, revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0 }), scopeLabel(year))
-      : { ...byYear, items: byYear.items.map(y => ({ label: String(y.year), revenue: y.revenue, profit: y.profit })) };
+    // Xu hướng theo tháng; trang tự gộp theo năm hoặc lọc 12 tháng của một năm
+    const trend = section(monthRes, r => ({ year: num(r, "Year"), month: num(r, "Month"), revenue: num(r, "Revenue") || 0, profit: num(r, "Profit") || 0 }), ALL_TIME);
 
     const mapProduct = r => ({
       key: str(r, "ProductKey"),
@@ -249,7 +249,7 @@ window.analyticsService = (function () {
       state: orders.state === "ready" ? (months.length ? "ready" : "empty") : orders.state,
       message: orders.message,
       scope: orders.scope,
-      items: months.map(m => ({ label: `${m.slice(5, 7)}/${m.slice(0, 4)}`, cost: monthMap[m] }))
+      items: months.map(m => ({ label: `${m.slice(5, 7)}/${m.slice(0, 4)}`, year: Number(m.slice(0, 4)), month: Number(m.slice(5, 7)), cost: monthMap[m] }))
     };
 
     return {
@@ -298,6 +298,8 @@ window.analyticsService = (function () {
 
     const movement = section(moveRes, r => ({
       label: str(r, "Period") || `${num(r, "Month")}/${num(r, "Year")}`,
+      year: num(r, "Year"),
+      month: num(r, "Month"),
       inbound: num(r, "TotalQuantityIn") || 0,
       outbound: num(r, "TotalQuantityOut") || 0,
       onHand: num(r, "TotalQuantityOnHand") || 0

@@ -160,12 +160,12 @@ window.KhangNghiRouter = (function () {
       "product": { cat: "Đối tượng", title: "Sản phẩm" },
       "supplier": { cat: "Đối tượng", title: "Nhà cung cấp" },
       "geography": { cat: "Đối tượng", title: "Khu vực" },
-      "cross-analysis": { cat: "Phân tích nâng cao", title: "Phân tích chéo" },
-      "multi-dim": { cat: "Phân tích nâng cao", title: "Phân tích đa chiều" },
-      "olap-explorer": { cat: "Phân tích nâng cao", title: "Phân tích đa chiều" },
-      "forecast": { cat: "Phân tích nâng cao", title: "Dự báo doanh số" },
-      "what-if": { cat: "Phân tích nâng cao", title: "Phân tích giả định" },
-      "question-explorer": { cat: "Phân tích nâng cao", title: "Câu hỏi phân tích" },
+      "cross-analysis": { cat: "Phân tích", title: "Phân tích chéo" },
+      "multi-dim": { cat: "Phân tích", title: "Phân tích đa chiều" },
+      "olap-explorer": { cat: "Phân tích", title: "Phân tích đa chiều" },
+      "forecast": { cat: "Dự báo", title: "Dự báo doanh số" },
+      "what-if": { cat: "Phân tích", title: "Phân tích giả định" },
+      "question-explorer": { cat: "Phân tích", title: "Câu hỏi phân tích" },
       "system-status": { cat: "Hệ thống", title: "Trạng thái dữ liệu" },
       "etl-logs": { cat: "Hệ thống", title: "Nhật ký ETL" },
       "settings": { cat: "Hệ thống", title: "Cài đặt" }
@@ -254,8 +254,20 @@ window.KhangNghiRouter = (function () {
     return currentRoute;
   }
 
+  function navigate(route) {
+    const cleanRoute = (route || "").replace(/^#\/?/, "");
+    const targetHash = `#/${cleanRoute}`;
+    if (window.location.hash === targetHash) {
+      handleHashChange();
+    } else {
+      window.location.hash = targetHash;
+    }
+  }
+
   return {
     init,
+    navigate,
+    handleHashChange,
     updateNavigationUI,
     onRouteChanged,
     getCurrentRoute,

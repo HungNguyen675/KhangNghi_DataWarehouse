@@ -1,0 +1,219 @@
+{
+  "system": {
+    "name": "Khang Nghi Business Intelligence AI Copilot",
+    "warehouse": "DWH_KhangNghi",
+    "cube": "KhangNghi_Cube",
+    "timeRange": "2022 - 2025",
+    "currency": "VNĐ",
+    "rules": {
+      "noHallucinatedNumbers": true,
+      "maxRowsPerToolCall": 15
+    }
+  },
+  "metrics": [
+    {
+      "name": "Doanh thu",
+      "measure": "SalesAmount",
+      "unit": "VNĐ",
+      "synonyms": [
+        "doanh thu", "doanh số", "tiền bán hàng", "tổng tiền bán được", "thu về", "sales", "revenue", "bán được bao nhiêu"
+      ],
+      "description": "Tổng giá trị bán hàng thực tế sau chiết khấu phát sinh trong kỳ."
+    },
+    {
+      "name": "Lợi nhuận",
+      "measure": "ProfitAmount",
+      "unit": "VNĐ",
+      "synonyms": [
+        "lợi nhuận", "tiền lãi", "lãi", "lãi thu được", "lãi gộp", "profit", "thu nhập ròng"
+      ],
+      "description": "Tổng lợi nhuận gộp thu được từ hoạt động bán lẻ và phân phối thiết bị."
+    },
+    {
+      "name": "Biên lợi nhuận",
+      "measure": "ProfitMargin",
+      "unit": "%",
+      "synonyms": [
+        "biên lợi nhuận", "tỷ suất lợi nhuận", "margin", "tỷ lệ lãi", "hiệu quả sinh lời"
+      ],
+      "description": "Tỷ lệ phần trăm giữa Lợi nhuận trên Doanh thu (Lợi nhuận / Doanh thu * 100%)."
+    },
+    {
+      "name": "Sản lượng bán",
+      "measure": "Quantity",
+      "unit": "chiếc",
+      "synonyms": [
+        "sản lượng", "số lượng bán", "số lượng", "bán được bao nhiêu chiếc", "số lượng xuất"
+      ],
+      "description": "Tổng số lượng sản phẩm/thiết bị đã giao dịch thành công."
+    },
+    {
+      "name": "Chi phí nhập hàng",
+      "measure": "PurchaseCost",
+      "unit": "VNĐ",
+      "synonyms": [
+        "chi phí nhập hàng", "tiền nhập", "giá trị nhập kho", "mua hàng", "chi tiêu mua", "purchase cost"
+      ],
+      "description": "Tổng số tiền bỏ ra để nhập hàng từ các nhà cung cấp."
+    },
+    {
+      "name": "Chi phí vận chuyển",
+      "measure": "ShippingCost",
+      "unit": "VNĐ",
+      "synonyms": [
+        "chi phí vận chuyển", "phí ship", "tiền cước", "cước vận chuyển", "chi phí giao hàng", "shipping cost"
+      ],
+      "description": "Tổng cước phí chi trả cho các đơn vị vận chuyển hàng hóa."
+    },
+    {
+      "name": "Tồn kho thực tế",
+      "measure": "QuantityOnHand",
+      "unit": "chiếc",
+      "synonyms": [
+        "tồn kho", "số lượng tồn", "hàng trong kho", "tồn thực tế", "stock"
+      ],
+      "description": "Số lượng hàng hóa hiện có thực tế tại các kho lưu trữ."
+    }
+  ],
+  "intentDictionary": [
+    {
+      "intent": "Doanh thu & lợi nhuận theo năm",
+      "queryId": "Q01",
+      "domain": "Sales",
+      "synonyms": [
+        "doanh thu theo năm", "doanh số các năm", "tiền bán hàng qua các năm", "tăng trưởng các năm", "doanh thu từng năm", "lợi nhuận theo năm", "tình hình kinh doanh các năm"
+      ],
+      "sampleQuestions": [
+        "Doanh thu công ty qua các năm như thế nào?",
+        "Tổng tiền bán hàng từ năm 2022 đến 2025 là bao nhiêu?",
+        "Năm nào có doanh thu cao nhất?"
+      ]
+    },
+    {
+      "intent": "Doanh thu theo quý",
+      "queryId": "Q02",
+      "domain": "Sales",
+      "synonyms": [
+        "doanh thu theo quý", "doanh số từng quý", "tiền bán theo quý", "quý nào bán tốt nhất"
+      ],
+      "parameters": ["year"],
+      "sampleQuestions": [
+        "Doanh thu theo các quý năm 2024?",
+        "Tình hình bán hàng từng quý của năm 2025?"
+      ]
+    },
+    {
+      "intent": "Top sản phẩm bán chạy theo doanh thu",
+      "queryId": "Q06",
+      "domain": "Sales",
+      "synonyms": [
+        "sản phẩm bán chạy", "top sản phẩm", "mặt hàng bán nhiều", "sản phẩm doanh thu cao", "thiết bị bán chạy nhất", "mặt hàng hot"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Top 10 sản phẩm bán chạy nhất là gì?",
+        "Những mặt hàng nào mang lại nhiều tiền bán hàng nhất?"
+      ]
+    },
+    {
+      "intent": "Top sản phẩm lợi nhuận cao nhất",
+      "queryId": "Q07",
+      "domain": "Sales",
+      "synonyms": [
+        "sản phẩm lãi nhất", "sản phẩm lợi nhuận cao", "mặt hàng có lãi lớn", "top sản phẩm sinh lời", "mặt hàng nhiều lãi"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Sản phẩm nào đem lại nhiều lợi nhuận nhất cho công ty?",
+        "Top 5 thiết bị có tiền lãi cao nhất?"
+      ]
+    },
+    {
+      "intent": "Top khách hàng thân thiết / VIP",
+      "queryId": "Q11",
+      "domain": "Sales",
+      "synonyms": [
+        "khách hàng lớn", "khách mua nhiều", "top khách hàng", "khách hàng vip", "ai mua nhiều nhất", "khách quen", "đối tác mua nhiều"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Khách hàng nào mua hàng nhiều nhất?",
+        "Danh sách Top khách hàng VIP đem lại doanh thu cao?"
+      ]
+    },
+    {
+      "intent": "Hàng sắp hết / Cảnh báo tồn kho an toàn",
+      "queryId": "Q28",
+      "domain": "Inventory",
+      "synonyms": [
+        "hàng sắp hết", "tồn kho thấp", "hàng cần nhập thêm", "cảnh báo hết hàng", "dưới định mức", "hàng thiếu", "cháy hàng", "cần nhập gấp"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Có mặt hàng nào đang sắp hết không?",
+        "Danh sách sản phẩm tồn kho dưới mức an toàn cần đặt hàng lại?"
+      ]
+    },
+    {
+      "intent": "Nhà cung cấp lớn / Nhập hàng nhiều",
+      "queryId": "Q21",
+      "domain": "Purchase",
+      "synonyms": [
+        "nhà cung cấp tốt", "nhà cung cấp lớn", "nhà cung cấp nhập nhiều", "nơi nhập hàng nhiều nhất", "đối tác cung ứng hàng đầu", "ncc lớn"
+      ],
+      "sampleQuestions": [
+        "Công ty đang nhập hàng nhiều nhất từ những nhà cung cấp nào?",
+        "Top nhà cung cấp có giá trị nhập hàng lớn nhất?"
+      ]
+    },
+    {
+      "intent": "Chi phí và hiệu quả vận chuyển",
+      "queryId": "Q32",
+      "domain": "Shipping",
+      "synonyms": [
+        "chi phí vận chuyển", "phí ship", "tiền cước đơn vị vận chuyển", "bên vận chuyển nào tốn phí", "tình trạng giao hàng", "cước ship"
+      ],
+      "sampleQuestions": [
+        "Chi phí vận chuyển phân bổ theo từng shipper như thế nào?",
+        "Đơn vị vận chuyển nào chiếm cước phí nhiều nhất?"
+      ]
+    },
+    {
+      "intent": "Mặt hàng sắp hết hàng theo tốc độ bán",
+      "queryId": "Q38",
+      "domain": "Cross",
+      "synonyms": [
+        "hàng bán chạy nhưng ít tồn", "nguy cơ hết hàng", "hàng sắp cạn kho", "số ngày tồn kho thấp", "dưới 3 ngày tồn"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Mặt hàng nào bán chạy nhưng lượng tồn kho không đủ 3 ngày bán?"
+      ]
+    },
+    {
+      "intent": "Mặt hàng tồn ứ đọng / Chậm luân chuyển",
+      "queryId": "Q39",
+      "domain": "Cross",
+      "synonyms": [
+        "hàng tồn nhiều bán chậm", "hàng ế", "tồn đọng", "tồn kho cao sức bán thấp", "chậm luân chuyển", "trên 7 ngày tồn"
+      ],
+      "parameters": ["top"],
+      "sampleQuestions": [
+        "Những mặt hàng nào đang tồn kho quá nhiều so với tốc độ bán hàng thực tế?"
+      ]
+    },
+    {
+      "intent": "Tổng quan toàn diện công ty",
+      "queryId": "OVERVIEW",
+      "domain": "Overview",
+      "synonyms": [
+        "tổng quan", "tóm tắt", "tình hình kinh doanh chung", "kpi tổng hợp", "báo cáo tổng quan", "dashboard chung"
+      ],
+      "parameters": ["year", "region"],
+      "sampleQuestions": [
+        "Tổng quan tình hình kinh doanh của công ty?",
+        "Tóm tắt các chỉ số chính của Khang Nghị năm 2024?"
+      ]
+    }
+  ]
+}

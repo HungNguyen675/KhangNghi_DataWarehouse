@@ -19,7 +19,11 @@ namespace KhangNghi.Api.Controllers
 
         // Q01: Tổng doanh thu bán hàng theo từng năm
         [HttpGet("by-year")]
-        public async Task<IActionResult> GetRevenueByYear() => Ok(await _repo.Q01_RevenueByYearAsync());
+        public async Task<IActionResult> GetRevenueByYear([FromQuery] int? year = null) => Ok(await _repo.Q01_RevenueByYearAsync(year));
+
+        // Doanh thu, lợi nhuận từng tháng (biểu đồ xu hướng trang Tổng quan, mở cho mọi vai trò)
+        [HttpGet("by-month")]
+        public async Task<IActionResult> GetRevenueByMonth() => Ok(await _repo.GetRevenueByMonthAsync());
 
         // Chi tiết một năm: doanh thu, lợi nhuận theo danh mục, khu vực và sản phẩm đứng đầu
         [HttpGet("year-breakdown")]

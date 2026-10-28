@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="18"
-  DTS:VersionGUID="{A3C136A9-878D-40CB-B0EC-65E79787BE01}">
+  DTS:VersionBuild="21"
+  DTS:VersionGUID="{6F8EA6A9-E3BD-43FD-BA85-3796709112B0}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACn/OmdxazRJGEcyFhRoexV+84vmVjTNcuNVewtxoPjGwAAAAAOgAAAAAIAACAAAABooY1uftEt1O7eA2TPdFobLqy7eiL5jfNOkpdWJdX0lBAAAAC8gBio4td/jIkJ8NJQ9e7nQAAAAIUnjx+00Shb+Y3p99FnC48gTTKEaDr0QWJ0VzbwQJfEQQboscNGx4WLtihLGq4r3cqGAR3XSPM//1FJylALJPM</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADMZ1BopEmH3bXHpZZWPvJyi7Pjo8d+coGt9EaCmlxv+AAAAAAOgAAAAAIAACAAAAAlvChkTeDUA0SkKKm4JHSZLNue1gnl/zCi+HpbtehpWhAAAAB4wYhaTdopFBe4yMDZPeHWQAAAAC1H7soQKO37Axf5zwR4ov7V8PQxCs6Tm1YL/Mn7J++hsO5ti/HztSnM6UiY9HAqdkA5Eh/EJ4cWR9LSpZpEoAQ</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{0065F774-81B4-48AD-8D23-FD94D358CD2B}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADV5fLvgf8b5xvbdgo9/6lDXhyojTvKvdwG7DIs9LgwcwAAAAAOgAAAAAIAACAAAABPtGMYsF6IS6PQMIRApr1s1kHfDSVozgMdlYKTAkp0KBAAAACCiQkacJEgub47jqXbdciQQAAAAEwkefiRf4AxE4f78cr2ZlcQVx+8IYcl8C63Bm30Ua5adolw+jnRek/QDEg7UppdTHF6xkNzCgzJz0Nc7n/DHyA</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAhZSU4dkgFHcIDksKrGCPtou+gyELzofpBPA+/eQQfjgAAAAAOgAAAAAIAACAAAABoDAgGaGf6OEuYCLwabSIYPMWAATYXWbQKsVuSvYe2PxAAAADMGuPbBRA5uuYkwTFGQQOVQAAAANXXwif7dmvtC8AYylpB+Ij/R3bIU35iGbJvr40cinE37hz+cU/7QUu00xEHr2u0JtUZI0Ka/4GL4JjfVw2R8kA</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -59,11 +59,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{DAD8EF47-9109-4893-846E-3C87FEE1DBC4}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{DAD8EF47-9109-4893-846E-3C87FEE1DBC4}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAwodDvzm9KR54kk4Ppa2KDY1bYpw81yaIl+qavKoOXnAAAAAAOgAAAAAIAACAAAACQLWXVyxYAND247e1M9gSCfDP9Mi4DE2CC1u1wZ3/e6BAAAAC3mGY0RetaeB2i/rt6HYoeQAAAAKhBiibAJufu7ykqegdwA77f+PZtnOfSWWHlD05Ee+cOkrCuh28cM9qGinTQlvGjpv6zJi1LuvsXoyngelR33uk</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAZbJEZl5tXKNh+JaG2xZgLz1UOhbtTsgIaMiWKQC40ZAAAAAAOgAAAAAIAACAAAAAS2/Lyw660LrXRIncGGkbxdBmPX3+RFz6hf8pVdfPg2BAAAACrLbdN0JbINOZtewEZw/atQAAAAGeO0W8QVAvgZPKYZioLOrm9OtWq4/ufqfzUGwQv3MxOrK5xUkO1xRqcjkxkma+46cvt0sOcnOEg3aMktNm/WV4</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -116,7 +116,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{DAD8EF47-9109-4893-846E-3C87FEE1DBC4}"
-          SQLTask:SqlStatementSource="UPDATE ETL_Config SET Last_Load_Date = GETDATE() WHERE TableName = 'KhangNghi_Inventory'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="UPDATE dbo.ETL_Config SET Last_Load_Date=COALESCE((SELECT MAX(D) FROM(SELECT MAX(CONVERT(date,[Ship Date])) D FROM dbo.Stg_KhangNghiData UNION ALL SELECT MAX(CONVERT(date,PurchaseDate)) FROM dbo.Stg_PurchaseHistory) q),Last_Load_Date) WHERE TableName=N'KhangNghi_Inventory'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -244,6 +244,172 @@
                       refId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
                       dataType="i4"
                       lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Data Flow Task\Lookup Existing Inventory"
+              componentClassID="Microsoft.Lookup"
+              contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;6"
+              description="Joins additional columns to the data flow by looking up values in a table. For example, join to the 'employee id' column the employees table to get 'hire date' and 'employee name'. We recommend this transformation when the lookup table can fit into memory."
+              name="Lookup Existing Inventory"
+              usesDispositions="true"
+              version="6">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="Specifies the SQL statement that generates the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT TimeKey,ProductKey,WarehouseKey FROM dbo.Fact_Inventory WHERE SourceSystem=N'SSIS_ETL'</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies a SQL statement that uses parameters to generate the lookup table."
+                  expressionType="Notify"
+                  name="SqlCommandParam"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT TimeKey,ProductKey,WarehouseKey FROM dbo.Fact_Inventory WHERE SourceSystem=N'SSIS_ETL' AND TimeKey=? AND ProductKey=? AND WarehouseKey=?</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the type of connection used to access the reference dataset."
+                  name="ConnectionType"
+                  typeConverter="LookupConnectionType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the cache type of the lookup table."
+                  name="CacheType"
+                  typeConverter="CacheType">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
+                  name="NoMatchBehavior"
+                  typeConverter="LookupNoMatchBehavior">1</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset."
+                  name="NoMatchCachePercentage">0</property>
+                <property
+                  dataType="System.Int32"
+                  description="Maximum Memory Usage for Reference Cache on a 32 bit platform."
+                  name="MaxMemoryUsage">25</property>
+                <property
+                  dataType="System.Int64"
+                  description="Maximum Memory Usage for Reference Cache on a 64 bit platform."
+                  name="MaxMemoryUsage64">25</property>
+                <property
+                  dataType="System.String"
+                  description="Indicates whether to reference metadata in an XML format."
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="TimeKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="ProductKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="WarehouseKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property
+                  containsID="true"
+                  dataType="System.String"
+                  description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
+                  name="ParameterMap">#{Package\Data Flow Task\Lookup Time.Outputs[Lookup Match Output].Columns[TimeKey]};#{Package\Data Flow Task\Lookup_Product.Outputs[Lookup Match Output].Columns[ProductKey]};#{Package\Data Flow Task\Lookup Warehouse.Outputs[Lookup Match Output].Columns[WarehouseKey]};</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1258</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used."
+                  name="TreatDuplicateKeysAsError">true</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Data Flow Task\Lookup Existing Inventory.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa 1]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa 1]"
+                  description="Connection manager used to access lookup data."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input].Columns[TimeKey]"
+                      cachedDataType="i4"
+                      cachedName="TimeKey"
+                      lineageId="Package\Data Flow Task\Lookup Time.Outputs[Lookup Match Output].Columns[TimeKey]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          name="JoinToReferenceColumn">TimeKey</property>
+                        <property
+                          dataType="System.Null"
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input].Columns[ProductKey]"
+                      cachedDataType="i4"
+                      cachedName="ProductKey"
+                      lineageId="Package\Data Flow Task\Lookup_Product.Outputs[Lookup Match Output].Columns[ProductKey]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          name="JoinToReferenceColumn">ProductKey</property>
+                        <property
+                          dataType="System.Null"
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input].Columns[WarehouseKey]"
+                      cachedDataType="i4"
+                      cachedName="WarehouseKey"
+                      lineageId="Package\Data Flow Task\Lookup Warehouse.Outputs[Lookup Match Output].Columns[WarehouseKey]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          name="JoinToReferenceColumn">WarehouseKey</property>
+                        <property
+                          dataType="System.Null"
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Match Output]"
+                  errorOrTruncationOperation="Lookup"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup No Match Output]"
+                  description="The Lookup output that handles rows with no matching entries in the reference dataset. Use this output when the NoMatchBehavior property is set to &quot;Send rows with no matching entries to the no match output.&quot;"
+                  exclusionGroup="1"
+                  name="Lookup No Match Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="Lookup Error Output"
+                  synchronousInputId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -741,14 +907,13 @@ where [refTable].[WarehouseID] = ?</property>
                   description="Specifies the SQL statement that generates the lookup table."
                   expressionType="Notify"
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[Dim_Product]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [ProductKey],[ProductID],[ProductName],[Category],[SubCategory],[SourceSystem],[CreatedDate],[UpdatedDate],[ProductType],CAST(ValidFrom AS date) AS SCDLookupDay FROM dbo.Dim_Product</property>
                 <property
                   dataType="System.String"
                   description="Specifies a SQL statement that uses parameters to generate the lookup table."
                   expressionType="Notify"
                   name="SqlCommandParam"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[Dim_Product]) [refTable]
-where [refTable].[ProductID] = ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [ProductKey],[ProductID],[ProductName],[Category],[SubCategory],[SourceSystem],[CreatedDate],[UpdatedDate],[ProductType],CAST(ValidFrom AS date) AS SCDLookupDay FROM dbo.Dim_Product WHERE ProductID=? AND ValidFrom&lt;=? AND ValidTo&gt;?</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the type of connection used to access the reference dataset."
@@ -758,7 +923,7 @@ where [refTable].[ProductID] = ?</property>
                   dataType="System.Int32"
                   description="Specifies the cache type of the lookup table."
                   name="CacheType"
-                  typeConverter="CacheType">0</property>
+                  typeConverter="CacheType">2</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set."
@@ -779,12 +944,12 @@ where [refTable].[ProductID] = ?</property>
                 <property
                   dataType="System.String"
                   description="Indicates whether to reference metadata in an XML format."
-                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ProductKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="ProductID" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="ProductName" dataType="DT_WSTR" length="255" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="Category" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="SubCategory" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="SourceSystem" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="CreatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="UpdatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="ProductType" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                  name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ProductKey" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="ProductID" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="ProductName" dataType="DT_WSTR" length="255" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="Category" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="SubCategory" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="SourceSystem" dataType="DT_WSTR" length="50" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="CreatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="UpdatedDate" dataType="DT_DBTIMESTAMP" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="ProductType" dataType="DT_WSTR" length="100" precision="0" scale="0" codePage="0" /&gt;&lt;referenceColumn name="SCDLookupDay" dataType="DT_DBDATE" length="0" precision="0" scale="0" codePage="0" /&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
                 <property
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[ProductID]};</property>
+                  name="ParameterMap">#{Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[ProductID]};#{Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryDate]};#{Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryDate]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -821,6 +986,20 @@ where [refTable].[ProductID] = ?</property>
                         <property
                           dataType="System.Null"
                           description="Specifies the column in the reference table from which a column is copied."
+                          name="CopyFromReferenceColumn" />
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Lookup_Product.Inputs[Lookup Input].Columns[InventoryDate]"
+                      cachedDataType="dbDate"
+                      cachedName="InventoryDate"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[InventoryDate]">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          name="JoinToReferenceColumn">SCDLookupDay</property>
+                        <property
+                          dataType="System.Null"
                           name="CopyFromReferenceColumn" />
                       </properties>
                     </inputColumn>
@@ -940,7 +1119,7 @@ where [refTable].[ProductID] = ?</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
-                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  name="FastLoadMaxInsertCommitSize">1000</property>
               </properties>
               <connections>
                 <connection
@@ -1126,45 +1305,36 @@ where [refTable].[ProductID] = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">WITH InventoryTransactions AS (
-    -- 1. Lấy giao dịch NHẬP KHO (mang dấu Cộng)
-    SELECT 
-        CAST([PurchaseDate] AS DATE) AS InventoryDate,
-        CAST('PUR_' + CAST(LTRIM(RTRIM([ProductID])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS ProductID,
-        CAST('PUR_Unknown' AS NVARCHAR(50)) AS LocationID, -- Mua hàng không có Location, gán tạm mác Unknown
-        CAST('PUR_' + CAST(LTRIM(RTRIM([Warehouse])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS WarehouseID,
-        [Quantity] AS QuantityIn,
-        0 AS QuantityOut
-    FROM dbo.Stg_PurchaseHistory
-    WHERE [PurchaseDate] &gt;= ?
-    
-    UNION ALL
-    
-    -- 2. Lấy giao dịch XUẤT KHO (mang dấu Trừ)
-    SELECT 
-        CAST([Order Date] AS DATE) AS InventoryDate,
-        CAST('SALE_' + CAST(LTRIM(RTRIM([Product ID])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS ProductID,
-        CAST('SALE_' + CAST(LTRIM(RTRIM([Location ID])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS LocationID,
-        CAST('SALE_' + CAST(LTRIM(RTRIM([Warehouse])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS WarehouseID,
-        0 AS QuantityIn,
-        [Quantity] AS QuantityOut
-    FROM dbo.Stg_KhangNghiData
-    WHERE [Order Date] &gt;= ?
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SET NOCOUNT ON;
+DECLARE @FromIn date=?,@FromOut date=?;
+DECLARE @Warehouses TABLE(WarehouseID nvarchar(50) PRIMARY KEY,WarehouseName nvarchar(255) UNIQUE,LocationID nvarchar(50));
+DECLARE @Events TABLE(EventDate date,SKU nvarchar(50),WarehouseID nvarchar(50),QuantityIn bigint,QuantityOut bigint);
+DECLARE @Daily TABLE(SKU nvarchar(50),WarehouseID nvarchar(50),EventDate date,QuantityIn bigint,QuantityOut bigint,PRIMARY KEY(SKU,WarehouseID,EventDate));
+DECLARE @Pairs TABLE(SKU nvarchar(50),WarehouseID nvarchar(50),FirstActivity date,PRIMARY KEY(SKU,WarehouseID));
+DECLARE @Rows TABLE(InventoryDate date,ProductID nvarchar(50),LocationID nvarchar(50),WarehouseID nvarchar(50),QuantityIn int,QuantityOut int,QuantityOnHand int,ReorderLevel int);
+INSERT @Warehouses SELECT w.WarehouseID,w.WarehouseName,JSON_VALUE(m.RecordPayload,N'$.locationId')
+FROM KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Warehouses w JOIN KhangNghi_OLTP_VN_DRAFT.vn.SimMasterRecord m ON m.EntityType=N'Warehouse' AND m.BusinessKey COLLATE DATABASE_DEFAULT=w.WarehouseID COLLATE DATABASE_DEFAULT AND m.MasterVersion=N'VN-MASTER-2022-2025-001';
+INSERT @Events SELECT CONVERT(date,p.PurchaseDate),p.ProductID,w.WarehouseID,CONVERT(bigint,p.Quantity),0 FROM dbo.Stg_PurchaseHistory p JOIN @Warehouses w ON w.WarehouseID=p.Warehouse
+UNION ALL SELECT CONVERT(date,s.[Ship Date]),s.[Product ID],w.WarehouseID,0,CONVERT(bigint,s.Quantity) FROM dbo.Stg_KhangNghiData s JOIN @Warehouses w ON w.WarehouseName=s.Warehouse;
+IF (SELECT COUNT_BIG(*) FROM @Events)&lt;&gt;(SELECT COUNT_BIG(*) FROM dbo.Stg_PurchaseHistory)+(SELECT COUNT_BIG(*) FROM dbo.Stg_KhangNghiData) THROW 51000,'Inventory warehouse mapping lost movements.',1;
+IF EXISTS(SELECT 1 FROM KhangNghi_OLTP_VN_DRAFT.dbo.Returns) OR EXISTS(SELECT 1 FROM KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.PurchaseReturns) THROW 51000,'Return movements require explicit inventory mapping.',1;
+INSERT @Pairs SELECT SKU,WarehouseID,MIN(EventDate) FROM @Events GROUP BY SKU,WarehouseID;
+INSERT @Daily SELECT SKU,WarehouseID,EventDate,SUM(QuantityIn),SUM(QuantityOut) FROM @Events GROUP BY SKU,WarehouseID,EventDate;
+DECLARE @Last date=(SELECT MAX(EventDate) FROM @Events);
+;WITH Balances AS(
+ SELECT p.SKU,p.WarehouseID,t.FullDate SnapshotDate,COALESCE(d.QuantityIn,0) QuantityIn,COALESCE(d.QuantityOut,0) QuantityOut,
+ SUM(COALESCE(d.QuantityIn,0)-COALESCE(d.QuantityOut,0)) OVER(PARTITION BY p.SKU,p.WarehouseID ORDER BY t.FullDate ROWS UNBOUNDED PRECEDING) QuantityOnHand
+ FROM @Pairs p JOIN DWH_KhangNghi.dbo.Dim_Time t ON t.FullDate BETWEEN p.FirstActivity AND @Last
+ LEFT JOIN @Daily d ON d.SKU=p.SKU AND d.WarehouseID=p.WarehouseID AND d.EventDate=t.FullDate
 )
--- 3. Gom nhóm và tính toán Tồn kho
-SELECT 
-    InventoryDate,
-    ProductID,
-    LocationID,
-    WarehouseID,
-    SUM(QuantityIn) AS QuantityIn,
-    SUM(QuantityOut) AS QuantityOut,
-    -- Tồn kho trong ngày = Nhập - Xuất
-    SUM(QuantityIn) - SUM(QuantityOut) AS QuantityOnHand,
-    -- Tạm gán mức cảnh báo nhập hàng là 50
-    50 AS ReorderLevel
-FROM InventoryTransactions
-GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
+INSERT @Rows SELECT b.SnapshotDate,CAST(N'SALE_'+b.SKU AS nvarchar(50)),CAST(N'SALE_'+w.LocationID AS nvarchar(50)),CAST(N'SALE_'+w.WarehouseName AS nvarchar(50)),CONVERT(int,b.QuantityIn),CONVERT(int,b.QuantityOut),CONVERT(int,b.QuantityOnHand),p.ReorderLevel
+FROM Balances b JOIN @Warehouses w ON w.WarehouseID=b.WarehouseID JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Products p ON p.ProductID=b.SKU
+WHERE b.SnapshotDate&gt;=CASE WHEN @FromIn&lt;@FromOut THEN @FromIn ELSE @FromOut END
+AND NOT EXISTS(SELECT 1 FROM DWH_KhangNghi.dbo.Fact_Inventory old JOIN DWH_KhangNghi.dbo.Dim_Time dt ON dt.TimeKey=old.TimeKey JOIN DWH_KhangNghi.dbo.Dim_Product dp ON dp.ProductKey=old.ProductKey JOIN DWH_KhangNghi.dbo.Dim_Warehouse dw ON dw.WarehouseKey=old.WarehouseKey WHERE old.SourceSystem=N'SSIS_ETL' AND dt.FullDate=b.SnapshotDate AND dp.ProductID=N'SALE_'+b.SKU AND dw.WarehouseID=N'SALE_'+w.WarehouseName AND old.QuantityIn=b.QuantityIn AND old.QuantityOut=b.QuantityOut AND old.QuantityOnHand=b.QuantityOnHand AND old.ReorderLevel=p.ReorderLevel)
+OPTION(RECOMPILE);
+IF EXISTS(SELECT 1 FROM @Rows WHERE QuantityOnHand&lt;0 OR QuantityIn&lt;0 OR QuantityOut&lt;0 OR ReorderLevel IS NULL) THROW 51000,'Invalid inventory balance/policy; stop before destination.',1;
+SELECT InventoryDate,ProductID,LocationID,WarehouseID,QuantityIn,QuantityOut,QuantityOnHand,ReorderLevel FROM @Rows;
+</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -1284,11 +1454,11 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
                       name="QuantityIn" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[QuantityOut]"
-                      dataType="r8"
+                      dataType="i4"
                       name="QuantityOut" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[QuantityOnHand]"
-                      dataType="r8"
+                      dataType="i4"
                       name="QuantityOnHand" />
                     <externalMetadataColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[ReorderLevel]"
@@ -1350,12 +1520,12 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
                       name="QuantityIn" />
                     <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[QuantityOut]"
-                      dataType="r8"
+                      dataType="i4"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[QuantityOut]"
                       name="QuantityOut" />
                     <outputColumn
                       refId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[QuantityOnHand]"
-                      dataType="r8"
+                      dataType="i4"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[QuantityOnHand]"
                       name="QuantityOnHand" />
                     <outputColumn
@@ -1380,13 +1550,242 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
                 </output>
               </outputs>
             </component>
+            <component
+              refId="Package\Data Flow Task\Update Existing Inventory"
+              componentClassID="Microsoft.OLEDBCommand"
+              contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+              description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+              name="Update Existing Inventory"
+              usesDispositions="true"
+              version="2">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  expressionType="Notify"
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE dbo.Fact_Inventory SET QuantityIn=?,QuantityOut=?,QuantityOnHand=?,ReorderLevel=?,LocationKey=?,UpdatedDate=GETDATE() WHERE TimeKey=? AND ProductKey=? AND WarehouseKey=? AND SourceSystem=?;</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1258</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Data Flow Task\Update Existing Inventory.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa 1]"
+                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa 1]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input]"
+                  errorOrTruncationOperation="Command Execution"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[QuantityIn]"
+                      cachedDataType="i4"
+                      cachedName="QuantityIn"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[QuantityIn]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[QuantityOut]"
+                      cachedDataType="r8"
+                      cachedName="QuantityOut"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[QuantityOut]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[QuantityOnHand]"
+                      cachedDataType="r8"
+                      cachedName="QuantityOnHand"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[QuantityOnHand]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[ReorderLevel]"
+                      cachedDataType="i4"
+                      cachedName="ReorderLevel"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[ReorderLevel]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[LocationKey]"
+                      cachedDataType="i4"
+                      cachedName="LocationKey"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_4]"
+                      lineageId="Package\Data Flow Task\Lookup Location.Outputs[Lookup Match Output].Columns[LocationKey]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[TimeKey]"
+                      cachedDataType="i4"
+                      cachedName="TimeKey"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_5]"
+                      lineageId="Package\Data Flow Task\Lookup Time.Outputs[Lookup Match Output].Columns[TimeKey]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[ProductKey]"
+                      cachedDataType="i4"
+                      cachedName="ProductKey"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_6]"
+                      lineageId="Package\Data Flow Task\Lookup_Product.Outputs[Lookup Match Output].Columns[ProductKey]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[WarehouseKey]"
+                      cachedDataType="i4"
+                      cachedName="WarehouseKey"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_7]"
+                      lineageId="Package\Data Flow Task\Lookup Warehouse.Outputs[Lookup Match Output].Columns[WarehouseKey]" />
+                    <inputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].Columns[SourceSystem]"
+                      cachedDataType="wstr"
+                      cachedLength="8"
+                      cachedName="SourceSystem"
+                      externalMetadataColumnId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_8]"
+                      lineageId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[SourceSystem]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      dataType="i4"
+                      name="Param_0">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      dataType="r8"
+                      name="Param_1">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      dataType="r8"
+                      name="Param_2">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      dataType="i4"
+                      name="Param_3">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_4]"
+                      dataType="i4"
+                      name="Param_4">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_5]"
+                      dataType="i4"
+                      name="Param_5">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_6]"
+                      dataType="i4"
+                      name="Param_6">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_7]"
+                      dataType="i4"
+                      name="Param_7">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input].ExternalColumns[Param_8]"
+                      dataType="wstr"
+                      length="8"
+                      name="Param_8">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          name="DBParamInfoFlags">65</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Output]"
+                  exclusionGroup="1"
+                  name="OLE DB Command Output"
+                  synchronousInputId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+                <output
+                  refId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Command Error Output"
+                  synchronousInputId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Data Flow Task\Update Existing Inventory.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
           </components>
           <paths>
             <path
               refId="Package\Data Flow Task.Paths[Derived Column Output]"
-              endId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              endId="Package\Data Flow Task\Lookup Existing Inventory.Inputs[Lookup Input]"
               name="Derived Column Output"
               startId="Package\Data Flow Task\Derived Column.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\Data Flow Task.Paths[Existing Inventory Match Output]"
+              endId="Package\Data Flow Task\Update Existing Inventory.Inputs[OLE DB Command Input]"
+              name="Existing Inventory Match Output"
+              startId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup Match Output]" />
             <path
               refId="Package\Data Flow Task.Paths[Lookup Match Output]"
               endId="Package\Data Flow Task\Lookup_Product.Inputs[Lookup Input]"
@@ -1407,6 +1806,11 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
               endId="Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
               name="Lookup Match Output"
               startId="Package\Data Flow Task\Lookup Location.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Data Flow Task.Paths[New Inventory No Match Output]"
+              endId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="New Inventory No Match Output"
+              startId="Package\Data Flow Task\Lookup Existing Inventory.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\Data Flow Task.Paths[OLE DB Source Output]"
               endId="Package\Data Flow Task\Lookup Time.Inputs[Lookup Input]"
@@ -1450,29 +1854,29 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
         <NodeLayout
           Size="185.6,41.6"
           Id="Package\1 Lấy mốc thời gian cũ"
-          TopLeft="280.400000149011,64.9999999430246" />
+          TopLeft="271.11428584353,71.8823528781684" />
         <NodeLayout
           Size="217.6,41.6"
           Id="Package\2 Cập nhật Mốc thời gian mới"
-          TopLeft="260.400000106437,298.999999737916" />
+          TopLeft="253.971428664181,318.117646779982" />
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
           TopLeft="290.000000617334,198.823529237488" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="369.200000383173,106.599999943025">
+          TopLeft="364.557143230432,113.482352878168">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,92.2235292944634"
+              EndConnector="0,85.3411763593196"
               Start="0,0"
-              End="0,84.7235292944634">
+              End="0,77.8411763593196">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,84.7235292944634" />
+                    End="0,77.8411763593196" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1483,18 +1887,18 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="367.200000361885,240.423529237488">
+          TopLeft="363.985714640757,240.423529237488">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,58.576470500428"
+              EndConnector="0,77.6941175424942"
               Start="0,0"
-              End="0,51.076470500428">
+              End="0,70.1941175424942">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,51.076470500428" />
+                    End="0,70.1941175424942" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1510,35 +1914,43 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
     design-time-name="Package\Data Flow Task">
     <LayoutInfo>
       <GraphLayout
-        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
-        <NodeLayout
-          Size="168.8,41.6"
-          Id="Package\Data Flow Task\Lookup Warehouse"
-          TopLeft="28.9999982906245,215.717644532535" />
-        <NodeLayout
-          Size="170.4,41.6"
-          Id="Package\Data Flow Task\OLE DB Destination"
-          TopLeft="35.0000000745055,301.294117382963" />
-        <NodeLayout
-          Size="139.2,41.6"
-          Id="Package\Data Flow Task\Lookup Time"
-          TopLeft="259.285714837665,110.776470580191" />
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="154.4,41.6"
           Id="Package\Data Flow Task\Lookup_Product"
           TopLeft="556.428567333793,110.482352905342" />
         <NodeLayout
-          Size="149.6,41.6"
-          Id="Package\Data Flow Task\OLE DB Source"
-          TopLeft="28.5714286322495,113.176470489032" />
+          Size="170.4,41.6"
+          Id="Package\Data Flow Task\OLE DB Destination"
+          TopLeft="27.1428572006369,317.352940898299" />
+        <NodeLayout
+          Size="155.2,41.6"
+          Id="Package\Data Flow Task\Lookup Location"
+          TopLeft="320.714286397002,217.941176279554" />
+        <NodeLayout
+          Size="168.8,41.6"
+          Id="Package\Data Flow Task\Lookup Warehouse"
+          TopLeft="28.9999982906245,215.717644532535" />
+        <NodeLayout
+          Size="260,41.6"
+          Id="Package\Data Flow Task\Update Existing Inventory"
+          TopLeft="570,294.705882366347" />
+        <NodeLayout
+          Size="139.2,41.6"
+          Id="Package\Data Flow Task\Lookup Time"
+          TopLeft="259.285714837665,110.776470580191" />
         <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
           TopLeft="602.857144140468,217.941176279554" />
         <NodeLayout
-          Size="155.2,41.6"
-          Id="Package\Data Flow Task\Lookup Location"
-          TopLeft="320.714286397002,217.941176279554" />
+          Size="149.6,41.6"
+          Id="Package\Data Flow Task\OLE DB Source"
+          TopLeft="28.5714286322495,113.176470489032" />
+        <NodeLayout
+          Size="240,41.6"
+          Id="Package\Data Flow Task\Lookup Existing Inventory"
+          TopLeft="272.857142841938,299.294117656443" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="178.17142863225,132.776470534612">
@@ -1559,6 +1971,42 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[New Inventory No Match Output]"
+          TopLeft="272.857142841938,320.094117656443">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-75.3142856413011,18.0588232418556"
+              Start="0,0"
+              End="-67.8142856413011,18.0588232418556">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-33.6571428206506,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-33.6571428206506,0"
+                    Point2="-37.6571428206506,0"
+                    Point3="-37.6571428206506,4" />
+                  <mssgle:LineSegment
+                    End="-37.6571428206506,14.0588232418556" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-37.6571428206506,14.0588232418556"
+                    Point2="-37.6571428206506,18.0588232418556"
+                    Point3="-41.6571428206506,18.0588232418556" />
+                  <mssgle:LineSegment
+                    End="-67.8142856413011,18.0588232418556" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-93.4635295394006,-17.609375,111.6127734375,11.609375"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -1670,31 +2118,55 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Existing Inventory Match Output]"
+          TopLeft="512.857142841938,317.800000011395">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="57.1428571580625,0"
+              Start="0,0"
+              End="49.6428571580625,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="49.6428571580625,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-23.3699581397188,5,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package\Data Flow Task.Paths[Derived Column Output]"
           TopLeft="679.257144140468,259.541176279554">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-559.057144065962,41.7529411034089"
+              EndConnector="-286.40000129853,39.7529413768889"
               Start="0,0"
-              End="-559.057144065962,34.2529411034089">
+              End="-286.40000129853,32.2529413768889">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,16.8764705517045" />
+                    End="0,15.8764706884445" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,16.8764705517045"
-                    Point2="0,20.8764705517045"
-                    Point3="-4,20.8764705517045" />
+                    Point1="0,15.8764706884445"
+                    Point2="0,19.8764706884445"
+                    Point3="-4,19.8764706884445" />
                   <mssgle:LineSegment
-                    End="-555.057144065962,20.8764705517045" />
+                    End="-282.40000129853,19.8764706884445" />
                   <mssgle:CubicBezierSegment
-                    Point1="-555.057144065962,20.8764705517045"
-                    Point2="-559.057144065962,20.8764705517045"
-                    Point3="-559.057144065962,24.8764705517045" />
+                    Point1="-282.40000129853,19.8764706884445"
+                    Point2="-286.40000129853,19.8764706884445"
+                    Point3="-286.40000129853,23.8764706884445" />
                   <mssgle:LineSegment
-                    End="-559.057144065962,34.2529411034089" />
+                    End="-286.40000129853,32.2529413768889" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1707,58 +2179,12 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\Lookup Warehouse">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:boolean">false</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Destination">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\Lookup Time">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:boolean">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string">[dbo].[Dim_Time]</Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\Lookup_Product">
     <Properties>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -1776,10 +2202,15 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Source">
+    design-time-name="Package\Data Flow Task\OLE DB Destination">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>
@@ -1789,7 +2220,7 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -1801,6 +2232,47 @@ GROUP BY InventoryDate, ProductID, LocationID, WarehouseID</property>
         <Value
           type="q4:string">0</Value>
       </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\Lookup Warehouse">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\Lookup Time">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[dbo].[Dim_Time]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\OLE DB Source">
+    <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
       </Property>

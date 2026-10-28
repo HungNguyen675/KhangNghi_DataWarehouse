@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KhangNghi.Core\KhangNghi.Core.csproj" />
+    <EmbeddedResource Include="Data\002_Validate_ETL_Schema.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -9,6 +10,7 @@
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="ExcelDataReader" Version="3.9.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.9.0" />
+    <PackageReference Include="Microsoft.AnalysisServices.NetCore.retail.amd64" Version="19.84.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.ML" Version="5.0.0" />

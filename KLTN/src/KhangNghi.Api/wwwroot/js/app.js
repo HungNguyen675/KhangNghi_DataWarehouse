@@ -4,6 +4,69 @@
    Dữ liệu: window.analyticsService (mọi khối có state ready/empty/error/forbidden)
    ========================================================================== */
 
+// Khởi tạo đối tượng toàn cục KhangNghiApp ngay lập tức để xử lý nút bấm login/demo ngay cả trước khi DOMContentLoaded hoàn tất
+window.KhangNghiApp = window.KhangNghiApp || {
+  handleLogin: async function() {
+    const emailInput = document.getElementById("login-email");
+    const passwordInput = document.getElementById("login-password");
+    const rememberInput = document.getElementById("login-remember");
+    const alertBox = document.getElementById("login-alert-box");
+    const alertMsg = document.getElementById("login-alert-msg");
+    const submitBtn = document.getElementById("login-submit-btn");
+    const btnText = document.getElementById("login-btn-text");
+    if (!emailInput || !passwordInput) return;
+
+    if (submitBtn) submitBtn.disabled = true;
+    if (btnText) btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xác thực...`;
+    if (alertBox) alertBox.style.display = "none";
+
+    const auth = window.KhangNghiAuth;
+    if (!auth) {
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnText) btnText.textContent = "Đăng Nhập";
+      return;
+    }
+
+    const res = await auth.login(emailInput.value.trim(), passwordInput.value, rememberInput ? rememberInput.checked : false);
+    if (submitBtn) submitBtn.disabled = false;
+    if (btnText) btnText.textContent = "Đăng Nhập";
+
+    if (res.success) {
+      if (window.KhangNghiComponents && window.KhangNghiComponents.showToast) {
+        window.KhangNghiComponents.showToast(`Xin chào ${res.user.fullName}`);
+      }
+      if (window.KhangNghiRouter && window.KhangNghiRouter.navigate) {
+        window.KhangNghiRouter.navigate("overview");
+      } else {
+        window.location.hash = "#/overview";
+      }
+    } else if (alertBox && alertMsg) {
+      alertMsg.textContent = res.message || "Tên đăng nhập hoặc mật khẩu không chính xác.";
+      alertBox.style.display = "flex";
+    }
+  },
+  fillDemoAccount: function(email) {
+    const emailInput = document.getElementById("login-email");
+    const passwordInput = document.getElementById("login-password");
+    if (emailInput) emailInput.value = email;
+    const auth = window.KhangNghiAuth;
+    if (auth && auth.DEMO_ACCOUNTS) {
+      const acc = auth.DEMO_ACCOUNTS.find(a => (a.email || "").toLowerCase() === (email || "").toLowerCase());
+      if (acc && passwordInput) passwordInput.value = acc.password;
+    }
+    window.KhangNghiApp.handleLogin();
+  },
+  togglePasswordVisibility: function() {
+    const input = document.getElementById("login-password");
+    const icon = document.getElementById("password-toggle-icon");
+    if (!input || !icon) return;
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    icon.className = show ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+  }
+};
+
+
 document.addEventListener("DOMContentLoaded", function () {
   const Svc = window.analyticsService;
   const Comp = window.KhangNghiComponents;
@@ -211,6 +274,58 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const kpi = Comp.renderKpiCard;
 
+  // Biểu đồ xu hướng nhiều năm: thanh chọn [Theo năm][2022]...[2025] để xem tổng từng năm hoặc 12 tháng của một năm,
+  // tránh dồn 48 tháng vào một trục. items: { year, month, ...chuỗi số liệu }; phần tử HTML: chart-{id}, {id}-tabs, {id}-scope
+  const periodCharts = {};   // id -> cấu hình lần vẽ gần nhất (view = "year" | "2024")
+
+  function setPeriodView(id, view) {
+    const cfg = periodCharts[id];
+    if (!cfg) return;
+    cfg.view = view;
+    Charts.destroy("chart-" + id);
+    drawPeriodChart(cfg);
+  }
+
+  function drawPeriodChart(cfg) {
+    const { id, items = [], series, unit, format, area = false, onYearClick = null } = cfg;
+    const years = [...new Set(items.map(m => m.year).filter(Boolean))].sort((a, b) => a - b);
+    if (!years.length) return null;
+    // Giữ lựa chọn của người xem, trừ khi mặc định đổi (vd. đổi bộ lọc năm trên thanh trên cùng)
+    const last = periodCharts[id];
+    const prev = last && last.defaultView === cfg.defaultView ? last.view : null;
+    let view = cfg.view || prev || cfg.defaultView || String(years[years.length - 1]);
+    if (view !== "year" && !years.includes(Number(view))) view = String(years[years.length - 1]);
+    if (years.length === 1) view = String(years[0]);   // đang lọc một năm: chỉ còn các tháng của năm đó
+    periodCharts[id] = { ...cfg, view };
+
+    const tabs = document.getElementById(id + "-tabs");
+    if (tabs) {
+      tabs.hidden = years.length < 2;
+      tabs.innerHTML = [["year", "Theo năm"], ...years.map(y => [String(y), String(y)])].map(([v, l]) =>
+        `<button type="button" class="segmented-btn${view === v ? " active" : ""}" role="tab" aria-selected="${view === v}" onclick="KhangNghiApp.setPeriodView('${id}','${v}')">${l}</button>`).join("");
+    }
+
+    let labels, rows, scope, onClick = null;
+    if (view === "year") {
+      rows = years.map(y => {
+        const acc = {};
+        items.filter(m => m.year === y).forEach(m => series.forEach(s => { acc[s.key] = (acc[s.key] || 0) + (Number(m[s.key]) || 0); }));
+        return acc;
+      });
+      labels = years.map(String);
+      scope = `${unit} · Tổng theo năm ${years[0]}–${years[years.length - 1]}${onYearClick ? " · bấm vào năm để xem chi tiết" : ""}`;
+      onClick = onYearClick;
+    } else {
+      const y = Number(view);
+      rows = items.filter(m => m.year === y).sort((a, b) => a.month - b.month);
+      labels = rows.map(m => "T" + m.month);
+      scope = `${unit} · Các tháng năm ${y}`;
+    }
+    const sc = document.getElementById(id + "-scope");
+    if (sc) sc.textContent = scope;
+    return Charts.line("chart-" + id, labels, series.map(s => ({ name: s.name, data: rows.map(r => r[s.key] || 0) })), { format, area, onClick });
+  }
+
   // --------------------------------------------------------------------------
   // 1. TỔNG QUAN
   // --------------------------------------------------------------------------
@@ -234,13 +349,13 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Số lượng bán", value: s.quantity, icon: "fa-box", change: d.change.quantity, note })
     );
 
-    setScope("ov-trend", CUR_LABEL, d.byYear, filters);
     setScope("ov-category", `${CUR_LABEL}, doanh thu`, d.byCategory, filters);
     setScope("ov-region", CUR_LABEL, d.byRegion, filters);
-    draw("chart-ov-trend", d.byYear, () => Charts.line("chart-ov-trend", d.byYear.items.map(y => String(y.year)), [
-      { name: "Doanh thu", data: d.byYear.items.map(y => y.revenue) },
-      { name: "Lợi nhuận", data: d.byYear.items.map(y => y.profit) }
-    ], { format: CUR, onClick: filters.year === "ALL" ? openYearDetail : null }));
+    draw("chart-ov-trend", d.byMonth, () => drawPeriodChart({
+      id: "ov-trend", items: d.byMonth.items, unit: CUR_LABEL, format: CUR,
+      series: [{ name: "Doanh thu", key: "revenue" }, { name: "Lợi nhuận", key: "profit" }],
+      defaultView: filters.year === "ALL" ? "year" : filters.year, onYearClick: openYearDetail
+    }));
     draw("chart-ov-category", d.byCategory, () => Charts.donut("chart-ov-category", d.byCategory.items, { value: "revenue", format: CUR }));
     draw("chart-ov-region", d.byRegion, () => Charts.bar("chart-ov-region", [...d.byRegion.items].sort((a, b) => b.revenue - a.revenue), { value: "revenue", format: CUR, horizontal: true, max: 12, seriesName: "Doanh thu", height: 360 }));
   }
@@ -351,18 +466,16 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Giá trị đơn trung bình", value: s.aov, format: CUR, icon: "fa-tag", note, hint: "Doanh thu / Số đơn hàng" })
     );
 
-    const title = document.getElementById("sales-trend-title");
-    if (title) title.textContent = filters.year === "ALL" ? "Doanh thu và lợi nhuận theo năm" : `Doanh thu và lợi nhuận theo quý, năm ${filters.year}`;
-    setScope("sal-trend", CUR_LABEL, d.trend, filters);
     setScope("sal-category", CUR_LABEL, d.byCategory, filters);
     setScope("sal-top-rev", CUR_LABEL, d.topByRevenue, filters);
     setScope("sal-top-prof", CUR_LABEL, d.topByProfit, filters);
     setScope("sal-table", CUR_LABEL, d.topByRevenue, filters);
 
-    draw("chart-sal-trend", d.trend, () => Charts.line("chart-sal-trend", d.trend.items.map(t => t.label), [
-      { name: "Doanh thu", data: d.trend.items.map(t => t.revenue) },
-      { name: "Lợi nhuận", data: d.trend.items.map(t => t.profit) }
-    ], { format: CUR, onClick: filters.year === "ALL" ? openYearDetail : null }), `Không có doanh thu${yearText(filters)}.`);
+    draw("chart-sal-trend", d.trend, () => drawPeriodChart({
+      id: "sal-trend", items: d.trend.items, unit: CUR_LABEL, format: CUR,
+      series: [{ name: "Doanh thu", key: "revenue" }, { name: "Lợi nhuận", key: "profit" }],
+      defaultView: filters.year === "ALL" ? "year" : filters.year, onYearClick: openYearDetail
+    }), `Không có doanh thu${yearText(filters)}.`);
     draw("chart-sal-category", d.byCategory, () => Charts.donut("chart-sal-category", d.byCategory.items, { value: "revenue", format: CUR }));
     draw("chart-sal-top-rev", d.topByRevenue, () => Charts.bar("chart-sal-top-rev", d.topByRevenue.items, { value: "revenue", format: CUR, horizontal: true, max: 10, seriesName: "Doanh thu" }));
     draw("chart-sal-top-prof", d.topByProfit, () => Charts.bar("chart-sal-top-prof", d.topByProfit.items, { value: "profit", format: CUR, horizontal: true, max: 10, seriesName: "Lợi nhuận", colorIndex: 1 }));
@@ -410,13 +523,15 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Nhà cung cấp", value: k.suppliers, icon: "fa-handshake", note: "Có đơn mua trong kỳ" })
     );
 
-    setScope("pur-trend", "VNĐ", d.trend, filters);
     setScope("pur-category", "VNĐ", d.byCategory, filters);
     setScope("pur-suppliers", "VNĐ", d.suppliers, filters);
     setScope("pur-products", "VNĐ", d.topProducts, filters);
     setScope("pur-orders", "VNĐ", d.orders, filters);
 
-    draw("chart-pur-trend", d.trend, () => Charts.line("chart-pur-trend", d.trend.items.map(t => t.label), [{ name: "Chi phí mua", data: d.trend.items.map(t => t.cost) }], { format: "vnd", area: true }));
+    draw("chart-pur-trend", d.trend, () => drawPeriodChart({
+      id: "pur-trend", items: d.trend.items, unit: "VNĐ", format: "vnd", area: true,
+      series: [{ name: "Chi phí mua", key: "cost" }]
+    }));
     draw("chart-pur-category", d.byCategory, () => Charts.donut("chart-pur-category", d.byCategory.items, { value: "cost", format: "vnd" }));
     draw("chart-pur-suppliers", d.suppliers, () => Charts.bar("chart-pur-suppliers", d.suppliers.items, { value: "cost", format: "vnd", horizontal: true, max: 10, seriesName: "Chi phí mua" }));
     draw("chart-pur-products", d.topProducts, () => Charts.bar("chart-pur-products", d.topProducts.items, { value: "cost", format: "vnd", horizontal: true, max: 10, seriesName: "Chi phí mua", colorIndex: 1 }));
@@ -479,12 +594,11 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Mặt hàng sắp hết", value: k.lowStock, icon: "fa-triangle-exclamation", note: "Còn đủ bán dưới 3 ngày", hint: "Số ngày tồn kho = tồn mới nhất ÷ lượng bán trung bình mỗi ngày (3 tháng gần nhất)" })
     );
 
-    setScope("inv-movement", "Số lượng", d.movement);
     setScope("inv-region", "Số lượng tồn", d.byRegion);
-    draw("chart-inv-movement", d.movement, () => Charts.line("chart-inv-movement", d.movement.items.map(m => m.label), [
-      { name: "Nhập", data: d.movement.items.map(m => m.inbound) },
-      { name: "Xuất", data: d.movement.items.map(m => m.outbound) }
-    ], { format: "number" }));
+    draw("chart-inv-movement", d.movement, () => drawPeriodChart({
+      id: "inv-movement", items: d.movement.items, unit: "Số lượng", format: "number",
+      series: [{ name: "Nhập", key: "inbound" }, { name: "Xuất", key: "outbound" }]
+    }));
     draw("chart-inv-region", d.byRegion, () => Charts.bar("chart-inv-region", [...d.byRegion.items].sort((a, b) => b.onHand - a.onHand), { value: "onHand", format: "number", horizontal: true, max: 12, seriesName: "Tồn kho" }));
 
     if (Comp.applySectionState("inventory-table", d.alerts, "Chưa có dữ liệu tồn kho để tính số ngày tồn.", "Không có cảnh báo")) {
@@ -1649,48 +1763,48 @@ document.addEventListener("DOMContentLoaded", function () {
     "Vận chuyển & Logistics": "shipping"
   };
 
-  // Câu hỏi diễn đạt bằng lời thường cho người xem không chuyên; kind = dạng câu trả lời
+  // Câu hỏi diễn đạt bằng thuật ngữ nghiệp vụ (doanh thu, lợi nhuận, chi phí...); kind = dạng câu trả lời
   const QUESTION_PLAIN = {
-    "MDX-01": ["Mỗi năm bán được bao nhiêu, lời bao nhiêu?", "trend"],
-    "MDX-02": ["Doanh thu từng quý trong năm ra sao?", "compare"],
-    "MDX-03": ["Tháng nào bán chạy, tháng nào bán chậm?", "trend"],
-    "MDX-04": ["Nhóm hàng nào mang về nhiều tiền nhất?", "compare"],
-    "MDX-05": ["Trong mỗi nhóm hàng, dòng nào bán tốt?", "compare"],
-    "MDX-06": ["10 sản phẩm bán ra nhiều tiền nhất?", "rank"],
-    "MDX-07": ["10 sản phẩm lời nhiều nhất?", "rank"],
-    "MDX-08": ["5 sản phẩm bán chậm nhất?", "rank"],
-    "MDX-09": ["Kênh bán nào mang về nhiều tiền nhất?", "share"],
-    "MDX-10": ["Khách thường trả tiền bằng cách nào?", "share"],
-    "MDX-11": ["Nhóm khách nào mua nhiều nhất?", "share"],
-    "MDX-12": ["10 khách hàng mua nhiều nhất là ai?", "rank"],
-    "MDX-13": ["Vùng miền nào bán tốt, lời nhiều?", "compare"],
-    "MDX-14": ["Trong mỗi vùng, tỉnh nào bán tốt nhất?", "compare"],
-    "MDX-15": ["Riêng Miền Nam bán nhóm hàng nào?", "compare"],
-    "MDX-16": ["Năm gần nhất, Miền Nam bán nhóm hàng nào?", "compare"],
-    "MDX-17": ["Nhóm hàng nào mạnh ở vùng nào?", "matrix"],
-    "MDX-18": ["5 thành phố mang lại lợi nhuận cao nhất?", "rank"],
-    "MDX-19": ["Nhân viên nào bán được nhiều nhất?", "rank"],
-    "MDX-20": ["Chương trình khuyến mãi nào thực sự hiệu quả?", "compare"],
-    "MDX-21": ["Hàng của hãng nào bán chạy nhất?", "compare"],
-    "MDX-22": ["Mỗi nhóm hàng lời bao nhiêu phần trăm?", "ratio"],
-    "MDX-23": ["Gói dịch vụ đi kèm mang về bao nhiêu?", "compare"],
-    "MDX-24": ["Mỗi kênh bán thay đổi thế nào qua các quý?", "matrix"],
-    "MDX-25": ["Mỗi năm chi bao nhiêu tiền mua hàng?", "trend"],
-    "MDX-26": ["5 nhà cung cấp lớn nhất là ai?", "rank"],
-    "MDX-27": ["Tiền nhập hàng dồn vào nhóm hàng nào?", "share"],
-    "MDX-28": ["Nhà cung cấp nào bán giá rẻ hơn?", "compare"],
-    "MDX-29": ["Kho nào nhận hàng nhiều nhất?", "compare"],
-    "MDX-30": ["Mỗi kho nhập, xuất và còn bao nhiêu?", "compare"],
-    "MDX-31": ["Hàng tồn đang nằm ở nhóm nào?", "share"],
-    "MDX-32": ["Mặt hàng nào sắp phải đặt thêm?", "alert"],
-    "MDX-33": ["Mặt hàng nào đang thiếu, thiếu bao nhiêu?", "alert"],
-    "MDX-34": ["10 mặt hàng tồn kho nhiều nhất?", "rank"],
-    "MDX-35": ["Mỗi tháng xuất kho bao nhiêu hàng?", "trend"],
-    "MDX-36": ["Mỗi đơn vị vận chuyển tốn bao nhiêu tiền?", "compare"],
-    "MDX-37": ["Cách giao hàng nào nhanh và đúng hẹn?", "compare"],
-    "MDX-38": ["Đơn vị vận chuyển nào hay giao trễ?", "rank"],
-    "MDX-39": ["Giao về vùng nào tốn phí nhất?", "compare"],
-    "MDX-40": ["Phí vận chuyển chiếm bao nhiêu % doanh thu?", "ratio"]
+    "MDX-01": ["Doanh thu và lợi nhuận hằng năm", "trend"],
+    "MDX-02": ["Doanh thu theo từng quý trong năm", "compare"],
+    "MDX-03": ["Tháng nào có doanh thu cao nhất, tháng nào thấp nhất?", "trend"],
+    "MDX-04": ["Nhóm sản phẩm nào có doanh thu cao nhất?", "compare"],
+    "MDX-05": ["Dòng sản phẩm có doanh thu cao nhất trong từng nhóm", "compare"],
+    "MDX-06": ["Top 10 sản phẩm có doanh thu cao nhất", "rank"],
+    "MDX-07": ["Top 10 sản phẩm có lợi nhuận cao nhất", "rank"],
+    "MDX-08": ["Top 5 sản phẩm có doanh thu thấp nhất", "rank"],
+    "MDX-09": ["Kênh bán hàng nào có doanh thu cao nhất?", "share"],
+    "MDX-10": ["Khách hàng thanh toán bằng hình thức nào?", "share"],
+    "MDX-11": ["Phân khúc khách hàng nào có doanh thu cao nhất?", "share"],
+    "MDX-12": ["Top 10 khách hàng có doanh thu cao nhất", "rank"],
+    "MDX-13": ["Doanh thu và lợi nhuận theo vùng miền", "compare"],
+    "MDX-14": ["Tỉnh/thành có doanh thu cao nhất trong từng vùng", "compare"],
+    "MDX-15": ["Doanh thu theo nhóm sản phẩm tại Miền Nam", "compare"],
+    "MDX-16": ["Doanh thu theo nhóm sản phẩm tại Miền Nam năm gần nhất", "compare"],
+    "MDX-17": ["Doanh thu nhóm sản phẩm theo vùng miền", "matrix"],
+    "MDX-18": ["Top 5 thành phố có lợi nhuận cao nhất", "rank"],
+    "MDX-19": ["Doanh thu theo nhân viên bán hàng", "rank"],
+    "MDX-20": ["Hiệu quả các chương trình khuyến mãi", "compare"],
+    "MDX-21": ["Thương hiệu nào có doanh thu cao nhất?", "compare"],
+    "MDX-22": ["Biên lợi nhuận theo nhóm sản phẩm", "ratio"],
+    "MDX-23": ["Doanh thu từ dịch vụ đi kèm", "compare"],
+    "MDX-24": ["Doanh thu theo kênh bán hàng qua các quý", "matrix"],
+    "MDX-25": ["Chi phí mua hàng hằng năm", "trend"],
+    "MDX-26": ["Top 5 nhà cung cấp có giá trị mua hàng cao nhất", "rank"],
+    "MDX-27": ["Chi phí mua hàng theo nhóm sản phẩm", "share"],
+    "MDX-28": ["Đơn giá nhập bình quân theo nhà cung cấp", "compare"],
+    "MDX-29": ["Số lượt nhập hàng theo kho", "compare"],
+    "MDX-30": ["Nhập – xuất – tồn theo từng kho", "compare"],
+    "MDX-31": ["Cơ cấu tồn kho theo nhóm sản phẩm", "share"],
+    "MDX-32": ["Mặt hàng nào cần đặt hàng bổ sung?", "alert"],
+    "MDX-33": ["Lượng hàng thiếu hụt cần bổ sung", "alert"],
+    "MDX-34": ["Top 10 mặt hàng có tồn kho cao nhất", "rank"],
+    "MDX-35": ["Số lượng xuất kho theo tháng", "trend"],
+    "MDX-36": ["Chi phí vận chuyển theo đơn vị vận chuyển", "compare"],
+    "MDX-37": ["Thời gian giao hàng và tỷ lệ đúng hạn theo phương thức giao", "compare"],
+    "MDX-38": ["Đơn vị vận chuyển nào giao trễ nhiều nhất?", "rank"],
+    "MDX-39": ["Chi phí vận chuyển theo vùng giao hàng", "compare"],
+    "MDX-40": ["Tỷ lệ chi phí vận chuyển trên doanh thu", "ratio"]
   };
   const ANSWER_KIND = {
     trend:   { icon: "fa-chart-line",            label: "Xu hướng" },
@@ -1760,46 +1874,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // fmt: định dạng giá trị trên biểu đồ; focus: phần được tô; tone: bad = tô cam; view: hbar | bar | matrix
   const QA_SPEC = {
-    "MDX-01": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${qaB(r[f[0]].label)} bán nhiều nhất: ${qaMoney(r[f[0]].value)}, lời ${qaMoney(r[f[0]].value2)}.` },
+    "MDX-01": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}, lợi nhuận ${qaMoney(r[f[0]].value2)}.` },
     "MDX-02": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}.` },
-    "MDX-03": { fmt: CUR, focus: qaFocus.max, focusBad: qaFocus.min, answer: (r, f, fb) => `Năm ${esc(r[0].note)}: bán chạy nhất tháng ${qaB(r[f[0]].label.slice(1))} (${qaMoney(r[f[0]].value)}), chậm nhất tháng ${qaB(r[fb[0]].label.slice(1))} (${qaMoney(r[fb[0]].value)}).` },
-    "MDX-04": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} mang về nhiều tiền nhất: ${qaMoney(r[f[0]].value)}, bằng ${qaShare(r[f[0]], r)} tổng doanh thu.` },
-    "MDX-05": { fmt: CUR, view: "hbar", focus: qaFocus.maxPerGroup, label: r => `${r.label} · ${r.grp}`, answer: (r, f) => `Mỗi nhóm hàng có một dòng bán tốt nhất (tô xanh). Dẫn đầu tất cả: ${qaB(r[0].label)} (${qaMoney(r[0].value)}).` },
-    "MDX-06": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Bán nhiều tiền nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}, gần gấp ${qaNum(r[0].value / (r[1].value || 1))} lần sản phẩm thứ hai.` },
-    "MDX-07": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Lời nhiều nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)} lợi nhuận.` },
-    "MDX-08": { fmt: CUR, view: "hbar", tone: "bad", focus: qaFocus.first(5), answer: r => `5 sản phẩm bán chậm nhất được tô cam. Chậm nhất là ${qaB(r[0].label)}, cả giai đoạn chỉ bán được ${qaMoney(r[0].value)}.` },
-    "MDX-09": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Kênh ${qaB(r[f[0]].label)} mang về nhiều nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
-    "MDX-10": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Khách chủ yếu trả bằng ${qaB(r[f[0]].label)}: ${qaShare(r[f[0]], r)} doanh thu, ${qaNum(r[f[0]].value2)} đơn hàng.` },
-    "MDX-11": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Nhóm ${qaB(r[f[0]].label)} mua nhiều nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
-    "MDX-12": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Khách mua nhiều nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}.` },
-    "MDX-13": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} bán tốt nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)} doanh thu), lời ${qaMoney(r[f[0]].value2)}.` },
-    "MDX-14": { fmt: CUR, view: "hbar", focus: qaFocus.maxPerGroup, label: r => `${r.label} · ${r.grp}`, answer: (r, f) => `Tỉnh/thành bán tốt nhất mỗi vùng: ${qaPerGroup(r, f, qaMoney)}.` },
-    "MDX-15": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Ở Miền Nam, nhóm ${qaB(r[f[0]].label)} bán nhiều nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
-    "MDX-16": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, Miền Nam bán nhiều nhất nhóm ${qaB(r[f[0]].label)}: ${qaMoney(r[f[0]].value)}.` },
-    "MDX-17": { fmt: CUR, view: "matrix", answer: (r, f) => `Nhóm hàng mạnh nhất ở từng vùng: ${qaPerGroup(r, f, qaMoney)}.`, focus: qaFocus.maxPerGroup },
+    "MDX-03": { fmt: CUR, focus: qaFocus.max, focusBad: qaFocus.min, answer: (r, f, fb) => `Năm ${esc(r[0].note)}: doanh thu cao nhất vào tháng ${qaB(r[f[0]].label.slice(1))} (${qaMoney(r[f[0]].value)}), thấp nhất vào tháng ${qaB(r[fb[0]].label.slice(1))} (${qaMoney(r[fb[0]].value)}).` },
+    "MDX-04": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}, chiếm ${qaShare(r[f[0]], r)} tổng doanh thu.` },
+    "MDX-05": { fmt: CUR, view: "hbar", focus: qaFocus.maxPerGroup, label: r => `${r.label} · ${r.grp}`, answer: (r, f) => `Dòng sản phẩm có doanh thu cao nhất của mỗi nhóm được tô xanh. Dẫn đầu chung: ${qaB(r[0].label)} (${qaMoney(r[0].value)}).` },
+    "MDX-06": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Doanh thu cao nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}, gấp ${qaNum(r[0].value / (r[1].value || 1))} lần sản phẩm thứ hai.` },
+    "MDX-07": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Lợi nhuận cao nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}.` },
+    "MDX-08": { fmt: CUR, view: "hbar", tone: "bad", focus: qaFocus.first(5), answer: r => `5 sản phẩm có doanh thu thấp nhất được tô cam. Thấp nhất là ${qaB(r[0].label)}, cả giai đoạn đạt ${qaMoney(r[0].value)}.` },
+    "MDX-09": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Kênh ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
+    "MDX-10": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Hình thức thanh toán phổ biến nhất là ${qaB(r[f[0]].label)}: chiếm ${qaShare(r[f[0]], r)} doanh thu, ${qaNum(r[f[0]].value2)} đơn hàng.` },
+    "MDX-11": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Phân khúc ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
+    "MDX-12": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Khách hàng có doanh thu cao nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}.` },
+    "MDX-13": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}), lợi nhuận ${qaMoney(r[f[0]].value2)}.` },
+    "MDX-14": { fmt: CUR, view: "hbar", focus: qaFocus.maxPerGroup, label: r => `${r.label} · ${r.grp}`, answer: (r, f) => `Tỉnh/thành có doanh thu cao nhất mỗi vùng: ${qaPerGroup(r, f, qaMoney)}.` },
+    "MDX-15": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Tại Miền Nam, nhóm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
+    "MDX-16": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, tại Miền Nam nhóm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}.` },
+    "MDX-17": { fmt: CUR, view: "matrix", answer: (r, f) => `Nhóm sản phẩm có doanh thu cao nhất ở từng vùng: ${qaPerGroup(r, f, qaMoney)}.`, focus: qaFocus.maxPerGroup },
     "MDX-18": { fmt: CUR, view: "hbar", focus: qaFocus.first(5), answer: r => `Lợi nhuận cao nhất: ${qaB(r[0].label)} (${qaMoney(r[0].value)}). 5 thành phố dẫn đầu được tô xanh.` },
-    "MDX-19": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `${qaB(r[0].label)} bán được nhiều nhất: ${qaMoney(r[0].value)}.` },
-    "MDX-20": { fmt: CUR, value: "value3", focus: rows => [0], answer: r => `${qaB(r[0].label)} mang về nhiều lợi nhuận nhất: ${qaMoney(r[0].value3)} trên ${qaMoney(r[0].value)} doanh thu.`, note: "Biểu đồ so sánh lợi nhuận thu về theo từng chương trình." },
-    "MDX-21": { fmt: CUR, focus: qaFocus.maxNamed, answer: (r, f) => `Hàng của ${qaB(r[f[0]].label)} bán chạy nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).`, note: "\u201cKhác\u201d là các hãng nhỏ được gộp chung, không tính là một hãng." },
-    "MDX-22": { fmt: "percent", focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có biên lợi nhuận cao nhất: cứ 100 đồng bán ra lời ${qaNum(r[f[0]].value)} đồng.` },
-    "MDX-23": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} mang về nhiều nhất: ${qaMoney(r[f[0]].value)}.`, empty: "Kho dữ liệu chưa ghi nhận doanh thu dịch vụ đi kèm (cột ServiceKey trong Fact_Sales đang trống), nên chưa trả lời được câu này." },
+    "MDX-19": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `${qaB(r[0].label)} có doanh thu cao nhất: ${qaMoney(r[0].value)}.` },
+    "MDX-20": { fmt: CUR, value: "value3", focus: rows => [0], answer: r => `${qaB(r[0].label)} có lợi nhuận cao nhất: ${qaMoney(r[0].value3)} trên ${qaMoney(r[0].value)} doanh thu.`, note: "Biểu đồ so sánh lợi nhuận thu về theo từng chương trình." },
+    "MDX-21": { fmt: CUR, focus: qaFocus.maxNamed, answer: (r, f) => `Thương hiệu ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).`, note: "\u201cKhác\u201d là các hãng nhỏ được gộp chung, không tính là một hãng." },
+    "MDX-22": { fmt: "percent", focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có biên lợi nhuận cao nhất: ${qaPct(r[f[0]].value)} (cứ 100 đồng doanh thu tạo ra ${qaNum(r[f[0]].value)} đồng lợi nhuận).` },
+    "MDX-23": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}.`, empty: "Kho dữ liệu chưa ghi nhận doanh thu dịch vụ đi kèm (cột ServiceKey trong Fact_Sales đang trống), nên chưa trả lời được câu này." },
     "MDX-24": { fmt: CUR, view: "matrix", focus: rows => { const best = {}; rows.forEach((r, i) => { if (best[r.label] === undefined || Number(r.value) > Number(rows[best[r.label]].value)) best[r.label] = i; }); return Object.values(best); },
-      answer: (r, f) => `Năm ${esc(r[0].note)}, quý bán tốt nhất của từng kênh: ${f.map(i => `${esc(r[i].label)}: ${qaB(r[i].grp)}`).join(" · ")}.` },
-    "MDX-25": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${qaB(r[f[0]].label)} chi nhiều nhất cho mua hàng: ${qaMoney(r[f[0]].value)} (${qaNum(r[f[0]].value2)} sản phẩm).` },
-    "MDX-26": { fmt: CUR, view: "hbar", focus: qaFocus.first(5), answer: r => `Nhà cung cấp lớn nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}, gấp ${qaNum(r[0].value / (r[1].value || 1))} lần nhà thứ hai.` },
-    "MDX-27": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Tiền nhập hàng dồn nhiều nhất vào ${qaB(r[f[0]].label)}: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
+      answer: (r, f) => `Năm ${esc(r[0].note)}, quý có doanh thu cao nhất của từng kênh: ${f.map(i => `${esc(r[i].label)}: ${qaB(r[i].grp)}`).join(" · ")}.` },
+    "MDX-25": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${qaB(r[f[0]].label)} có chi phí mua hàng cao nhất: ${qaMoney(r[f[0]].value)} (${qaNum(r[f[0]].value2)} sản phẩm).` },
+    "MDX-26": { fmt: CUR, view: "hbar", focus: qaFocus.first(5), answer: r => `Giá trị mua hàng cao nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}, gấp ${qaNum(r[0].value / (r[1].value || 1))} lần nhà cung cấp thứ hai.` },
+    "MDX-27": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Chi phí mua hàng tập trung nhiều nhất ở nhóm ${qaB(r[f[0]].label)}: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
     "MDX-28": { fmt: CUR, view: "hbar", focus: qaFocus.min, answer: (r, f) => `${qaB(r[f[0]].label)} có giá nhập bình quân thấp nhất: ${qaMoney(r[f[0]].value)} mỗi sản phẩm.`, note: "Mỗi nhà cung cấp bán những mặt hàng khác nhau, nên đây là giá bình quân chung, không phải so cùng một mặt hàng." },
-    "MDX-29": { fmt: "number", focus: qaFocus.max, answer: (r, f) => qaTie(f, r, x => `${qaB(x.label)} nhận nhiều nhất: ${qaNum(x.value)} lượt nhập.`, (names, x) => `${qaList(names)} nhận hàng ngang nhau: mỗi kho ${qaNum(x.value)} lượt nhập.`) },
-    "MDX-30": { fmt: "number", focus: qaFocus.max, answer: r => r.map(x => `${qaB(x.label)}: nhập ${qaNum(x.value2)} · xuất ${qaNum(x.value3)} · còn ${qaNum(x.value)}`).join("<br>"), note: "Biểu đồ là lượng còn trong kho ở lần kiểm kê gần nhất." },
-    "MDX-31": { fmt: "number", focus: qaFocus.max, answer: (r, f) => `Hàng tồn nằm nhiều nhất ở nhóm ${qaB(r[f[0]].label)}: ${qaNum(r[f[0]].value)} sản phẩm (${qaShare(r[f[0]], r)}).` },
-    "MDX-32": { fmt: "days", view: "hbar", tone: "bad", focus: qaFocus.when(x => x.value !== null && Number(x.value) < 3), answer: (r, f) => f.length ? `${f.length} mặt hàng chỉ còn đủ bán dưới 3 ngày (tô cam), cần đặt thêm. Gấp nhất: ${qaB(r[f[0]].label)}, còn ${Comp.formatValue(r[f[0]].value, "days")}.` : "Chưa có mặt hàng nào xuống dưới 3 ngày bán.", note: "Số ngày tồn kho = lượng tồn ÷ lượng bán trung bình mỗi ngày (3 tháng gần nhất)." },
-    "MDX-33": { fmt: "number", view: "hbar", tone: "bad", focus: qaFocus.when(x => Number(x.value) > 0), answer: (r, f) => f.length ? `${f.length} mặt hàng đang thiếu. Thiếu nhiều nhất: ${qaB(r[f[0]].label)}, cần thêm ${qaNum(r[f[0]].value)} sản phẩm để đủ bán 3 ngày.` : "Không mặt hàng nào đang thiếu.", note: "Lượng thiếu = lượng cần để đủ bán 3 ngày − lượng đang tồn." },
-    "MDX-34": { fmt: "number", view: "hbar", focus: qaFocus.max, answer: (r, f) => qaTie(f, r, x => `${qaB(x.label)} tồn nhiều nhất: ${qaNum(x.value)} sản phẩm.`, (names, x) => `${names.length} mặt hàng cùng tồn nhiều nhất, mỗi mặt hàng ${qaNum(x.value)} sản phẩm.`) },
-    "MDX-35": { fmt: "number", focus: qaFocus.max, answer: (r, f) => `Tháng ${qaB(r[f[0]].label)} xuất kho nhiều nhất: ${qaNum(r[f[0]].value)} sản phẩm.`, note: "12 tháng gần nhất có số liệu kho." },
-    "MDX-36": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} tốn nhiều nhất: ${qaMoney(r[f[0]].value)} cho ${qaNum(r[f[0]].value2)} đơn.` },
+    "MDX-29": { fmt: "number", focus: qaFocus.max, answer: (r, f) => qaTie(f, r, x => `${qaB(x.label)} có số lượt nhập nhiều nhất: ${qaNum(x.value)} lượt.`, (names, x) => `${qaList(names)} có số lượt nhập bằng nhau: mỗi kho ${qaNum(x.value)} lượt.`) },
+    "MDX-30": { fmt: "number", focus: qaFocus.max, answer: r => r.map(x => `${qaB(x.label)}: nhập ${qaNum(x.value2)} · xuất ${qaNum(x.value3)} · tồn ${qaNum(x.value)}`).join("<br>"), note: "Biểu đồ là lượng tồn kho ở lần kiểm kê gần nhất." },
+    "MDX-31": { fmt: "number", focus: qaFocus.max, answer: (r, f) => `Tồn kho tập trung nhiều nhất ở nhóm ${qaB(r[f[0]].label)}: ${qaNum(r[f[0]].value)} sản phẩm (${qaShare(r[f[0]], r)}).` },
+    "MDX-32": { fmt: "days", view: "hbar", tone: "bad", focus: qaFocus.when(x => x.value !== null && Number(x.value) < 3), answer: (r, f) => f.length ? `${f.length} mặt hàng có số ngày tồn kho dưới 3 ngày (tô cam), cần đặt hàng bổ sung. Gấp nhất: ${qaB(r[f[0]].label)}, còn ${Comp.formatValue(r[f[0]].value, "days")}.` : "Chưa có mặt hàng nào xuống dưới 3 ngày bán.", note: "Số ngày tồn kho = lượng tồn ÷ lượng bán trung bình mỗi ngày (3 tháng gần nhất)." },
+    "MDX-33": { fmt: "number", view: "hbar", tone: "bad", focus: qaFocus.when(x => Number(x.value) > 0), answer: (r, f) => f.length ? `${f.length} mặt hàng đang thiếu hụt. Thiếu hụt nhiều nhất: ${qaB(r[f[0]].label)}, cần bổ sung ${qaNum(r[f[0]].value)} sản phẩm để đủ bán 3 ngày.` : "Không có mặt hàng nào thiếu hụt.", note: "Lượng thiếu = lượng cần để đủ bán 3 ngày − lượng đang tồn." },
+    "MDX-34": { fmt: "number", view: "hbar", focus: qaFocus.max, answer: (r, f) => qaTie(f, r, x => `${qaB(x.label)} có tồn kho cao nhất: ${qaNum(x.value)} sản phẩm.`, (names, x) => `${names.length} mặt hàng cùng có tồn kho cao nhất, mỗi mặt hàng ${qaNum(x.value)} sản phẩm.`) },
+    "MDX-35": { fmt: "number", focus: qaFocus.max, answer: (r, f) => `Tháng ${qaB(r[f[0]].label)} có số lượng xuất kho cao nhất: ${qaNum(r[f[0]].value)} sản phẩm.`, note: "12 tháng gần nhất có số liệu kho." },
+    "MDX-36": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có chi phí vận chuyển cao nhất: ${qaMoney(r[f[0]].value)} cho ${qaNum(r[f[0]].value2)} đơn.` },
     "MDX-37": { fmt: "days", focus: qaFocus.min, answer: r => r.map(x => `${qaB(x.label)}: trung bình ${Comp.formatValue(x.value, "days")}, đúng hẹn ${qaPct(x.value2)}`).join("<br>") },
-    "MDX-38": { fmt: "number", tone: "bad", focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} trễ nhiều nhất: tổng ${qaNum(r[f[0]].value)} ngày trễ, trên ${qaNum(r[f[0]].value2)} đơn giao trễ.` },
-    "MDX-39": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Giao về ${qaB(r[f[0]].label)} tốn phí nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)} tổng phí).` },
+    "MDX-38": { fmt: "number", tone: "bad", focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} giao trễ nhiều nhất: tổng ${qaNum(r[f[0]].value)} ngày trễ, trên ${qaNum(r[f[0]].value2)} đơn giao trễ.` },
+    "MDX-39": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Vùng ${qaB(r[f[0]].label)} có chi phí vận chuyển cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)} tổng phí).` },
     "MDX-40": { fmt: "percent", tone: "bad", focus: qaFocus.max, answer: (r, f) => `Toàn công ty, phí vận chuyển chiếm ${qaB(qaPct(r[0].note))} doanh thu. Cao nhất ở ${qaB(r[f[0]].label)}: ${qaPct(r[f[0]].value)}.` }
   };
 
@@ -2376,10 +2490,34 @@ document.addEventListener("DOMContentLoaded", function () {
     return Comp.renderTable(cols, rows.slice(0, 10)) + more;
   }
 
+  // Nhãn chế độ trả lời dưới mỗi câu trả lời: Gemini hay offline (kèm lý do)
+  let copilotSeq = 0;
+  const FALLBACK_REASON = {
+    not_configured: "chưa cấu hình Gemini",
+    auth: "API key Gemini không hợp lệ",
+    quota: "Gemini đã hết hạn mức sử dụng",
+    overloaded: "Gemini đang quá tải",
+    timeout: "Gemini không phản hồi kịp",
+    network: "không kết nối được tới Gemini",
+    bad_response: "Gemini trả phản hồi lỗi",
+    error: "Gemini gặp lỗi"
+  };
+
+  function copilotModeBadge(res) {
+    const d = res && res.data;
+    const source = d && (d.source ?? d.Source);
+    if (source === "llm") return `<div class="chat-source"><i class="fa-solid fa-wand-magic-sparkles"></i> Trả lời bởi Gemini</div>`;
+    if (source === "fallback") {
+      const reason = FALLBACK_REASON[d.fallbackReason ?? d.FallbackReason] || "Gemini không khả dụng";
+      return `<div class="chat-source"><i class="fa-solid fa-plug-circle-xmark"></i> Chế độ offline (${esc(reason)}): số liệu tra trực tiếp từ kho dữ liệu</div>`;
+    }
+    return "";
+  }
+
   async function askCopilot(text) {
     if (!text) return;
     openCopilot();
-    chatAppend("user", esc(text));
+    const userMsg = chatAppend("user", esc(text));
     const input = document.getElementById("copilot-input");
     if (input) input.value = "";
 
@@ -2388,16 +2526,29 @@ document.addEventListener("DOMContentLoaded", function () {
       ? window.CopilotResponseRules.renderLoading("Đang truy vấn dữ liệu…")
       : `<i class="fa-solid fa-spinner fa-spin"></i> Đang truy vấn dữ liệu…`;
     const loading = chatAppend("bot", loadingHtml);
+    const requestId = ++copilotSeq;
+    if (userMsg) userMsg.dataset.requestId = requestId;
+    loading.dataset.requestId = requestId;
 
-    const res = await window.KhangNghiApiClient.get("/nlq/query", { q: text }, { timeout: 60000 });
-    loading.remove();
+    // Server chờ Gemini tối đa ~20 s rồi chuyển offline; trình duyệt chờ lâu hơn để luôn nhận được câu trả lời offline
+    const res = await window.KhangNghiApiClient.get("/nlq/query", { q: text }, { timeout: 45000 });
+
+    // Câu trả lời thay đúng vào ô "đang tải" của câu hỏi này, nên vẫn nằm ngay dưới câu hỏi dù về sớm hay muộn
+    const modeBadge = copilotModeBadge(res);
+    const place = html => {
+      const el = chatAppend("bot", html);
+      el.dataset.requestId = requestId;
+      if (modeBadge) el.querySelector(".chat-bubble").insertAdjacentHTML("beforeend", modeBadge);
+      loading.replaceWith(el);
+      return el;
+    };
 
     if (!res.success) {
       const errText = res.status === 403
         ? (window.CopilotResponseRules ? window.CopilotResponseRules.MESSAGES.UNAUTHORIZED : "Vai trò hiện tại chưa được cấp quyền dùng trợ lý.")
         : ((res.data && (res.data.answer || res.data.Answer)) || res.error || (window.CopilotResponseRules ? window.CopilotResponseRules.MESSAGES.CONNECTION_ERROR : "Không thể kết nối nguồn dữ liệu."));
       const errHtml = window.CopilotResponseRules ? window.CopilotResponseRules.renderError(errText) : `<p>${esc(errText)}</p>`;
-      chatAppend("bot", errHtml);
+      place(errHtml);
       return;
     }
 
@@ -2411,7 +2562,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const sourceNote = queriesUsed.length > 0
         ? `Nguồn: kho DWH_KhangNghi (truy vấn ${queriesUsed.join(", ")})`
         : "Nguồn: Khang Nghi AI Copilot";
-      chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(answer, sourceNote));
+      place(window.CopilotResponseRules.createBotBubbleHtml(answer, sourceNote));
       return;
     }
 
@@ -2420,16 +2571,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (data === null || data === undefined) {
       if (window.CopilotResponseRules) {
-        chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(answer || window.CopilotResponseRules.MESSAGES.EMPTY_DATA, "Hệ thống BI Khang Nghị"));
+        place(window.CopilotResponseRules.createBotBubbleHtml(answer || window.CopilotResponseRules.MESSAGES.EMPTY_DATA, "Hệ thống BI Khang Nghị"));
       } else {
-        chatAppend("bot", `<p>${esc(answer)}</p>`);
+        place(`<p>${esc(answer)}</p>`);
       }
     } else if (Array.isArray(data)) {
       if (!data.length) {
         const emptyHtml = window.CopilotResponseRules
           ? window.CopilotResponseRules.renderEmpty(answer || window.CopilotResponseRules.MESSAGES.EMPTY_DATA)
           : `<p>${esc(answer || "Kho dữ liệu chưa có bản ghi phù hợp.")}</p>`;
-        chatAppend("bot", emptyHtml);
+        place(emptyHtml);
       } else {
         const intro = window.CopilotResponseRules ? window.CopilotResponseRules.renderMarkdown(answer) : `<p>${esc(answer)}</p>`;
         const content = `
@@ -2443,7 +2594,7 @@ ${source}
     <i class="fa-regular fa-copy"></i> Sao chép
   </button>
 </div>`.trim();
-        chatAppend("bot", content);
+        place(content);
       }
     } else {
       // Dữ liệu tổng quan
@@ -2456,15 +2607,15 @@ ${source}
 - **Biên lợi nhuận:** ${fv(g("ProfitMargin"), "percent")}
 - **Số đơn hàng:** ${fv(g("TotalOrders"))}`;
         if (window.CopilotResponseRules) {
-          chatAppend("bot", window.CopilotResponseRules.createBotBubbleHtml(mdText, "Kho DWH_KhangNghi (tổng quan)"));
+          place(window.CopilotResponseRules.createBotBubbleHtml(mdText, "Kho DWH_KhangNghi (tổng quan)"));
         } else {
-          chatAppend("bot", `<p>Tổng quan kinh doanh:</p><ul class="chat-list"><li>Doanh thu: <strong>${fv(g("TotalRevenue"), CUR)}</strong></li><li>Lợi nhuận: <strong>${fv(g("TotalProfit"), CUR)}</strong></li><li>Biên lợi nhuận: <strong>${fv(g("ProfitMargin"), "percent")}</strong></li><li>Số đơn hàng: <strong>${fv(g("TotalOrders"))}</strong></li></ul>${source}`);
+          place(`<p>Tổng quan kinh doanh:</p><ul class="chat-list"><li>Doanh thu: <strong>${fv(g("TotalRevenue"), CUR)}</strong></li><li>Lợi nhuận: <strong>${fv(g("TotalProfit"), CUR)}</strong></li><li>Biên lợi nhuận: <strong>${fv(g("ProfitMargin"), "percent")}</strong></li><li>Số đơn hàng: <strong>${fv(g("TotalOrders"))}</strong></li></ul>${source}`);
         }
       } else {
         const emptyHtml = window.CopilotResponseRules
           ? window.CopilotResponseRules.renderEmpty("Chưa có giao dịch phát sinh để tổng hợp.")
           : `<p>Chưa có giao dịch phát sinh để tổng hợp.</p>`;
-        chatAppend("bot", emptyHtml);
+        place(emptyHtml);
       }
     }
   }
@@ -2544,8 +2695,13 @@ ${source}
     if (btnText) btnText.textContent = "Đăng Nhập";
 
     if (res.success) {
-      Comp.showToast(`Xin chào ${res.user.fullName}`);
-      window.location.hash = "#/overview";
+      if (typeof Comp !== "undefined" && Comp.showToast) Comp.showToast(`Xin chào ${res.user.fullName}`);
+      else if (window.KhangNghiComponents && window.KhangNghiComponents.showToast) window.KhangNghiComponents.showToast(`Xin chào ${res.user.fullName}`);
+      if (window.KhangNghiRouter && window.KhangNghiRouter.navigate) {
+        window.KhangNghiRouter.navigate("overview");
+      } else {
+        window.location.hash = "#/overview";
+      }
     } else if (alertBox && alertMsg) {
       alertMsg.textContent = res.message;
       alertBox.style.display = "flex";
@@ -2584,7 +2740,7 @@ ${source}
     }
   }
 
-  window.KhangNghiApp = {
+  Object.assign(window.KhangNghiApp, {
     handleLogin,
     fillDemoAccount,
     togglePasswordVisibility,
@@ -2612,6 +2768,7 @@ ${source}
     applyForecastDates,
     resetForecastDates,
     selectForecastDrillMonth,
+    setPeriodView,
     updateWhatIf,
     resetWhatIf,
     applyWhatIfPreset,
@@ -2630,5 +2787,5 @@ ${source}
     changePassword,
     openCopilot,
     askCopilot
-  };
+  });
 });

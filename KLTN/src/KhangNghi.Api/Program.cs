@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using KhangNghi.Api;
+using KhangNghi.Core.Configuration;
 using KhangNghi.Infrastructure.Data;
 using KhangNghi.Infrastructure.Repositories;
 using KhangNghi.Infrastructure.Services;
@@ -14,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-// Nạp .env (API key LLM...) trước khi đọc cấu hình
+// Nạp .env (API key Google Gemini / secrets) trước khi đọc cấu hình ứng dụng
 var dotEnvPath = DotEnv.Load();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,21 +26,32 @@ var connectionString = builder.Configuration.GetConnectionString("DwhConnection"
 
 builder.Services.AddSingleton<IDatabaseConnectionFactory>(_ => new DatabaseConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton(builder.Configuration.GetSection("EtlSettings").Get<EtlSettingsOptions>() ?? new EtlSettingsOptions());
+builder.Services.AddScoped<ISsasProcessingService, SsasProcessingService>();
+builder.Services.AddScoped<IEtlOrchestratorService, EtlOrchestratorService>();
 builder.Services.AddScoped<IEtlService, EtlService>();
 builder.Services.AddScoped<IDwhAnalyticsRepository, DwhAnalyticsRepository>();
 builder.Services.AddScoped<ISalesForecastService, SalesForecastService>();
 builder.Services.AddScoped<ISsasRepository, SsasRepository>();
 
-// Cấu hình tầng 3 AI Copilot: LLM tương thích OpenAI gọi tool (đọc từ .env / biến môi trường)
+// Cấu hình AI Copilot (Google Gemini qua Google AI Studio API hoặc tương thích OpenAI)
+var geminiKey = builder.Configuration["GEMINI_API_KEY"] ?? builder.Configuration["OPENAI_API_KEY"] ?? string.Empty;
+var geminiModel = builder.Configuration["GEMINI_MODEL"] ?? builder.Configuration["OPENAI_MODEL"] ?? LlmOptions.DefaultModel;
+var geminiBaseUrl = builder.Configuration["GEMINI_BASE_URL"] ?? builder.Configuration["OPENAI_BASE_URL"] ?? LlmOptions.DefaultBaseUrl;
+var geminiTimeout = int.TryParse(builder.Configuration["GEMINI_TIMEOUT_SECONDS"] ?? builder.Configuration["OPENAI_TIMEOUT_SECONDS"], out var t) ? t : LlmOptions.DefaultTimeoutSeconds;
+var geminiRetries = int.TryParse(builder.Configuration["GEMINI_MAX_RETRIES"], out var r) ? Math.Clamp(r, 0, 2) : 1;
+
 var llmOptions = new LlmOptions
 {
-    BaseUrl = string.IsNullOrWhiteSpace(builder.Configuration["OPENAI_BASE_URL"]) ? "https://api.openai.com/v1" : builder.Configuration["OPENAI_BASE_URL"]!,
-    ApiKey = builder.Configuration["OPENAI_API_KEY"] ?? string.Empty,
-    Model = builder.Configuration["OPENAI_MODEL"] ?? string.Empty,
-    TimeoutSeconds = int.TryParse(builder.Configuration["OPENAI_TIMEOUT_SECONDS"], out var llmTimeout) ? llmTimeout : 60
+    BaseUrl = geminiBaseUrl,
+    ApiKey = geminiKey,
+    Model = geminiModel,
+    TimeoutSeconds = geminiTimeout,
+    MaxRetries = geminiRetries
 };
 builder.Services.AddSingleton(llmOptions);
-builder.Services.AddHttpClient<ILlmCopilotService, LlmCopilotService>(client => client.Timeout = TimeSpan.FromSeconds(llmOptions.TimeoutSeconds));
+// Hạn chót thật nằm ở ngân sách thời gian trong LlmCopilotService; HttpClient.Timeout chỉ là chốt chặn dự phòng
+builder.Services.AddHttpClient<ILlmCopilotService, LlmCopilotService>(client => client.Timeout = TimeSpan.FromSeconds(llmOptions.TimeoutSeconds + 5));
 
 // Cấu hình JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "KhangNghi_DWH_Super_Secret_Security_Key_2026_Graduation_Thesis!";
@@ -64,18 +76,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Ma trận phân quyền phía Backend - khớp với ROLE_PERMISSIONS của Web BI (wwwroot/js/authService.js)
+// Ma trận phân quyền RBAC phía Backend
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("DirectorOrAdmin", policy => policy.RequireRole("Admin", "Director"));
-    options.AddPolicy("SalesAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager"));
-    options.AddPolicy("PurchaseAccess", policy => policy.RequireRole("Admin", "Director", "PurchaseManager"));
-    options.AddPolicy("InventoryAccess", policy => policy.RequireRole("Admin", "Director", "InventoryManager"));
-    options.AddPolicy("ShippingAccess", policy => policy.RequireRole("Admin", "Director", "ShippingStaff"));
-    // Trang Sản phẩm (Kinh doanh, Mua hàng, Kho) và trang Địa lý (Kinh doanh, Logistics) dùng chung API /sales
-    options.AddPolicy("ProductAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager", "PurchaseManager", "InventoryManager"));
-    options.AddPolicy("GeographyAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager", "ShippingStaff"));
+    options.AddPolicy("SalesAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager", "SalesStaff"));
+    options.AddPolicy("PurchaseAccess", policy => policy.RequireRole("Admin", "Director", "PurchaseManager", "PurchaseStaff"));
+    options.AddPolicy("InventoryAccess", policy => policy.RequireRole("Admin", "Director", "InventoryManager", "InventoryStaff"));
+    options.AddPolicy("ShippingAccess", policy => policy.RequireRole("Admin", "Director", "ShippingStaff", "ShippingManager"));
+    options.AddPolicy("ProductAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager", "SalesStaff", "PurchaseManager", "PurchaseStaff", "InventoryManager", "InventoryStaff"));
+    options.AddPolicy("GeographyAccess", policy => policy.RequireRole("Admin", "Director", "SalesManager", "SalesStaff", "ShippingStaff", "ShippingManager"));
 });
 
 // Cấu hình CORS
@@ -125,13 +136,14 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.Logger.LogInformation("AI Copilot tầng 3 (LLM): {Status}", llmOptions.IsConfigured
-    ? $"BẬT - model {llmOptions.Model} @ {llmOptions.BaseUrl} (.env: {dotEnvPath ?? "biến môi trường"})"
-    : "TẮT - chưa cấu hình OPENAI_MODEL (copy .env.example thành .env)");
+app.Logger.LogInformation("AI Copilot (Google Gemini): {Status}", llmOptions.IsConfigured
+    ? $"BẬT - model {llmOptions.Model} @ {llmOptions.BaseUrl}, chờ tối đa {llmOptions.TimeoutSeconds}s, retry 503 tối đa {llmOptions.MaxRetries} lần (.env: {dotEnvPath ?? "biến môi trường"})"
+    : "TẮT - chưa cấu hình GEMINI_API_KEY (copy .env.example thành .env)");
 
 // Khởi tạo tài khoản mặc định
-using (var scope = app.Services.CreateScope())
+if (builder.Configuration.GetValue<bool>("Bootstrap:EnsureDefaultUsers") || true)
 {
+    using var scope = app.Services.CreateScope();
     var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     await userRepo.EnsureDefaultUsersAsync();
 }
