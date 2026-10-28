@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="css/layout.css?v=20261023_05">
   <link rel="stylesheet" href="css/components.css?v=20261023_05">
   <link rel="stylesheet" href="css/responsive.css?v=20261023_05">
-  <link rel="stylesheet" href="css/views.css?v=20261027_12">
+  <link rel="stylesheet" href="css/views.css?v=20261028_4">
   <link rel="stylesheet" href="css/login.css?v=20261022_02">
 </head>
 <body data-theme="light">
@@ -544,7 +544,7 @@
         </div>
         <div class="glass-card grid-full">
           <div class="card-toolbar">
-            <div class="chart-title-group"><h3 class="chart-title">Cảnh báo dưới mức đặt hàng lại</h3><span class="chart-description" data-scope="inv-alerts"></span></div>
+            <div class="chart-title-group"><h3 class="chart-title">Cảnh báo sắp hết hàng</h3><span class="chart-description">Xếp theo số ngày còn đủ bán, ít nhất lên đầu. Sắp hết &lt; 3 ngày · An toàn 3–7 ngày · Tồn thừa &gt; 7 ngày</span></div>
             <div class="card-toolbar-actions">
               <input type="search" class="table-search" placeholder="Tìm sản phẩm, danh mục, vị trí…" oninput="KhangNghiApp.filterTable('inventory', this.value)" aria-label="Tìm trong cảnh báo">
               <button type="button" class="btn" onclick="KhangNghiApp.exportTable('inventory')"><i class="fa-solid fa-file-csv"></i> Xuất CSV</button>
@@ -949,19 +949,14 @@
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title">Câu hỏi phân tích</h1>
-            <p class="page-subtitle">40 câu hỏi bài toán kinh doanh và điều hướng nhanh đến trang báo cáo chi tiết</p>
+            <p class="page-subtitle">40 câu hỏi doanh nghiệp hay đặt ra. Bấm vào một câu để xem câu trả lời bằng biểu đồ.</p>
           </div>
         </div>
-        <div class="glass-card grid-full">
-          <div class="card-toolbar">
-            <input type="search" class="table-search" id="question-search" placeholder="Tìm câu hỏi…" oninput="KhangNghiApp.renderQuestions()" aria-label="Tìm câu hỏi">
-            <div class="card-toolbar-actions">
-              <select id="question-section" class="input" onchange="KhangNghiApp.renderQuestions()" aria-label="Lọc theo phân hệ"><option value="">Tất cả phân hệ</option></select>
-
-            </div>
-          </div>
-          <div id="question-table"></div>
+        <div class="qe-toolbar">
+          <div class="qe-chips" id="question-chips" role="tablist" aria-label="Lọc theo phân hệ"></div>
+          <input type="search" class="table-search qe-search" id="question-search" placeholder="Tìm câu hỏi…" oninput="KhangNghiApp.renderQuestions()" aria-label="Tìm câu hỏi">
         </div>
+        <div id="question-table"></div>
       </section>
 
       <!-- ===================== TRẠNG THÁI DỮ LIỆU ===================== -->
@@ -1122,13 +1117,13 @@
   <!-- JavaScript Modules -->
   <script src="js/apiClient.js?v=20261023_05"></script>
   <script src="js/authService.js?v=20261023_05"></script>
-  <script src="js/analyticsService.js?v=20261027_10"></script>
+  <script src="js/analyticsService.js?v=20261028_3"></script>
   <script src="js/components.js?v=20261023_05"></script>
   <script src="js/charts.js?v=20261027_10"></script>
   <script src="js/filters.js?v=20261023_05"></script>
   <script src="js/router.js?v=20261027_07"></script>
   <script src="js/copilotResponseRules.js?v=20261023_06"></script>
-  <script src="js/app.js?v=20261027_13"></script>
+  <script src="js/app.js?v=20261028_4"></script>
 
   <!-- Modal Xem truy vấn MDX (mở từ Câu hỏi phân tích) -->
   <div class="modal-overlay" id="mdx-viewer-modal" onclick="if(event.target===this) KhangNghiApp.closeMdxModal()">
@@ -1152,6 +1147,28 @@
 
 
   <!-- Quick Chart Modal dùng chung cho MDX-19 đến MDX-24 -->
+  <div class="modal-overlay" id="qa-modal" role="dialog" aria-modal="true" aria-labelledby="qa-title" onclick="if(event.target===this) KhangNghiApp.closeQuestionAnswer()">
+    <div class="modal-box qa-box">
+      <div class="detail-head">
+        <div>
+          <div class="qa-head-top"><span class="qe-no" id="qa-no">01</span><span class="qa-section" id="qa-section"></span></div>
+          <h2 id="qa-title" class="qa-title">Câu hỏi</h2>
+        </div>
+        <button type="button" class="panel-close-btn" onclick="KhangNghiApp.closeQuestionAnswer()" aria-label="Đóng">&times;</button>
+      </div>
+      <div id="qa-body">
+        <div id="qa-answer" class="qa-answer"></div>
+        <div id="qa-legend" class="qa-legend"></div>
+        <div id="qa-chart" class="chart-canvas-wrapper"></div>
+        <div id="qa-matrix"></div>
+        <p id="qa-note" class="qa-note"></p>
+      </div>
+      <div class="qa-foot">
+        <a class="btn" id="qa-route" href="#/sales" onclick="KhangNghiApp.closeQuestionAnswer()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Trang chi tiết</a>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="quick-chart-modal" role="dialog" aria-modal="true" aria-labelledby="quick-chart-title" onclick="if(event.target===this) KhangNghiApp.closeQuickChart()">
     <div class="modal-box" style="max-width: 880px; width: 95%; max-height: 90vh;">
       <div class="detail-head">

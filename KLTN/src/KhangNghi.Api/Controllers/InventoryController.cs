@@ -29,6 +29,11 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("alerts")]
         public async Task<IActionResult> GetReorderAlerts([FromQuery] int top = 50) => Ok(await _repo.Q28_ReorderLevelAlertsAsync(top));
 
+        // Số ngày tồn kho từng mặt hàng (tồn mới nhất ÷ bán TB ngày 3 tháng gần nhất), ít nhất lên đầu.
+        // Thay cho cảnh báo theo ReorderLevel: dữ liệu tồn luôn bằng đúng mức đặt lại nên cảnh báo đó luôn rỗng.
+        [HttpGet("stock-cover")]
+        public async Task<IActionResult> GetStockCover([FromQuery] int top = 500) => Ok(await _repo.Q38_HighSalesLowStockRiskAsync(top));
+
         // Q29: Khu vực đang lưu trữ lượng tồn kho lớn nhất
         [HttpGet("by-region")]
         public async Task<IActionResult> GetStockByRegion() => Ok(await _repo.Q29_StockByRegionAsync());

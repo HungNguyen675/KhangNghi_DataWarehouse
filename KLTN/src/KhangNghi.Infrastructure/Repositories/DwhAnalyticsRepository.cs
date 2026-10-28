@@ -744,7 +744,7 @@ namespace KhangNghi.Infrastructure.Repositories
                     ROUND(AvgMonthly, 0) AS AvgMonthlySold,
                     OnHand AS QuantityOnHand,
                     ReorderLevel,
-                    ROUND(Cover, 1) AS DaysOfCover,
+                    FLOOR(Cover * 10) / 10.0 AS DaysOfCover, -- làm tròn xuống: 2,96 ngày hiện 2,9 cho khớp mức Sắp hết (< 3)
                     CASE
                         WHEN Cover IS NULL OR Cover > 7 THEN N'Tồn thừa'
                         WHEN Cover < 3 OR OnHand < ReorderLevel THEN N'Sắp hết'
