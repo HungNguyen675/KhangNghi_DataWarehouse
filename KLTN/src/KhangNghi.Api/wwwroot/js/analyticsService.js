@@ -283,11 +283,10 @@ window.analyticsService = (function () {
   // 4. TỒN KHO
   // --------------------------------------------------------------------------
   async function getInventory() {
-    const [regRes, moveRes, alertRes, sumRes] = await Promise.all([
+    const [regRes, moveRes, alertRes] = await Promise.all([
       get("/inventory/by-region"),
       get("/inventory/movement-over-time"),
-      get("/inventory/alerts", { top: 50 }),
-      get("/dashboard/summary")
+      get("/inventory/stock-cover", { top: 500 })
     ]);
 
     const byRegion = section(regRes, r => ({
@@ -304,26 +303,30 @@ window.analyticsService = (function () {
       onHand: num(r, "TotalQuantityOnHand") || 0
     }), ALL_TIME);
 
-    const alerts = section(alertRes, r => ({
-      key: str(r, "ProductKey") || str(r, "ProductID"),
-      product: str(r, "ProductName"),
-      category: str(r, "Category"),
-      location: str(r, "Location") || str(r, "City"),
-      onHand: num(r, "QuantityOnHand"),
-      reorderLevel: num(r, "ReorderLevel"),
-      deficit: num(r, "Deficit"),
-      status: str(r, "StatusColor"),
-      recommendation: str(r, "Recommendation")
-    }), "Top 50 mặt hàng thiếu hụt nhiều nhất");
+    // Cảnh báo theo số ngày tồn kho; "Cần nhập thêm" = lượng để đủ bán 3 ngày (chỉ mặt hàng Sắp hết)
+    const alerts = section(alertRes, r => {
+      const avgMonthly = num(r, "AvgMonthlySold") || 0;
+      const onHand = num(r, "QuantityOnHand") || 0;
+      const status = str(r, "StockStatus");
+      return {
+        key: str(r, "ProductKey"),
+        product: str(r, "ProductName"),
+        category: str(r, "Category"),
+        onHand,
+        avgMonthly,
+        cover: num(r, "DaysOfCover"),
+        status,
+        need: status === "Sắp hết" ? Math.max(0, Math.ceil(avgMonthly / 30 * 3 - onHand)) : 0
+      };
+    }, "Tồn mới nhất so với bán 3 tháng gần nhất");
 
-    const sumOk = sumRes && sumRes.success;
     let kpi = null;
     if (byRegion.state === "ready") {
       kpi = {
         onHand: sum(byRegion.items, "onHand"),
         inbound: sum(byRegion.items, "inbound"),
         outbound: sum(byRegion.items, "outbound"),
-        belowReorder: sumOk ? num(sumRes.data, "LowStockAlertCount") : null
+        lowStock: alerts.state === "ready" ? alerts.items.filter(x => x.status === "Sắp hết").length : null
       };
     }
 
@@ -690,6 +693,19 @@ window.analyticsService = (function () {
   // --------------------------------------------------------------------------
   // 13c. QUICK CHART DÀNH CHO CÂU HỎI PHÂN TÍCH (MDX-19 ĐẾN MDX-24)
   // --------------------------------------------------------------------------
+  // Câu trả lời trọng tâm của một câu hỏi phân tích; khóa cột chuẩn hóa về chữ thường
+  async function getQuestionAnswer(mdxId) {
+    const res = await get(`/question-answer/${encodeURIComponent(mdxId)}`);
+    if (!res.success) return { state: res.status === 403 ? "forbidden" : "error", rows: [], message: failMessage(res) };
+    const list = Array.isArray(res.data && res.data.data) ? res.data.data : [];
+    const rows = list.map(r => {
+      const o = {};
+      Object.keys(r).forEach(k => { o[k.toLowerCase()] = r[k]; });
+      return o;
+    });
+    return { state: rows.length ? "ready" : "empty", rows, message: "" };
+  }
+
   async function getQuickChart(mdxId) {
     if (!client) return { state: "error", message: "API client chưa sẵn sàng" };
     const res = await client.get(`/ssas/quick-chart/${encodeURIComponent(mdxId)}`);
@@ -847,6 +863,7 @@ window.analyticsService = (function () {
     getMdxCatalog,
     executeMdx,
     getQuickChart,
+    getQuestionAnswer,
     getMultiDimAnalysis,
     getCubeMetadata,
     getCustomerDetail,
