@@ -275,8 +275,8 @@
                 <li>
                   <span class="login-feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                   <div>
-                    <div class="login-feature-title">Dự báo doanh số bằng ML.NET</div>
-                    <div class="login-feature-desc">Chuỗi thời gian SSA kèm khoảng tin cậy 95%</div>
+                    <div class="login-feature-title">Dự báo doanh số bằng AI</div>
+                    <div class="login-feature-desc">Dự báo doanh thu theo ngày, tuần, tháng giai đoạn 2026 – 2027</div>
                   </div>
                 </li>
                 <li>
@@ -864,22 +864,123 @@
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title">Dự báo doanh số</h1>
-            <p class="page-subtitle">Dự báo doanh thu các tháng tới bằng mô hình ML.NET SSA</p>
           </div>
-          <div class="segmented" role="tablist" aria-label="Kỳ dự báo">
-            <button type="button" class="segmented-btn" data-horizon="3" onclick="KhangNghiApp.setForecastHorizon(3)">3 tháng</button>
-            <button type="button" class="segmented-btn active" data-horizon="6" onclick="KhangNghiApp.setForecastHorizon(6)">6 tháng</button>
-            <button type="button" class="segmented-btn" data-horizon="12" onclick="KhangNghiApp.setForecastHorizon(12)">12 tháng</button>
+          <div class="segmented" role="tablist" aria-label="Cấp độ thời gian dự báo" id="forecast-granularity-tabs">
+            <button type="button" class="segmented-btn" data-granularity="day" onclick="KhangNghiApp.setForecastGranularity('day')"><i class="fa-regular fa-calendar-days" style="margin-right:5px;"></i>Theo ngày</button>
+            <button type="button" class="segmented-btn" data-granularity="week" onclick="KhangNghiApp.setForecastGranularity('week')"><i class="fa-solid fa-calendar-week" style="margin-right:5px;"></i>Theo tuần</button>
+            <button type="button" class="segmented-btn active" data-granularity="month" onclick="KhangNghiApp.setForecastGranularity('month')"><i class="fa-regular fa-calendar" style="margin-right:5px;"></i>Theo tháng</button>
           </div>
         </div>
+
+        <!-- Thanh công cụ chọn kỳ hạn nhanh & Lịch chi tiết -->
+        <div class="glass-card grid-full" style="padding: 14px 18px; margin-bottom: 18px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;">
+            <!-- Chọn nhanh kỳ hạn -->
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);"><i class="fa-solid fa-bolt" style="color: var(--color-primary); margin-right: 4px;"></i>Kỳ hạn nhanh:</span>
+              <div class="segmented" role="tablist" aria-label="Kỳ dự báo" id="forecast-horizon-tabs">
+                <button type="button" class="segmented-btn" data-horizon="3" onclick="KhangNghiApp.setForecastHorizon(3)">3 tháng</button>
+                <button type="button" class="segmented-btn active" data-horizon="6" onclick="KhangNghiApp.setForecastHorizon(6)">6 tháng</button>
+                <button type="button" class="segmented-btn" data-horizon="12" onclick="KhangNghiApp.setForecastHorizon(12)">12 tháng</button>
+                <button type="button" class="segmented-btn" data-horizon="24" onclick="KhangNghiApp.setForecastHorizon(24)">24 tháng</button>
+              </div>
+            </div>
+
+            <!-- Chọn lịch chi tiết (Từ ngày - Đến ngày) -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);"><i class="fa-regular fa-calendar-check" style="color: var(--tone-info); margin-right: 4px;"></i>Từ ngày:</span>
+              <input type="date" id="forecast-start-date" class="input" min="2026-01-01" max="2027-12-31" value="2026-01-01" style="height: 34px; padding: 4px 10px; font-size: 13px; width: auto;" aria-label="Từ ngày">
+              <span style="color: var(--text-muted); font-size: 12px;">đến</span>
+              <input type="date" id="forecast-end-date" class="input" min="2026-01-01" max="2027-12-31" value="2026-06-30" style="height: 34px; padding: 4px 10px; font-size: 13px; width: auto;" aria-label="Đến ngày">
+              <button type="button" class="btn btn-primary btn-sm" id="forecast-run-btn" onclick="KhangNghiApp.applyForecastDates()" style="height: 34px;">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Dự báo
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="KhangNghiApp.resetForecastDates()" style="height: 34px;" title="Đặt lại mặc định">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thanh tiến trình tính toán ngắn gọn (tự ẩn sau khi tính xong) -->
+        <div class="glass-card grid-full" id="forecast-inference-card" style="display: none; padding: 14px 18px; margin-bottom: 18px; border-left: 4px solid var(--color-primary);">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div id="forecast-inference-icon" style="width: 36px; height: 36px; border-radius: 8px; background: rgba(37, 99, 235, 0.12); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+              </div>
+              <div>
+                <strong id="forecast-inference-title" style="font-size: 13.5px; color: var(--text-primary); display: block;">Đang tính toán dự báo doanh số...</strong>
+                <span id="forecast-inference-step" style="font-size: 12px; color: var(--text-secondary);">Đang tổng hợp dữ liệu...</span>
+              </div>
+            </div>
+            <div style="min-width: 150px; text-align: right;">
+              <div id="forecast-inference-meta" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">0%</div>
+              <div style="width: 150px; height: 5px; background: var(--bg-hover); border-radius: 999px; overflow: hidden; margin-top: 5px;">
+                <div id="forecast-inference-bar" style="width: 20%; height: 100%; background: var(--color-primary); transition: width 0.25s ease;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="forecast-notice"></div>
         <div class="kpi-grid" id="forecast-kpis"></div>
         <div class="glass-card chart-card grid-full">
-          <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Doanh thu thực tế và dự báo</h3><span class="chart-description">Đường đứt nét là dự báo, vùng mờ là khoảng tin cậy 95%</span></div></div>
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <h3 class="chart-title" id="forecast-chart-title">Biểu đồ doanh thu thực tế và dự báo</h3>
+            </div>
+          </div>
           <div class="chart-canvas-wrapper" id="chart-forecast"></div>
         </div>
+
+        <!-- Khung chi tiết Tuần & Ngày của Tháng đang chọn -->
+        <div class="glass-card grid-full" id="forecast-month-drilldown-card" style="display: none; margin-bottom: 20px;">
+          <div class="card-toolbar" style="flex-wrap: wrap; gap: 12px;">
+            <div class="chart-title-group">
+              <h3 class="chart-title" id="forecast-drill-title">Chi tiết theo Tuần &amp; Ngày</h3>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Tháng:</span>
+              <select id="forecast-drill-month-select" class="input" style="height: 34px; padding: 4px 10px; font-size: 13px; font-weight: 600; width: auto;" onchange="KhangNghiApp.selectForecastDrillMonth(this.value)"></select>
+            </div>
+          </div>
+
+          <div class="kpi-grid" id="forecast-drill-kpis" style="margin-bottom: 16px;"></div>
+
+          <div class="grid-charts-2">
+            <div class="glass-card chart-card" style="box-shadow: none; border: 1px solid var(--border-color);">
+              <div class="chart-card-header">
+                <div class="chart-title-group">
+                  <h4 class="chart-title" id="forecast-drill-week-title" style="font-size: 15px;">Theo tuần trong tháng</h4>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper" id="chart-forecast-drill-week" style="min-height: 250px;"></div>
+              <div id="table-forecast-drill-week" style="margin-top: 10px;"></div>
+            </div>
+
+            <div class="glass-card chart-card" style="box-shadow: none; border: 1px solid var(--border-color);">
+              <div class="chart-card-header">
+                <div class="chart-title-group">
+                  <h4 class="chart-title" id="forecast-drill-day-title" style="font-size: 15px;">Theo ngày trong tháng</h4>
+                </div>
+              </div>
+              <div class="chart-canvas-wrapper" id="chart-forecast-drill-day" style="min-height: 250px;"></div>
+              <div id="table-forecast-drill-day" style="margin-top: 10px; max-height: 245px; overflow-y: auto;"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="glass-card grid-full">
-          <div class="card-toolbar"><div class="chart-title-group"><h3 class="chart-title">Kết quả dự báo</h3></div></div>
+          <div class="card-toolbar">
+            <div class="chart-title-group">
+              <h3 class="chart-title" id="forecast-table-title">Bảng số liệu dự báo</h3>
+            </div>
+            <div class="card-toolbar-actions">
+              <input type="search" class="table-search" placeholder="Tìm ngày, tuần, tháng…" oninput="KhangNghiApp.filterTable('forecast', this.value)" aria-label="Tìm trong bảng dự báo">
+              <button type="button" class="btn" onclick="KhangNghiApp.exportTable('forecast')"><i class="fa-solid fa-file-csv"></i> Xuất CSV</button>
+            </div>
+          </div>
           <div id="forecast-table"></div>
         </div>
       </section>
@@ -1115,15 +1216,15 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/apiClient.js?v=20261023_05"></script>
-  <script src="js/authService.js?v=20261023_05"></script>
-  <script src="js/analyticsService.js?v=20261028_3"></script>
-  <script src="js/components.js?v=20261023_05"></script>
-  <script src="js/charts.js?v=20261027_10"></script>
-  <script src="js/filters.js?v=20261023_05"></script>
-  <script src="js/router.js?v=20261027_07"></script>
-  <script src="js/copilotResponseRules.js?v=20261023_06"></script>
-  <script src="js/app.js?v=20261028_4"></script>
+  <script src="js/apiClient.js?v=20261028_07"></script>
+  <script src="js/authService.js?v=20261028_07"></script>
+  <script src="js/analyticsService.js?v=20261028_11"></script>
+  <script src="js/components.js?v=20261028_11"></script>
+  <script src="js/charts.js?v=20261028_11"></script>
+  <script src="js/filters.js?v=20261028_11"></script>
+  <script src="js/router.js?v=20261028_11"></script>
+  <script src="js/copilotResponseRules.js?v=20261028_11"></script>
+  <script src="js/app.js?v=20261028_11"></script>
 
   <!-- Modal Xem truy vấn MDX (mở từ Câu hỏi phân tích) -->
   <div class="modal-overlay" id="mdx-viewer-modal" onclick="if(event.target===this) KhangNghiApp.closeMdxModal()">

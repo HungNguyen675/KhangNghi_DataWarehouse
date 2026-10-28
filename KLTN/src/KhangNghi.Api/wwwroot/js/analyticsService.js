@@ -557,19 +557,30 @@ window.analyticsService = (function () {
     };
   }
   // --------------------------------------------------------------------------
-  // 11. DỰ BÁO DOANH SỐ (ML.NET)
+  // 11. DỰ BÁO DOANH SỐ (ModelKLTN Hybrid Optimal)
   // --------------------------------------------------------------------------
-  async function getForecast(horizon = 6) {
-    const res = await get("/forecast/sales", { horizon });
+  async function getForecast(opts = {}) {
+    const params = typeof opts === "number"
+      ? { granularity: "month", horizon: opts }
+      : {
+          granularity: opts.granularity || "month",
+          horizon: opts.horizon || 6,
+          ...(opts.startDate ? { startDate: opts.startDate } : {}),
+          ...(opts.endDate ? { endDate: opts.endDate } : {})
+        };
+    const res = await get("/forecast/sales", params);
     if (!res.success) {
       return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res), points: [] };
     }
     const d = res.data || {};
     const points = (Array.isArray(pick(d, "Points")) ? pick(d, "Points") : []).map(p => ({
       label: str(p, "Period"),
+      dateKey: str(p, "DateKey"),
+      subLabel: str(p, "SubLabel"),
       isFuture: !!pick(p, "IsFuture"),
       actual: pick(p, "IsFuture") ? null : num(p, "ActualValue"),
-      forecast: pick(p, "IsFuture") ? num(p, "ForecastValue") : null,
+      samePeriodActual: num(p, "SamePeriodActualValue"),
+      forecast: num(p, "ForecastValue"),
       lower: pick(p, "IsFuture") ? num(p, "LowerBound") : null,
       upper: pick(p, "IsFuture") ? num(p, "UpperBound") : null
     }));
@@ -582,11 +593,54 @@ window.analyticsService = (function () {
       modelName,
       isFallback: /fallback/i.test(modelName),
       targetMetric: str(d, "TargetMetric"),
+      granularity: str(d, "Granularity") || params.granularity,
+      forecastStart: str(d, "ForecastStart") || "2026-01-01",
+      forecastEnd: str(d, "ForecastEnd") || "2027-12-31",
+      selectedStart: str(d, "SelectedStart"),
+      selectedEnd: str(d, "SelectedEnd"),
+      totalActualRevenue: num(d, "TotalActualRevenue"),
+      totalForecastRevenue: num(d, "TotalForecastRevenue"),
+      averagePeriodRevenue: num(d, "AveragePeriodRevenue"),
+      peakPeriodLabel: str(d, "PeakPeriodLabel"),
+      peakPeriodRevenue: num(d, "PeakPeriodRevenue"),
       mae: num(d, "MeanAbsoluteError"),
       rmse: num(d, "RootMeanSquaredError"),
       historyCount: points.length - futureCount,
       futureCount,
       points
+    };
+  }
+
+  async function getForecastMonthDetail(year, month) {
+    const res = await get("/forecast/month-detail", { year, month });
+    if (!res.success || !res.data) {
+      return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    }
+    const d = res.data;
+    const mapPt = p => ({
+      label: str(p, "Period"),
+      dateKey: str(p, "DateKey"),
+      subLabel: str(p, "SubLabel"),
+      isFuture: !!pick(p, "IsFuture"),
+      actual: pick(p, "IsFuture") ? null : num(p, "ActualValue"),
+      samePeriodActual: num(p, "SamePeriodActualValue"),
+      forecast: num(p, "ForecastValue"),
+      lower: pick(p, "IsFuture") ? num(p, "LowerBound") : null,
+      upper: pick(p, "IsFuture") ? num(p, "UpperBound") : null
+    });
+    return {
+      state: "ready",
+      year: num(d, "Year") || year,
+      month: num(d, "Month") || month,
+      monthLabel: str(d, "MonthLabel") || `Tháng ${month}/${year}`,
+      isFuture: !!pick(d, "IsFuture"),
+      totalActual: num(d, "TotalActual"),
+      totalSamePeriodActual: num(d, "TotalSamePeriodActual"),
+      totalForecast: num(d, "TotalForecast"),
+      averageWeeklyForecast: num(d, "AverageWeeklyForecast"),
+      averageDailyForecast: num(d, "AverageDailyForecast"),
+      weeks: (Array.isArray(pick(d, "Weeks")) ? pick(d, "Weeks") : []).map(mapPt),
+      days: (Array.isArray(pick(d, "Days")) ? pick(d, "Days") : []).map(mapPt)
     };
   }
 
@@ -855,6 +909,7 @@ window.analyticsService = (function () {
     getCrossAnalysis,
     getStockCoverDetail,
     getForecast,
+    getForecastMonthDetail,
     getSummary,
     getSsasStatus,
     getDataStatus,

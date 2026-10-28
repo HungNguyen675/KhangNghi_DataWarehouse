@@ -95,17 +95,23 @@ namespace KhangNghi.Core.DTOs
         public string Recommendation { get; set; } = "Đủ tồn kho";
     }
 
-    // === FORECAST DTOs (ML.NET) ===
+    // === FORECAST DTOs (ModelKLTN Hybrid Optimal) ===
     public class ForecastRequest
     {
-        public int HorizonMonths { get; set; } = 6; // 3, 6, 12
+        public string Granularity { get; set; } = "month"; // "day", "week", "month"
+        public int HorizonMonths { get; set; } = 6; // 3, 6, 12, 24 (hoặc số đơn vị kỳ hạn)
+        public string? StartDate { get; set; } // YYYY-MM-DD
+        public string? EndDate { get; set; }   // YYYY-MM-DD
         public string? Category { get; set; }
     }
 
     public class ForecastPointDto
     {
         public string Period { get; set; } = string.Empty; // e.g. "T10/2026"
+        public string DateKey { get; set; } = string.Empty; // YYYY-MM-DD
+        public string SubLabel { get; set; } = string.Empty; // Chi tiết Thứ hoặc khoảng ngày
         public double ActualValue { get; set; }
+        public double SamePeriodActualValue { get; set; } // Doanh thu thực tế cùng kỳ năm trước (2025)
         public double ForecastValue { get; set; }
         public double LowerBound { get; set; }
         public double UpperBound { get; set; }
@@ -114,11 +120,36 @@ namespace KhangNghi.Core.DTOs
 
     public class ForecastResponse
     {
-        public string ModelName { get; set; } = "ML.NET SSA (Singular Spectrum Analysis)";
+        public string ModelName { get; set; } = "Hybrid Optimal (Prophet + XGBoost + CatBoost)";
         public string TargetMetric { get; set; } = "Doanh thu (Sales)";
+        public string Granularity { get; set; } = "month";
+        public string ForecastStart { get; set; } = "2026-01-01";
+        public string ForecastEnd { get; set; } = "2027-12-31";
+        public string SelectedStart { get; set; } = string.Empty;
+        public string SelectedEnd { get; set; } = string.Empty;
+        public double TotalActualRevenue { get; set; }
+        public double TotalForecastRevenue { get; set; }
+        public double AveragePeriodRevenue { get; set; }
+        public string PeakPeriodLabel { get; set; } = string.Empty;
+        public double PeakPeriodRevenue { get; set; }
         public double MeanAbsoluteError { get; set; }
         public double RootMeanSquaredError { get; set; }
         public List<ForecastPointDto> Points { get; set; } = new();
+    }
+
+    public class MonthDrilldownResponse
+    {
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public string MonthLabel { get; set; } = string.Empty;
+        public bool IsFuture { get; set; }
+        public double TotalActual { get; set; }
+        public double TotalSamePeriodActual { get; set; }
+        public double TotalForecast { get; set; }
+        public double AverageWeeklyForecast { get; set; }
+        public double AverageDailyForecast { get; set; }
+        public List<ForecastPointDto> Weeks { get; set; } = new();
+        public List<ForecastPointDto> Days { get; set; } = new();
     }
 
     // === DWH TABLE STATUS DTO ===
@@ -204,4 +235,3 @@ namespace KhangNghi.Core.DTOs
         public string SourceFactTable { get; set; } = string.Empty;
     }
 }
-

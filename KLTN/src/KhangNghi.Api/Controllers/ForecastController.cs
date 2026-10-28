@@ -26,10 +26,31 @@ namespace KhangNghi.Api.Controllers
         }
 
         [HttpGet("sales")]
-        public async Task<IActionResult> PredictSalesGet([FromQuery] int horizon = 6, [FromQuery] string? category = null)
+        public async Task<IActionResult> PredictSalesGet(
+            [FromQuery] string granularity = "month",
+            [FromQuery] int horizon = 6,
+            [FromQuery] string? startDate = null,
+            [FromQuery] string? endDate = null,
+            [FromQuery] string? category = null)
         {
-            var req = new ForecastRequest { HorizonMonths = horizon, Category = category };
+            var req = new ForecastRequest
+            {
+                Granularity = granularity,
+                HorizonMonths = horizon,
+                StartDate = startDate,
+                EndDate = endDate,
+                Category = category
+            };
             var result = await _forecastService.PredictSalesAsync(req);
+            return Ok(result);
+        }
+
+        [HttpGet("month-detail")]
+        public async Task<IActionResult> GetMonthDrilldown(
+            [FromQuery] int year = 2026,
+            [FromQuery] int month = 1)
+        {
+            var result = await _forecastService.GetMonthDrilldownAsync(year, month);
             return Ok(result);
         }
     }

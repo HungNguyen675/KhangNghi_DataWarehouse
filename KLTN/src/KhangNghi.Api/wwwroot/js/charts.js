@@ -180,33 +180,63 @@ window.KhangNghiCharts = (function () {
   }
 
   // --------------------------------------------------------------------------
-  // DỰ BÁO - lịch sử (đường liền) + dự báo (đường đứt) + khoảng tin cậy
+  // DỰ BÁO - lịch sử (đường liền) + dự báo (đường đứt) + khoảng dao động
   //   points: [{ label, actual, forecast, lower, upper, isFuture }]
   // --------------------------------------------------------------------------
   function forecast(id, points, opts = {}) {
-    const { format = "usd", height = 340 } = opts;
+    const { format = "usd", height = 360, onPointClick = null } = opts;
     if (!points || !points.length) return null;
     const t = theme();
     const labels = points.map(p => p.label);
-    // Nối điểm lịch sử cuối cùng với đoạn dự báo để đường liền mạch
-    const lastHist = points.map(p => p.actual).filter(v => v !== null).length - 1;
-    const fc = points.map((p, i) => (p.isFuture ? p.forecast : i === lastHist ? p.actual : null));
+    // Chạy song song đường dự báo trên cả giai đoạn thực tế để đối chiếu độ chính xác
+    const fc = points.map(p => (p.forecast !== null && p.forecast !== undefined ? p.forecast : null));
     const o = base(t, "rangeArea", height);
+    const dense = points.length > 36;
+    if (onPointClick) {
+      o.chart.events = {
+        dataPointSelection: (e, ctx, cfg) => {
+          const item = points[cfg.dataPointIndex];
+          if (item) onPointClick(item, cfg.dataPointIndex);
+        },
+        markerClick: (e, ctx, cfg) => {
+          const item = points[cfg.dataPointIndex];
+          if (item) onPointClick(item, cfg.dataPointIndex);
+        }
+      };
+    }
     o.series = [
-      { type: "rangeArea", name: "Khoảng tin cậy 95%", data: points.map((p, i) => ({ x: labels[i], y: p.isFuture && p.lower !== null && p.upper !== null ? [p.lower, p.upper] : null })) },
-      { type: "line", name: "Thực tế", data: points.map((p, i) => ({ x: labels[i], y: p.actual })) },
-      { type: "line", name: "Dự báo", data: points.map((p, i) => ({ x: labels[i], y: fc[i] })) }
+      {
+        type: "rangeArea",
+        name: "Khoảng dao động dự kiến",
+        data: points.map((p, i) => ({
+          x: labels[i],
+          y: p.isFuture && p.lower !== null && p.upper !== null
+            ? [p.lower, p.upper]
+            : (fc[i] !== null ? [fc[i], fc[i]] : (p.actual !== null && p.actual !== undefined ? [p.actual, p.actual] : null))
+        }))
+      },
+      { type: "line", name: "Doanh thu thực tế", data: points.map((p, i) => ({ x: labels[i], y: p.isFuture ? null : p.actual })) },
+      { type: "line", name: "Doanh số dự báo", data: points.map((p, i) => ({ x: labels[i], y: fc[i] })) }
     ];
-    o.colors = [t.colors[0], t.colors[0], t.colors[1]];
+    o.colors = [t.colors[1], t.colors[0], t.colors[1]];
     o.fill = { opacity: [0.18, 1, 1] };
-    o.stroke = { width: [0, 2, 2], curve: "straight", dashArray: [0, 0, 6] };
-    o.markers = { size: [0, 3, 4], strokeWidth: 2, strokeColors: t.surface };
+    o.stroke = { width: [0, 2.5, 2.5], curve: "straight", dashArray: [0, 0, 6] };
+    o.markers = { size: dense ? [0, 0, 0] : [0, 4, 4], strokeWidth: 2, strokeColors: t.surface };
     o.xaxis = { type: "category", labels: { rotate: -30, hideOverlappingLabels: true, style: { fontSize: "11px" } }, axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false } };
     o.yaxis = { labels: { formatter: v => fmt(v, format), style: { fontSize: "11px" } } };
     o.legend.show = true;
     o.tooltip.shared = true;
     o.tooltip.intersect = false;
-    o.tooltip.y = { formatter: v => (v === null || v === undefined ? "—" : Array.isArray(v) ? `${fmt(v[0], format)} – ${fmt(v[1], format)}` : fmt(v, format)) };
+    o.tooltip.y = {
+      formatter: (v, ctx) => {
+        if (v === null || v === undefined) return "—";
+        if (Array.isArray(v)) {
+          if (v[0] === v[1]) return "—";
+          return `${fmt(v[0], format)} – ${fmt(v[1], format)}`;
+        }
+        return fmt(v, format);
+      }
+    };
     return mount(id, o);
   }
 

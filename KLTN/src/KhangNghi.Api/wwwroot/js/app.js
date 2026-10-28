@@ -22,7 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
   let renderSeq = 0;
   const tables = {};          // dữ liệu bảng đang hiển thị: phục vụ tìm kiếm và xuất CSV
   let mdxCatalog = null;      // dùng chung cho MDX Studio và Câu hỏi phân tích
+  let forecastGranularity = "month";
   let forecastHorizon = 6;
+  let forecastStartDate = "";
+  let forecastEndDate = "";
   let whatIfBase = null;
   // Khai báo trước renderCurrentView() bên dưới: tải lại trang ngay trên route sẽ gọi renderer trước khi chạy tới phần thân
   let crossCache = { items: [], eff: [] };   // Phân tích chéo: dữ liệu lần vẽ gần nhất cho cửa sổ diễn giải
@@ -1090,42 +1093,389 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // --------------------------------------------------------------------------
-  // 13. DỰ BÁO
+  // 13. DỰ BÁO DOANH SỐ (THEO NGÀY / TUẦN / THÁNG & CHỌN LỊCH CHI TIẾT)
   // --------------------------------------------------------------------------
-  function setForecastHorizon(h) {
-    forecastHorizon = h;
-    document.querySelectorAll("#view-forecast .segmented-btn").forEach(b => b.classList.toggle("active", Number(b.dataset.horizon) === h));
+  const FORECAST_HORIZON_PRESETS = {
+    day: [
+      { value: 7, label: "7 ngày" },
+      { value: 14, label: "14 ngày" },
+      { value: 30, label: "30 ngày" },
+      { value: 60, label: "60 ngày" }
+    ],
+    week: [
+      { value: 4, label: "4 tuần" },
+      { value: 8, label: "8 tuần" },
+      { value: 12, label: "12 tuần" },
+      { value: 24, label: "24 tuần" }
+    ],
+    month: [
+      { value: 3, label: "3 tháng" },
+      { value: 6, label: "6 tháng" },
+      { value: 12, label: "12 tháng" },
+      { value: 24, label: "24 tháng" }
+    ]
+  };
+
+  function syncForecastToolbar() {
+    document.querySelectorAll("#forecast-granularity-tabs .segmented-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.granularity === forecastGranularity);
+    });
+    const horizonWrap = document.getElementById("forecast-horizon-tabs");
+    if (horizonWrap) {
+      const presets = FORECAST_HORIZON_PRESETS[forecastGranularity] || FORECAST_HORIZON_PRESETS.month;
+      const isCustom = !!(forecastStartDate || forecastEndDate);
+      horizonWrap.innerHTML = presets.map(p =>
+        `<button type="button" class="segmented-btn${!isCustom && forecastHorizon === p.value ? " active" : ""}" data-horizon="${p.value}" onclick="KhangNghiApp.setForecastHorizon(${p.value})">${esc(p.label)}</button>`
+      ).join("");
+    }
+  }
+
+  function setForecastGranularity(gran) {
+    forecastGranularity = gran || "month";
+    forecastStartDate = "";
+    forecastEndDate = "";
+    forecastHorizon = forecastGranularity === "day" ? 30 : forecastGranularity === "week" ? 12 : 6;
+    syncForecastToolbar();
     renderCurrentView();
   }
 
+  function setForecastHorizon(h) {
+    forecastHorizon = Number(h) || 6;
+    forecastStartDate = "";
+    forecastEndDate = "";
+    syncForecastToolbar();
+    renderCurrentView();
+  }
+
+  function applyForecastDates() {
+    const startInput = document.getElementById("forecast-start-date");
+    const endInput = document.getElementById("forecast-end-date");
+    let s = startInput ? startInput.value.trim() : "";
+    let e = endInput ? endInput.value.trim() : "";
+    if (!s && !e) return;
+    if (s && e && s > e) {
+      const tmp = s; s = e; e = tmp;
+      if (startInput) startInput.value = s;
+      if (endInput) endInput.value = e;
+    }
+    forecastStartDate = s || "2026-01-01";
+    forecastEndDate = e || "2027-12-31";
+    syncForecastToolbar();
+    renderCurrentView();
+  }
+
+  function resetForecastDates() {
+    forecastStartDate = "";
+    forecastEndDate = "";
+    forecastHorizon = forecastGranularity === "day" ? 30 : forecastGranularity === "week" ? 12 : 6;
+    syncForecastToolbar();
+    renderCurrentView();
+  }
+
+  function fmtDateVN(ymd) {
+    if (!ymd || ymd.length < 10) return ymd || "—";
+    const [y, m, d] = ymd.slice(0, 10).split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  async function runForecastInferenceAnimation(gran, isCurrent) {
+    const card = document.getElementById("forecast-inference-card");
+    const icon = document.getElementById("forecast-inference-icon");
+    const title = document.getElementById("forecast-inference-title");
+    const step = document.getElementById("forecast-inference-step");
+    const meta = document.getElementById("forecast-inference-meta");
+    const bar = document.getElementById("forecast-inference-bar");
+    const runBtn = document.getElementById("forecast-run-btn");
+
+    if (!card) return;
+    card.style.display = "";
+    card.style.borderLeftColor = "var(--color-primary)";
+    if (runBtn) {
+      runBtn.disabled = true;
+      runBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tính...`;
+    }
+    if (icon) {
+      icon.style.background = "rgba(37, 99, 235, 0.12)";
+      icon.style.color = "var(--color-primary)";
+      icon.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+    }
+
+    const steps = [
+      { pct: 35, ms: 220, t: "Đang tải dữ liệu bán hàng...", s: "Tổng hợp doanh thu thực tế các kỳ trước" },
+      { pct: 75, ms: 240, t: "Đang tính toán doanh số dự kiến...", s: "Ước tính xu hướng cho giai đoạn đã chọn" },
+      { pct: 100, ms: 180, t: "Hoàn tất dự báo", s: "Đang hiển thị biểu đồ và bảng số liệu" }
+    ];
+
+    for (const st of steps) {
+      if (!isCurrent()) return;
+      if (title) title.textContent = st.t;
+      if (step) step.textContent = st.s;
+      if (meta) meta.textContent = `${st.pct}%`;
+      if (bar) bar.style.width = `${st.pct}%`;
+      await delay(st.ms);
+    }
+
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Dự báo`;
+    }
+    card.style.display = "none";
+  }
+
   async function renderForecast(filters, isCurrent) {
+    syncForecastToolbar();
     setKpis("forecast-kpis", Comp.renderSkeletonCards(4));
     setLoading(["chart-forecast", "forecast-table"]);
     document.getElementById("forecast-notice").innerHTML = "";
-    const d = await Svc.getForecast(forecastHorizon);
+    const drillCardInit = document.getElementById("forecast-month-drilldown-card");
+    if (drillCardInit) drillCardInit.style.display = "none";
+
+    const [d] = await Promise.all([
+      Svc.getForecast({
+        granularity: forecastGranularity,
+        horizon: forecastHorizon,
+        startDate: forecastStartDate,
+        endDate: forecastEndDate
+      }),
+      runForecastInferenceAnimation(forecastGranularity, isCurrent)
+    ]);
     if (!isCurrent()) return;
 
-    gate("forecast", d, { title: "Chưa có kết quả dự báo", emptyMessage: "Mô hình chưa tạo được điểm dự báo vì Fact_Sales chưa có đủ doanh thu theo tháng để huấn luyện." });
+    gate("forecast", d, { title: "Chưa có kết quả dự báo", emptyMessage: "Không có dữ liệu dự báo trong khoảng thời gian đã chọn." });
     if (d.state !== "ready") return;
 
-    if (d.isFallback) {
-      document.getElementById("forecast-notice").innerHTML = Comp.renderState("unavailable", { title: "Đang dùng mô hình dự phòng", message: `${d.modelName}: ML.NET SSA không chạy được với dữ liệu hiện có, kết quả là ước lượng theo xu hướng và chỉ nên dùng để tham khảo.`, compact: true });
-    }
-    // Không hiển thị MAE/RMSE: backend hiện trả hằng số cố định, không phải sai số đo trên dữ liệu
-    const firstFuture = d.points.find(p => p.isFuture);
+    const startInput = document.getElementById("forecast-start-date");
+    const endInput = document.getElementById("forecast-end-date");
+    if (startInput && d.selectedStart) startInput.value = d.selectedStart;
+    if (endInput && d.selectedEnd) endInput.value = d.selectedEnd;
+
+    const unitMap = {
+      day: { unit: "ngày", cap: "Ngày", chartTitle: "Doanh thu thực tế và dự báo theo ngày", tableLabel: "Ngày" },
+      week: { unit: "tuần", cap: "Tuần", chartTitle: "Doanh thu thực tế và dự báo theo tuần", tableLabel: "Tuần" },
+      month: { unit: "tháng", cap: "Tháng", chartTitle: "Doanh thu thực tế và dự báo theo tháng", tableLabel: "Tháng" }
+    };
+    const u = unitMap[forecastGranularity] || unitMap.month;
+    const rangeNote = d.selectedStart && d.selectedEnd ? `${fmtDateVN(d.selectedStart)} – ${fmtDateVN(d.selectedEnd)}` : "";
+
     setKpis("forecast-kpis",
-      kpi({ label: "Mô hình", value: d.modelName, format: "text", icon: "fa-brain", note: d.targetMetric }) +
-      kpi({ label: "Kỳ dự báo", value: d.futureCount, icon: "fa-calendar-plus", note: "tháng" }) +
-      kpi({ label: `Dự báo ${firstFuture ? firstFuture.label : "tháng tới"}`, value: firstFuture ? firstFuture.forecast : null, format: CUR, icon: "fa-wand-magic-sparkles", note: firstFuture && firstFuture.lower !== null ? `Khoảng ${fv(firstFuture.lower, CUR)} – ${fv(firstFuture.upper, CUR)}` : "" }) +
-      kpi({ label: "Tháng lịch sử trên biểu đồ", value: d.historyCount, icon: "fa-clock-rotate-left", note: "Doanh thu thực tế gần nhất" })
+      kpi({ label: "Doanh thu thực tế (2025)", value: d.totalActualRevenue, format: CUR, icon: "fa-clock-rotate-left", note: `${d.historyCount} ${u.unit} gần nhất` }) +
+      kpi({ label: "Tổng doanh thu dự báo", value: d.totalForecastRevenue, format: CUR, icon: "fa-sack-dollar", note: rangeNote }) +
+      kpi({ label: `Trung bình / ${u.unit}`, value: d.averagePeriodRevenue, format: CUR, icon: "fa-chart-line", note: `${d.futureCount} ${u.unit} dự báo` }) +
+      kpi({ label: `${u.cap} cao nhất`, value: d.peakPeriodRevenue, format: CUR, icon: "fa-arrow-trend-up", note: d.peakPeriodLabel || "" })
     );
-    draw("chart-forecast", d, () => Charts.forecast("chart-forecast", d.points, { format: CUR }));
-    mountTable("forecast", "forecast-table", [
-      { key: "label", label: "Kỳ" },
-      { key: "forecast", label: "Dự báo", format: CUR },
-      { key: "lower", label: "Cận dưới (95%)", format: CUR },
-      { key: "upper", label: "Cận trên (95%)", format: CUR }
-    ], d.points.filter(p => p.isFuture));
+
+    const chartTitleEl = document.getElementById("forecast-chart-title");
+    const tableTitleEl = document.getElementById("forecast-table-title");
+
+    if (chartTitleEl) chartTitleEl.textContent = u.chartTitle;
+    if (tableTitleEl) tableTitleEl.textContent = `Bảng số liệu theo ${u.unit}`;
+
+    const drillCard = document.getElementById("forecast-month-drilldown-card");
+    if (drillCard) drillCard.style.display = forecastGranularity === "month" ? "" : "none";
+
+    draw("chart-forecast", d, () => Charts.forecast("chart-forecast", d.points, {
+      format: CUR,
+      onPointClick: forecastGranularity === "month"
+        ? item => {
+            if (item && item.dateKey) {
+              selectForecastDrillMonth(item.dateKey.slice(0, 7), true);
+            }
+          }
+        : null
+    }));
+
+    const tableRows = d.points.map((p, idx) => {
+      const refActual = p.isFuture ? p.samePeriodActual : p.actual;
+      const diffPct = refActual && refActual > 0 ? ((p.forecast - refActual) / refActual) * 100 : null;
+      return {
+        rank: idx + 1,
+        ymKey: p.dateKey ? p.dateKey.slice(0, 7) : "",
+        label: p.label,
+        isFuture: p.isFuture,
+        status: p.isFuture ? "Dự báo" : "Thực tế",
+        actualDisplay: p.isFuture ? p.samePeriodActual : p.actual,
+        forecast: p.forecast,
+        lower: p.isFuture ? p.lower : null,
+        upper: p.isFuture ? p.upper : null,
+        diffPct
+      };
+    });
+
+    const tableCols = [
+      { key: "rank", label: "#", format: "number" },
+      { key: "label", label: u.tableLabel, render: r => `<strong>${esc(r.label)}</strong>` },
+      { key: "status", label: "Kỳ", render: r => r.isFuture ? Comp.statusBadge("info", "Dự báo") : Comp.statusBadge("success", "Thực tế") },
+      {
+        key: "actualDisplay",
+        label: "Doanh thu thực tế",
+        align: "right",
+        render: r => {
+          if (r.actualDisplay === null || r.actualDisplay === undefined || r.actualDisplay <= 0) return "—";
+          return r.isFuture
+            ? `<span>${esc(fv(r.actualDisplay, CUR))}</span>`
+            : `<strong>${esc(fv(r.actualDisplay, CUR))}</strong>`;
+        }
+      },
+      { key: "forecast", label: "Doanh số dự báo", format: CUR },
+      { key: "lower", label: "Mức thấp", render: r => r.isFuture && r.lower !== null ? esc(fv(r.lower, CUR)) : "—", align: "right" },
+      { key: "upper", label: "Mức cao", render: r => r.isFuture && r.upper !== null ? esc(fv(r.upper, CUR)) : "—", align: "right" },
+      {
+        key: "diffPct",
+        label: "Chênh lệch",
+        align: "right",
+        render: r => {
+          if (r.diffPct === null || r.diffPct === undefined) return "—";
+          const v = Number(r.diffPct);
+          const sign = v > 0 ? "+" : "";
+          const tone = v >= 0 ? "success" : "warning";
+          return Comp.statusBadge(tone, `${sign}${v.toFixed(1)}%`);
+        }
+      }
+    ];
+
+    if (forecastGranularity === "month") {
+      tableCols.push({
+        key: "ymKey",
+        label: "Chi tiết",
+        align: "center",
+        render: r => r.ymKey
+          ? `<button type="button" class="btn btn-sm" onclick="event.stopPropagation(); KhangNghiApp.selectForecastDrillMonth('${esc(r.ymKey)}', true)">Tuần &amp; Ngày</button>`
+          : "—"
+      });
+    }
+
+    mountTable("forecast", "forecast-table", tableCols, tableRows, {
+      limit: 120,
+      empty: "Không có dữ liệu dự báo trong khoảng lịch này.",
+      ...(forecastGranularity === "month" ? { onRowClick: "KhangNghiApp.selectForecastDrillMonth", rowKey: "ymKey" } : {})
+    });
+
+    if (forecastGranularity === "month") {
+      const selEl = document.getElementById("forecast-drill-month-select");
+      if (selEl) {
+        selEl.innerHTML = d.points.map(p => {
+          const ym = p.dateKey ? p.dateKey.slice(0, 7) : "";
+          return `<option value="${esc(ym)}">${esc(p.label)}</option>`;
+        }).join("");
+      }
+      const firstFuture = d.points.find(p => p.isFuture) || d.points[d.points.length - 1];
+      const defaultYm = firstFuture && firstFuture.dateKey ? firstFuture.dateKey.slice(0, 7) : "2026-01";
+      await selectForecastDrillMonth(defaultYm, false);
+    }
+  }
+
+  async function selectForecastDrillMonth(ymKey, scrollIntoView = false) {
+    if (!ymKey || typeof ymKey !== "string") return;
+    const parts = ymKey.slice(0, 7).split("-");
+    const year = Number(parts[0]) || 2026;
+    const month = Number(parts[1]) || 1;
+
+    const selEl = document.getElementById("forecast-drill-month-select");
+    if (selEl && selEl.value !== `${year}-${String(month).padStart(2, "0")}`) {
+      selEl.value = `${year}-${String(month).padStart(2, "0")}`;
+    }
+
+    const card = document.getElementById("forecast-month-drilldown-card");
+    if (card) {
+      card.style.display = "";
+      if (scrollIntoView) {
+        card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    setLoading(["chart-forecast-drill-week", "chart-forecast-drill-day"]);
+    const detail = await Svc.getForecastMonthDetail(year, month);
+    if (detail.state !== "ready") return;
+
+    const titleEl = document.getElementById("forecast-drill-title");
+    if (titleEl) {
+      titleEl.innerHTML = `Chi tiết Tuần &amp; Ngày — <strong>${esc(detail.monthLabel)}</strong>`;
+    }
+
+    setKpis("forecast-drill-kpis",
+      kpi({
+        label: detail.isFuture ? `Cùng kỳ T${String(month).padStart(2, "0")}/2025` : `Thực tế ${detail.monthLabel}`,
+        value: detail.isFuture ? detail.totalSamePeriodActual : detail.totalActual,
+        format: CUR,
+        icon: "fa-clock-rotate-left"
+      }) +
+      kpi({
+        label: `Dự báo ${detail.monthLabel}`,
+        value: detail.totalForecast,
+        format: CUR,
+        icon: "fa-sack-dollar"
+      }) +
+      kpi({
+        label: "Trung bình / Tuần",
+        value: detail.averageWeeklyForecast,
+        format: CUR,
+        icon: "fa-calendar-week"
+      }) +
+      kpi({
+        label: "Trung bình / Ngày",
+        value: detail.averageDailyForecast,
+        format: CUR,
+        icon: "fa-calendar-day"
+      })
+    );
+
+    const weekChartPts = detail.weeks.map(w => ({
+      ...w,
+      actual: detail.isFuture ? w.samePeriodActual : w.actual,
+      isFuture: false
+    }));
+    Charts.forecast("chart-forecast-drill-week", weekChartPts, { format: CUR, height: 240 });
+
+    const dayChartPts = detail.days.map(dPt => ({
+      ...dPt,
+      label: dPt.label.slice(0, 5),
+      actual: detail.isFuture ? dPt.samePeriodActual : dPt.actual,
+      isFuture: false
+    }));
+    Charts.forecast("chart-forecast-drill-day", dayChartPts, { format: CUR, height: 240 });
+
+    const weekTableEl = document.getElementById("table-forecast-drill-week");
+    if (weekTableEl) {
+      weekTableEl.innerHTML = Comp.renderTable([
+        { key: "label", label: "Tuần", render: r => `<strong>${esc(r.label)}</strong>` },
+        { key: "refActual", label: detail.isFuture ? "Cùng kỳ 2025" : "Thực tế", format: CUR },
+        { key: "forecast", label: "Dự báo", format: CUR },
+        {
+          key: "diffPct",
+          label: "Chênh lệch",
+          align: "right",
+          render: r => {
+            if (r.diffPct === null) return "—";
+            const sign = r.diffPct > 0 ? "+" : "";
+            return Comp.statusBadge(r.diffPct >= 0 ? "success" : "warning", `${sign}${r.diffPct.toFixed(1)}%`);
+          }
+        }
+      ], detail.weeks.map(w => {
+        const refAct = detail.isFuture ? w.samePeriodActual : w.actual;
+        return {
+          label: w.label,
+          refActual: refAct,
+          forecast: w.forecast,
+          diffPct: refAct > 0 ? ((w.forecast - refAct) / refAct) * 100 : null
+        };
+      }));
+    }
+
+    const dayTableEl = document.getElementById("table-forecast-drill-day");
+    if (dayTableEl) {
+      dayTableEl.innerHTML = Comp.renderTable([
+        { key: "label", label: "Ngày", render: r => `<strong>${esc(r.label)}</strong> <span class="cell-sub">(${esc(r.subLabel)})</span>` },
+        { key: "refActual", label: detail.isFuture ? "Cùng kỳ 2025" : "Thực tế", format: CUR },
+        { key: "forecast", label: "Dự báo", format: CUR }
+      ], detail.days.map(dPt => ({
+        label: dPt.label,
+        subLabel: dPt.subLabel,
+        refActual: detail.isFuture ? dPt.samePeriodActual : dPt.actual,
+        forecast: dPt.forecast
+      })));
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -2257,7 +2607,11 @@ ${source}
     swapMultiDimAxes,
     resetMultiDim,
     exportMultiDimToCSV,
+    setForecastGranularity,
     setForecastHorizon,
+    applyForecastDates,
+    resetForecastDates,
+    selectForecastDrillMonth,
     updateWhatIf,
     resetWhatIf,
     applyWhatIfPreset,
