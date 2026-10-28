@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/10/2026 2:32:33 PM"
@@ -25,7 +25,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Promotion-{5B4F7D4D-0AD8-4663-8333-E218C1F67286}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Promotion-{5B4F7D4D-0AD8-4663-8333-E218C1F67286}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -42,7 +42,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Shipper-{397929AD-F183-439F-AEF8-50D320DB6282}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Promotion-{5B4F7D4D-0AD8-4663-8333-E218C1F67286}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -59,7 +59,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Promotion-{3FFDE7CD-14E8-421A-A1A9-6C677FE2DCC6}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Promotion-{3FFDE7CD-14E8-421A-A1A9-6C677FE2DCC6}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -735,15 +735,7 @@ WHERE PromotionID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('SALE_' + CAST([Promotion Name] AS NVARCHAR(50)) AS NVARCHAR(50)) AS PromotionID,
-    CAST([Promotion Name] AS NVARCHAR(255)) AS PromotionName,
-    CAST(N'Chưa xác định' AS NVARCHAR(50)) AS DiscountType,
-    CAST('2026-01-01' AS DATETIME) AS StartDate,
-    CAST('2099-12-31' AS DATETIME) AS EndDate
-FROM dbo.Stg_KhangNghiData
-WHERE [Promotion Name] IS NOT NULL
-GROUP BY [Promotion Name]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT CAST(N'SALE_'+s.[Promotion Name] AS nvarchar(50)) PromotionID,CAST(s.[Promotion Name] AS nvarchar(255)) PromotionName,CAST(p.DiscountType AS nvarchar(50)) DiscountType,CAST(p.StartDate AS datetime) StartDate,CAST(p.EndDate AS datetime) EndDate FROM dbo.Stg_KhangNghiData s JOIN KhangNghi_OLTP_VN_DRAFT.vn.PromotionPolicy p ON p.PromotionName=s.[Promotion Name]</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."

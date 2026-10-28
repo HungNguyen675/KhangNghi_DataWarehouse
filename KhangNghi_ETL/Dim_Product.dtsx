@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="12"
-  DTS:VersionGUID="{39192683-519A-48C3-BCE7-965EEB03A5E6}">
+  DTS:VersionBuild="13"
+  DTS:VersionGUID="{0C2B1F48-2E92-4537-B97B-2D7A38C46B46}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{EDD94D61-9370-4C4D-9124-9A5D85436E66}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{EDD94D61-9370-4C4D-9124-9A5D85436E66}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADGC1eHmQRAi0VEdFFPDRiBD2wswUEFMtSVfJAS2RjQagAAAAAOgAAAAAIAACAAAABaVueNH7SYlSkFTx986wMn93+2Ngo3nQBhAZLVfaSekRAAAACwF+9bM08HdG2xA9uRPXFnQAAAACLUTwzpE3NWaThlx/2mNm1dd9++m9DwCt2vPyFdxUVijdFCzd13OOIGuMYFHa5BpZNMYS9gY+Twx+jZ1E/C5MQ</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAChBoJa5cEoBczr9MODW7yghNHvi5EKxtfKIdQwZDM7PgAAAAAOgAAAAAIAACAAAAA8g+/+UR49luBtdif+iu+X752oxXGmtuoV0+NKgz3ApRAAAACD9Hii61dxrJRC6u2tGgrEQAAAAMebHecJ0ZL0pYdGqkMlAU77LryI4DfW/Cmc992TvJ9cQz2Py22/6Egu1buBnH28WHaefbOGnncuDw9joQuPh2M</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{5869F7FC-453C-457B-A7F6-80BC118AB520}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{5869F7FC-453C-457B-A7F6-80BC118AB520}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACzXEVz7o3aTznUp5Snd8lQwBiCHGjHneNRmbVazNCF0QAAAAAOgAAAAAIAACAAAABvwsIXHKGOopZP5K2tZcsM6k6Kr253lslQtiIoaGzOrRAAAABlobgP+TGHs2mwS4KAF2pVQAAAAN6GcW77TSyQQaM6REYrqjwFKwrrvRX4M67yvHI9pJxl9dSQ04z6HYupIK+wuIPVBNc462VNp0a4x22tYVscH9Y</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABCEkYYd7SAcegGaovVBk6jiJCEtGnBP90ul8lasjyP6QAAAAAOgAAAAAIAACAAAAAPams8rtQ06IRQTLL50NJ/JPzlyQ3rTYLnHR7IglwvAhAAAADvDSjV1UjtLFFb6LuqlTsDQAAAAOvHkHV4avy+u1QVRZFS8THtBn06JXXe6+qJUgEJ4g1hpIPHGyVOxfFSqNsDKPK24as6Mha1zxGXYh8zFQWNVfo</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -199,14 +199,13 @@
                   description="Specifies the SQL statement that generates the lookup table."
                   expressionType="Notify"
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from [dbo].[Dim_Product]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [ProductKey],[ProductID],[ProductName],[Category],[SubCategory],[SourceSystem],[CreatedDate],[UpdatedDate],[ProductType] FROM dbo.Dim_Product WHERE IsCurrent=1</property>
                 <property
                   dataType="System.String"
                   description="Specifies a SQL statement that uses parameters to generate the lookup table."
                   expressionType="Notify"
                   name="SqlCommandParam"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select * from (select * from [dbo].[Dim_Product]) [refTable]
-where [refTable].[ProductID] = ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [ProductKey],[ProductID],[ProductName],[Category],[SubCategory],[SourceSystem],[CreatedDate],[UpdatedDate],[ProductType] FROM dbo.Dim_Product WHERE IsCurrent=1 AND ProductID=?</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the type of connection used to access the reference dataset."
@@ -345,9 +344,7 @@ where [refTable].[ProductID] = ?</property>
                   description="The SQL command to be executed."
                   expressionType="Notify"
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE dbo.Dim_Product
-SET ProductName = ?, Category = ?, SubCategory = ?, UpdatedDate = GETDATE()
-WHERE ProductID = ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">EXEC etl.usp_RestoreProductSCD @ProductName=?,@Category=?,@SubCategory=?,@ProductID=?;</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -374,37 +371,37 @@ WHERE ProductID = ?</property>
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="ProductName"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@ProductName]"
                       lineageId="Package\Data Flow Task\SRC - Gom 2 Bảng.Outputs[OLE DB Source Output].Columns[ProductName]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[Category]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="Category"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@Category]"
                       lineageId="Package\Data Flow Task\SRC - Gom 2 Bảng.Outputs[OLE DB Source Output].Columns[Category]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[SubCategory]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="SubCategory"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@SubCategory]"
                       lineageId="Package\Data Flow Task\SRC - Gom 2 Bảng.Outputs[OLE DB Source Output].Columns[SubCategory]" />
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[ProductID]"
                       cachedDataType="wstr"
                       cachedLength="255"
                       cachedName="ProductID"
-                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@ProductID]"
                       lineageId="Package\Data Flow Task\SRC - Gom 2 Bảng.Outputs[OLE DB Source Output].Columns[ProductID]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@ProductName]"
                       dataType="wstr"
                       length="255"
-                      name="Param_0">
+                      name="@ProductName">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -413,10 +410,10 @@ WHERE ProductID = ?</property>
                       </properties>
                     </externalMetadataColumn>
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@Category]"
                       dataType="wstr"
                       length="100"
-                      name="Param_1">
+                      name="@Category">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -425,10 +422,10 @@ WHERE ProductID = ?</property>
                       </properties>
                     </externalMetadataColumn>
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_2]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@SubCategory]"
                       dataType="wstr"
                       length="100"
-                      name="Param_2">
+                      name="@SubCategory">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -437,10 +434,10 @@ WHERE ProductID = ?</property>
                       </properties>
                     </externalMetadataColumn>
                     <externalMetadataColumn
-                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_3]"
+                      refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[@ProductID]"
                       dataType="wstr"
                       length="50"
-                      name="Param_3">
+                      name="@ProductID">
                       <properties>
                         <property
                           dataType="System.Int32"
@@ -700,25 +697,7 @@ WHERE ProductID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">-- 1. Lấy Sản phẩm bên Bán hàng (Có đầy đủ Tên, Danh mục)
-SELECT 
-    CAST('SALE_' + CAST([Product ID] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ProductID,
-    CAST([Product Name] AS NVARCHAR(255)) AS ProductName,
-    CAST([Category] AS NVARCHAR(100)) AS Category,
-    CAST([Sub-Category] AS NVARCHAR(100)) AS SubCategory
-FROM dbo.Stg_KhangNghiData
-WHERE [Product ID] IS NOT NULL
-
-UNION 
-
--- 2. Lấy Sản phẩm bên Nhập hàng (Chỉ có Mã SP, các cột khác ép NULL)
-SELECT 
-    CAST('PUR_' + CAST([ProductID] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ProductID,
-    CAST(NULL AS NVARCHAR(255)) AS ProductName, 
-    CAST(NULL AS NVARCHAR(100)) AS Category,    
-    CAST(NULL AS NVARCHAR(100)) AS SubCategory  
-FROM dbo.Stg_PurchaseHistory
-WHERE [ProductID] IS NOT NULL;</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CAST(N'SALE_'+s.[Product ID] AS nvarchar(255)) ProductID,CAST(m.ProductName AS nvarchar(255)) ProductName,CAST(m.Category AS nvarchar(255)) Category,CAST(m.SubCategory AS nvarchar(255)) SubCategory FROM dbo.Stg_KhangNghiData s JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Products m ON m.ProductID=s.[Product ID] UNION SELECT CAST(N'PUR_'+s.ProductID AS nvarchar(255)),CAST(m.ProductName AS nvarchar(255)),CAST(m.Category AS nvarchar(255)),CAST(NULL AS nvarchar(255)) FROM dbo.Stg_PurchaseHistory s JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Products m ON m.ProductID=s.ProductID</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -921,17 +900,21 @@ WHERE [ProductID] IS NOT NULL;</property>
           Id="Package\Data Flow Task\OLE DB Destination"
           TopLeft="578.571429803055,210.294117462727" />
         <NodeLayout
-          Size="112.8,41.6"
-          Id="Package\Data Flow Task\Lookup"
-          TopLeft="340.714286439577,213.352940989458" />
+          Size="166.4,41.6"
+          Id="Package\Data Flow Task\SRC - Gom 2 Bảng"
+          TopLeft="53.571428685468,140.705882229607" />
+        <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Data Flow Task\OLE DB Command"
+          TopLeft="525.714286833394,94.0588234469656" />
         <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
           TopLeft="167.857143214467,48.9411764276892" />
         <NodeLayout
-          Size="166.4,41.6"
-          Id="Package\Data Flow Task\SRC - Gom 2 Bảng"
-          TopLeft="53.571428685468,140.705882229607" />
+          Size="112.8,41.6"
+          Id="Package\Data Flow Task\Lookup"
+          TopLeft="340.714286439577,213.352940989458" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="136.771428685468,140.705882229607">
@@ -991,6 +974,42 @@ WHERE [ProductID] IS NOT NULL;</property>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Lookup Match Output]"
+          TopLeft="414.580953106244,213.352940989458">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="193.53333372715,-77.6941175424924"
+              Start="0,0"
+              End="193.53333372715,-70.1941175424924">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,-27.7296256257451" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,-27.7296256257451"
+                    Point2="0,-31.7296256257451"
+                    Point3="4,-31.7296256257451" />
+                  <mssgle:LineSegment
+                    End="189.53333372715,-31.7296256257451" />
+                  <mssgle:CubicBezierSegment
+                    Point1="189.53333372715,-31.7296256257451"
+                    Point2="193.53333372715,-31.7296256257451"
+                    Point3="193.53333372715,-35.7296256257451" />
+                  <mssgle:LineSegment
+                    End="193.53333372715,-70.1941175424924" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="48.5752801448252,-26.7296256257451,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package\Data Flow Task.Paths[Derived Column Output]"
           TopLeft="268.3904765478,90.5411764276892">
           <EdgeLayout.Curve>
@@ -1024,51 +1043,24 @@ WHERE [ProductID] IS NOT NULL;</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Data Flow Task\OLE DB Command"
-          TopLeft="525.714286833394,94.0588234469656" />
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Lookup Match Output]"
-          TopLeft="414.580953106244,213.352940989458">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="193.53333372715,-77.6941175424924"
-              Start="0,0"
-              End="193.53333372715,-70.1941175424924">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,-27.7296256257451" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,-27.7296256257451"
-                    Point2="0,-31.7296256257451"
-                    Point3="4,-31.7296256257451" />
-                  <mssgle:LineSegment
-                    End="189.53333372715,-31.7296256257451" />
-                  <mssgle:CubicBezierSegment
-                    Point1="189.53333372715,-31.7296256257451"
-                    Point2="193.53333372715,-31.7296256257451"
-                    Point3="193.53333372715,-35.7296256257451" />
-                  <mssgle:LineSegment
-                    End="193.53333372715,-70.1941175424924" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="48.575280144825,-26.7296256257451,96.3827734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\SRC - Gom 2 Bảng">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -1100,19 +1092,6 @@ WHERE [ProductID] IS NOT NULL;</property>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\SRC - Gom 2 Bảng">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>

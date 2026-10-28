@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/20/2026 9:46:25 AM"
@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="8"
-  DTS:VersionGUID="{7161C7AF-1625-4AE7-89A2-740279B9C38A}">
+  DTS:VersionBuild="9"
+  DTS:VersionGUID="{7F1252DD-0D00-479A-B42C-72FC1FD36BE4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{00B4D273-3E5C-4C7B-873C-F6DA13A5F5B2}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{00B4D273-3E5C-4C7B-873C-F6DA13A5F5B2}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAYGpa9wRqPS9ox1sY4SA+ttS3by0sghpTKP5yTl7OCQwAAAAAOgAAAAAIAACAAAACYW1noSyUOlzygfhDlXBPduAQBgIolENDblgze+0R8ehAAAABr7ZyWFANXbJufSgmV4RF6QAAAAM/PUoBMEH9kocbev1MUUjWU0qr0RSbxzlsxcsw2+QOB+uB2TYHcEw8Hpzb6g3TopsoWmO1qpk3IqLO019wlEjM</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABmfVq0tUGE2RPFZEzCA02DUCNXMeX7WP4IHTyjuaskagAAAAAOgAAAAAIAACAAAADkGNyJv2r/HwPTBgXh43uYEoBh1u1p5uo+YwMppDjV4hAAAAC+xE3Dp+mPjLP4arknkkO+QAAAAB6inFjeIkRvrMlYvYWlBldbM3gJDcWw5P/fZyeHgOcQhFM3F93hC91lL+3FZ+JFrpatlIoIyWsNkBX8MdoE7qc</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Service-{E16AF63A-83F3-4E90-8BE8-16FC700FAAD5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{00B4D273-3E5C-4C7B-873C-F6DA13A5F5B2}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADPuhOys3GTfrVyF0y+mwi5yigpQMcdG7+8sofsmghsqwAAAAAOgAAAAAIAACAAAABTqQirwT59JxgATv0XZXq7NAwTTHD16bcDgvRhVGr0qBAAAAC5+nXoobZTLdR4VGp8GqecQAAAAALst7UBIFM9IzIJudBP52ydPmFhcFJVaSuU0BP9H7TuE75QpIALYG6COodIrRQmnOxLvYJCNwDofkncGEKZzOc</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADB8K0RyZFaMd9yNpvoZVQqzzV4WEpKhmbtY4isp6+0iAAAAAAOgAAAAAIAACAAAACnHN02Jgp57tId7tx3pmDzidjrFVE6jKYvtRV9Y1R8URAAAACh7XnVE/ah0JggdImtS1EcQAAAAALsJMUZqbyigGH9b4pVqZxNylHJTzlM37YHObjdHkyKTKWmgPsGAte/SyhkXcARLuSAtKH11YBWFFXOuqgIOcA</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -59,11 +59,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{AF1FFC76-70FC-4DF9-AD2B-3CBECC8C4C42}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{AF1FFC76-70FC-4DF9-AD2B-3CBECC8C4C42}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADICFGFw7V6kGK99rWdsbC0YSb4LuTJGiZpnG5hpAvy+gAAAAAOgAAAAAIAACAAAACB+HXhwuQPQO6ViUNPdnKoQJnn78UVfIC2bWKkQYQaDRAAAAAu25Qvi3eIQqlc11SX2VFdQAAAAAfTyi16mNq/V9tYHCXrlZN40ADwu46XpYkPhmB2Un3dsPOaJAft038d5jMC7KjYAQ4J/xIkcUnVXA9BdCf2n6o</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAB6Fh68p1RV0NShvG/m4xRmJYi+sCEE/U1UyaTuJTxmDgAAAAAOgAAAAAIAACAAAABCg7awgs5c2vM9/eh5H3z5AhyHuBUxGyFP0VmfAsStoRAAAAC2QdvL9yu1O0y4MEI3vSAtQAAAAN4Iv0Dh3EHQ+94iCYg9HJe2EG//h/tgAQNWiK9kPx42Zcw60rd89BGpeJXIcWafYyaP6LHtKZC+ze3AQBg8bzw</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -285,7 +285,7 @@ where [refTable].[SupplierID] = ?</property>
                     <inputColumn
                       refId="Package\Data Flow Task\Lookup.Inputs[Lookup Input].Columns[SupplierID]"
                       cachedDataType="wstr"
-                      cachedLength="255"
+                      cachedLength="50"
                       cachedName="SupplierID"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]">
                       <properties>
@@ -396,7 +396,7 @@ WHERE SupplierID = ?</property>
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].Columns[SupplierID]"
                       cachedDataType="wstr"
-                      cachedLength="255"
+                      cachedLength="50"
                       cachedName="SupplierID"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]" />
@@ -537,7 +537,7 @@ WHERE SupplierID = ?</property>
                     <inputColumn
                       refId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SupplierID]"
                       cachedDataType="wstr"
-                      cachedLength="255"
+                      cachedLength="50"
                       cachedName="SupplierID"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SupplierID]"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]" />
@@ -650,12 +650,7 @@ WHERE SupplierID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('PUR_' + CAST(LTRIM(RTRIM([Manufacturer])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS SupplierID,
-    CAST([Manufacturer] AS NVARCHAR(255)) AS SupplierName
-FROM dbo.Stg_PurchaseHistory
-WHERE [Manufacturer] IS NOT NULL
-GROUP BY [Manufacturer]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT CAST(N'PUR_'+m.SupplierID AS nvarchar(50)) SupplierID,CAST(m.SupplierName AS nvarchar(255)) SupplierName FROM dbo.Stg_PurchaseHistory s JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Suppliers m ON m.SupplierName=s.SupplierName</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -697,7 +692,7 @@ GROUP BY [Manufacturer]</property>
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
                       externalMetadataColumnId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SupplierID]"
-                      length="255"
+                      length="50"
                       lineageId="Package\Data Flow Task\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]"
                       name="SupplierID"
                       truncationRowDisposition="FailComponent" />
@@ -812,67 +807,25 @@ GROUP BY [Manufacturer]</property>
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Data Flow Task\OLE DB Source"
+          TopLeft="173.571428940917,227.117646859746" />
+        <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Data Flow Task\OLE DB Command"
+          TopLeft="322.857143544421,170.423529351438" />
+        <NodeLayout
           Size="170.4,41.6"
           Id="Package\Data Flow Task\OLE DB Destination"
           TopLeft="478.571429590181,231.705882149842" />
-        <NodeLayout
-          Size="112.8,41.6"
-          Id="Package\Data Flow Task\Lookup"
-          TopLeft="502.857143927594,85.6470587484564" />
         <NodeLayout
           Size="152.8,41.6"
           Id="Package\Data Flow Task\Derived Column"
           TopLeft="222.142857615741,88.705882275187" />
         <NodeLayout
-          Size="149.6,41.6"
-          Id="Package\Data Flow Task\OLE DB Source"
-          TopLeft="173.571428940917,227.117646859746" />
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Lookup No Match Output]"
-          TopLeft="561.514286758888,127.247058748456">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,104.458823401386"
-              Start="0,0"
-              End="0,96.9588234013858">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,96.9588234013858" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-55.80638671875,42.6747242006929,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Data Flow Task.Paths[Derived Column Output]"
-          TopLeft="374.942857615741,107.976470511822">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="127.914286311853,0"
-              Start="0,0"
-              End="120.414286311853,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="120.414286311853,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
+          Size="112.8,41.6"
+          Id="Package\Data Flow Task\Lookup"
+          TopLeft="502.857143927594,85.6470587484564" />
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[OLE DB Source Output]"
           TopLeft="248.371428940917,227.117646859746">
@@ -907,10 +860,30 @@ GROUP BY [Manufacturer]</property>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="164.8,41.6"
-          Id="Package\Data Flow Task\OLE DB Command"
-          TopLeft="322.857143544421,170.423529351438" />
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Lookup No Match Output]"
+          TopLeft="561.514286758888,127.247058748456">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,104.458823401386"
+              Start="0,0"
+              End="0,96.9588234013858">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,96.9588234013858" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-55.80638671875,42.6747242006929,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <EdgeLayout
           Id="Package\Data Flow Task.Paths[Lookup Match Output]"
           TopLeft="541.790477260927,127.247058748456">
@@ -947,22 +920,31 @@ GROUP BY [Manufacturer]</property>
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Derived Column Output]"
+          TopLeft="374.942857615741,107.976470511822">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="127.914286311853,0"
+              Start="0,0"
+              End="120.414286311853,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="120.414286311853,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Destination">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\Lookup">
     <Properties>
@@ -991,6 +973,19 @@ GROUP BY [Manufacturer]</property>
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>

@@ -15,10 +15,12 @@ namespace KhangNghi.Api.Controllers
     public class SsasController : ControllerBase
     {
         private readonly ISsasRepository _ssasRepo;
+        private readonly IDwhAnalyticsRepository _dwhRepo;
 
-        public SsasController(ISsasRepository ssasRepo)
+        public SsasController(ISsasRepository ssasRepo, IDwhAnalyticsRepository dwhRepo)
         {
             _ssasRepo = ssasRepo;
+            _dwhRepo = dwhRepo;
         }
 
         /// <summary>
@@ -139,10 +141,41 @@ namespace KhangNghi.Api.Controllers
                 });
             }
         }
+
+        /// <summary>
+        /// Dữ liệu Quick Chart trực tiếp cho các câu hỏi phân tích MDX
+        /// </summary>
+        [HttpGet("quick-chart/{id}")]
+        public async Task<IActionResult> GetQuickChart([FromRoute] string id)
+        {
+            var result = await _dwhRepo.GetQuickChartAsync(id);
+            if (result == null)
+            {
+                return NotFound(new { success = false, message = $"Chưa hỗ trợ Quick Chart cho câu hỏi '{id}'." });
+            }
+            return Ok(new { success = true, data = result });
+        }
+
+        /// <summary>
+        /// Phân tích kinh doanh đa chiều (Multi-dimensional business analytics)
+        /// </summary>
+        [HttpGet("multidim-analysis")]
+        public async Task<IActionResult> GetMultiDimAnalysis([FromQuery] string measure = "revenue", [FromQuery] string row = "category", [FromQuery] string col = "year")
+        {
+            var result = await _dwhRepo.GetMultiDimAnalysisAsync(measure, row, col);
+            if (result == null)
+            {
+                return BadRequest(new { success = false, message = "Không thể phân tích đa chiều với các tham số đã chọn." });
+            }
+            return Ok(new { success = true, data = result });
+        }
     }
 
     public class MdxQueryRequest
     {
         public string MdxQuery { get; set; } = string.Empty;
+
+
+
     }
 }

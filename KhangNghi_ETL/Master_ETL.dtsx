@@ -23,7 +23,7 @@
       DTS:ObjectName="0_Nap_Staging.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\0_Nap_Staging.dtsx" />
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\0_Nap_Staging.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -33,7 +33,7 @@
       DTS:ObjectName="1_Load_Dimensions.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\1_Load_Dimensions.dtsx" />
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\1_Load_Dimensions.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -43,7 +43,7 @@
       DTS:ObjectName="2_Load_Fact.dtsx">
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\2_Load_Fact.dtsx" />
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\2_Load_Fact.dtsx" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>

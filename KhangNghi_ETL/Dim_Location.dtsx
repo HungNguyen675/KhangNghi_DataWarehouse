@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="9"
-  DTS:VersionGUID="{E33C9DE2-45D1-4187-B045-3EF8E43262A4}">
+  DTS:VersionBuild="10"
+  DTS:VersionGUID="{4D0D5704-A98E-4B50-96DF-5B6B2C532E03}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{F7B11931-1AD9-4593-AE13-6831CF4211BE}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{F7B11931-1AD9-4593-AE13-6831CF4211BE}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACnACRhzETLuWI6OatbEHMiYwG0m+wQeE8Lw5nfqdfWIQAAAAAOgAAAAAIAACAAAABhBK/BaWem+RK+gUorTkPlLdUczIpXO84HXNfeq2TkNBAAAABWlnnFrRBwtIEwfBeY+TK5QAAAAFBXCE/X4IkyTGEOKFEZDu3XOuvGe0gTQJ4cZmdfQpi0JDU417iYbnGfhXIPVaWEAnpawkrch6+Z/ufy4FIHfDg</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADn19A1KCTPe0laWq+6l3VI/bhsNboHr1iSF2mrWbt20QAAAAAOgAAAAAIAACAAAADXBW5PlxMlLPSW7/yKECJMuh7y4gh2FeREoHLbDpt8WBAAAADwL0uCwYEKs+yLks8ZqzbNQAAAAM20r0d5qyiTk0fekVeTy7Jrvzf2GxRYDcSgdz+j0/bJmbXZlGE7P9Aap7VLQyJa35g7ofRwAZNR1BAnc2kmw3A</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{75E5CEC3-2EA2-4ED9-B9AE-5318A93B2C3F}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{75E5CEC3-2EA2-4ED9-B9AE-5318A93B2C3F}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAA/1JRZYQkUYvqxtzy8GAsjNDHVJteX6ugjPbWnF0fDLQAAAAAOgAAAAAIAACAAAAD3oMpKO7Ha1Euvmd9CGfhmxBRzRg0PnyWCMxTsteFAUhAAAAA3CPmQM+Z/y1aLp7fizcrOQAAAAJ4oxucQBL9HLObBL8BUSLafEv7gTlr3IB+kQWrdCn4L2qiq1ZUXSj8aapUiEH2n0KNvX6dMCJP4euaX0eUv8C4</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACzPMjqrYy6PeBcFYuJQaFzw5Gw97tEtD6Jg5N5Wp51jwAAAAAOgAAAAAIAACAAAACIfYPgIr3PXmaf0EL5c8cXxB99vSiabVd8Q7B+wNfSuxAAAACt9PdJT7ar8TFPmPGf4AsnQAAAAIwtYoPMPSwPF2OYHmKWUm3lg67SEU3VzHKeEE227D2/4sZDUbIYs2tpekCCt0ZTKpvgrQVLfE65dJ/35J2/ICc</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -726,15 +726,55 @@ WHERE LocationID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('SALE_' + CAST([Location ID] AS NVARCHAR(50)) AS NVARCHAR(50)) AS LocationID,
-    CAST([Country] AS NVARCHAR(100)) AS Country,
-    CAST([City] AS NVARCHAR(100)) AS City,
-    CAST([State] AS NVARCHAR(100)) AS State,
-    CAST([Region] AS NVARCHAR(50)) AS Region
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">;WITH GeoMap AS
+(
+    SELECT
+        Country,
+        City,
+        MIN(State) AS State,
+        MIN(Region) AS Region
+    FROM dbo.Stg_KhangNghiData
+    WHERE Country IS NOT NULL
+      AND City IS NOT NULL
+      AND State IS NOT NULL
+      AND Region IS NOT NULL
+    GROUP BY Country, City
+    HAVING COUNT(DISTINCT State) = 1
+       AND COUNT(DISTINCT Region) = 1
+)
+SELECT
+    CAST('SALE_' + CAST([Location ID] AS nvarchar(50))
+         AS nvarchar(50)) AS LocationID,
+    CAST(Country AS nvarchar(100)) AS Country,
+    CAST(City AS nvarchar(100)) AS City,
+    CAST(State AS nvarchar(100)) AS State,
+    CAST(Region AS nvarchar(50)) AS Region
 FROM dbo.Stg_KhangNghiData
 WHERE [Location ID] IS NOT NULL
-GROUP BY [Location ID], [Country], [City], [State], [Region]</property>
+GROUP BY [Location ID], Country, City, State, Region
+
+UNION
+
+SELECT
+    CAST(N'PUR_SUPLOC_' + s.SupplierID AS nvarchar(50)),
+    CAST(N'Việt Nam' AS nvarchar(100)),
+    CAST(c.CityName AS nvarchar(100)),
+    CAST(g.State AS nvarchar(100)),
+    CAST(g.Region AS nvarchar(50))
+FROM KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Suppliers s
+JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Wards w
+    ON w.WardID = s.WardID
+JOIN KhangNghi_Purchasing_OLTP_VN_DRAFT.dbo.Cities c
+    ON c.CityID = w.CityID
+LEFT JOIN GeoMap g
+    ON g.Country = N'Việt Nam'
+   AND g.City = c.CityName
+WHERE EXISTS
+(
+    SELECT 1
+    FROM dbo.Stg_PurchaseHistory x
+    WHERE x.SupplierName = s.SupplierName
+);</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."

@@ -311,6 +311,12 @@ select.input {
   gap: 6px;
 }
 
+/* Tab chọn kỳ đặt bên phải tiêu đề biểu đồ, xuống dòng khi hẹp */
+.chart-card-header .segmented { flex-wrap: wrap; flex-shrink: 0; }
+@media (max-width: 640px) {
+  .chart-card-header:has(.segmented) { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
 .segmented-btn.active {
   background: var(--bg-card);
   color: var(--text-main);

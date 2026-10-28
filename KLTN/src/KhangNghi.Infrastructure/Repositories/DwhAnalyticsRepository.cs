@@ -15,7 +15,11 @@ namespace KhangNghi.Infrastructure.Repositories
         Task<DashboardSummaryDto> GetDashboardSummaryAsync(int? year = null, string? region = null);
 
         // Nhóm 1: Bán hàng (Q1 - Q20)
-        Task<IEnumerable<dynamic>> Q01_RevenueByYearAsync();
+        Task<IEnumerable<dynamic>> Q01_RevenueByYearAsync(int? year = null);
+        // Doanh thu, lợi nhuận từng tháng: biểu đồ xu hướng chọn xem theo năm hoặc 12 tháng của một năm
+        Task<IEnumerable<dynamic>> GetRevenueByMonthAsync();
+        // Sản phẩm xếp TĂNG dần theo doanh thu hoặc lợi nhuận (chỉ sản phẩm có phát sinh bán, cùng định nghĩa MDX-08)
+        Task<IEnumerable<dynamic>> GetLowestProductsAsync(int top, bool byProfit);
         Task<IEnumerable<dynamic>> Q02_RevenueByQuarterAsync(int? year = null);
         Task<dynamic?> Q03_PeakMonthRevenueAsync();
         Task<dynamic?> Q04_PeakQuarterProfitAsync();
@@ -137,14 +141,26 @@ namespace KhangNghi.Infrastructure.Repositories
         }
 
         // ==================== NHÓM 1: BÁN HÀNG ====================
-        public async Task<IEnumerable<dynamic>> Q01_RevenueByYearAsync()
+        public async Task<IEnumerable<dynamic>> Q01_RevenueByYearAsync(int? year = null)
         {
             using var db = _connectionFactory.CreateConnection();
             const string sql = @"
                 SELECT t.Year, ROUND(SUM(f.SalesAmount), 2) AS Revenue, ROUND(SUM(f.ProfitAmount), 2) AS Profit, SUM(f.Quantity) AS Quantity
                 FROM dbo.Fact_Sales f WITH (NOLOCK)
                 JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                WHERE (@Year IS NULL OR t.Year = @Year)
                 GROUP BY t.Year ORDER BY t.Year ASC";
+            return await db.QueryAsync(sql, new { Year = year }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<dynamic>> GetRevenueByMonthAsync()
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT t.Year, t.Month, ROUND(SUM(f.SalesAmount), 2) AS Revenue, ROUND(SUM(f.ProfitAmount), 2) AS Profit
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                GROUP BY t.Year, t.Month ORDER BY t.Year, t.Month";
             return await db.QueryAsync(sql, commandTimeout: 60);
         }
 
@@ -207,6 +223,27 @@ namespace KhangNghi.Infrastructure.Repositories
                 GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
                 ORDER BY Revenue DESC";
             return await db.QueryAsync(sql, new { Top = top }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<dynamic>> GetLowestProductsAsync(int top, bool byProfit)
+        {
+            using var db = _connectionFactory.CreateConnection();
+            // Cột sắp xếp chọn từ hai câu SQL cố định, không ghép chuỗi từ đầu vào người dùng
+            const string byRevenueSql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory,
+                                   ROUND(SUM(f.SalesAmount), 2) AS Revenue, ROUND(SUM(f.ProfitAmount), 2) AS Profit, SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
+                ORDER BY Revenue ASC";
+            const string byProfitSql = @"
+                SELECT TOP (@Top) p.ProductKey, p.ProductName, p.Category, p.SubCategory,
+                                   ROUND(SUM(f.ProfitAmount), 2) AS Profit, ROUND(SUM(f.SalesAmount), 2) AS Revenue, SUM(f.Quantity) AS Quantity
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                GROUP BY p.ProductKey, p.ProductName, p.Category, p.SubCategory
+                ORDER BY Profit ASC";
+            return await db.QueryAsync(byProfit ? byProfitSql : byRevenueSql, new { Top = Math.Clamp(top, 1, 50) }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<dynamic>> Q07_TopProductsByProfitAsync(int top = 10)

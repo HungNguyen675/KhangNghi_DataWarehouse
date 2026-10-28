@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/10/2026 2:32:33 PM"
@@ -25,7 +25,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_PaymentMethod-{2EB0F415-F340-4966-8514-DBA7FF89B3B5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_PaymentMethod-{2EB0F415-F340-4966-8514-DBA7FF89B3B5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -42,7 +42,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package-{03EFF312-9DCA-4393-8E06-A8CAF9FA9B01}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_PaymentMethod-{2EB0F415-F340-4966-8514-DBA7FF89B3B5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -59,7 +59,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_PaymentMethod-{A3F7FFDA-0B70-4262-A8DF-F07F1C7574FF}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_PaymentMethod-{A3F7FFDA-0B70-4262-A8DF-F07F1C7574FF}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
@@ -677,13 +677,7 @@ WHERE PaymentID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('SALE_' + CAST([Payment Method] AS NVARCHAR(50)) AS NVARCHAR(50)) AS PaymentID,
-    CAST([Payment Method] AS NVARCHAR(100)) AS MethodType,
-    CAST(NULL AS INT) AS TermDays -- (Do Staging không có cột này nên ép về NULL)
-FROM dbo.Stg_KhangNghiData
-WHERE [Payment Method] IS NOT NULL
-GROUP BY [Payment Method]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT CAST(N'SALE_'+s.[Payment Method] AS nvarchar(50)) PaymentID,CAST(s.[Payment Method] AS nvarchar(100)) MethodType,p.TermDays FROM dbo.Stg_KhangNghiData s JOIN KhangNghi_OLTP_VN_DRAFT.vn.PaymentMethodPolicy p ON p.MethodType=s.[Payment Method]</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
