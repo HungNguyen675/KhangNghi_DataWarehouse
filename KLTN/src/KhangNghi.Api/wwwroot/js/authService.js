@@ -237,16 +237,16 @@ window.KhangNghiAuth = (function () {
         } else if (rawRole === "Director" || rawRole === "CEO") {
           mappedRole = "CEO";
           roleTitle = "Ban Giám Đốc";
-        } else if (rawRole === "SalesManager" || rawRole === "Sales") {
+        } else if (rawRole === "SalesManager" || rawRole === "Sales" || rawRole === "SalesStaff") {
           mappedRole = "Sales";
           roleTitle = "Trưởng Phòng Kinh Doanh";
-        } else if (rawRole === "PurchaseManager" || rawRole === "Purchase") {
+        } else if (rawRole === "PurchaseManager" || rawRole === "Purchase" || rawRole === "PurchaseStaff") {
           mappedRole = "Purchase";
           roleTitle = "Trưởng Phòng Mua Hàng";
-        } else if (rawRole === "InventoryManager" || rawRole === "Warehouse") {
+        } else if (rawRole === "InventoryManager" || rawRole === "Warehouse" || rawRole === "InventoryStaff") {
           mappedRole = "Warehouse";
           roleTitle = "Thủ Kho Trưởng";
-        } else if (rawRole === "ShippingStaff" || rawRole === "Logistics") {
+        } else if (rawRole === "ShippingStaff" || rawRole === "Logistics" || rawRole === "ShippingManager") {
           mappedRole = "Logistics";
           roleTitle = "Trưởng Phòng Logistics";
         }

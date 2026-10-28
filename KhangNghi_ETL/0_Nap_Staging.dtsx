@@ -11,71 +11,11 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="0_Nap_Staging"
   DTS:PackageType="5"
-  DTS:VersionBuild="38"
-  DTS:VersionGUID="{EA492DAF-297D-4DA1-B8AF-A8EF487B79D5}">
+  DTS:VersionBuild="46"
+  DTS:VersionGUID="{47B24694-7BC5-47A5-A4DC-60E4D6BA146F}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Excel Connection Manager]"
-      DTS:CreationName="EXCEL"
-      DTS:DTSID="{F414BB9B-C5DC-40F3-B6AB-29B0CBC9A4C0}"
-      DTS:ObjectName="Excel Connection Manager">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="0"
-          DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Excel Connection Manager 1]"
-      DTS:CreationName="EXCEL"
-      DTS:DTSID="{DC500932-B6B7-4D4F-BD3A-601606AE6933}"
-      DTS:ObjectName="Excel Connection Manager 1">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="0"
-          DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\KhangNghiData_Sample.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Excel Connection Manager 2]"
-      DTS:CreationName="EXCEL"
-      DTS:DTSID="{1B16A3AF-C05F-4C20-861B-C81D574035DA}"
-      DTS:ObjectName="Excel Connection Manager 2">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="0"
-          DTS:ConnectRetryInterval="0"
-          DTS:ConnectionString="Provider=Microsoft.ACE.OLEDB.12.0;Data Source=d:\Khóa Luận Tốt Nghiệp Cô Vân Anh\KhangNghi_DataWarehouse_Git\KhangNghi_ETL\Nguon1_Sales_MienTrung.xlsx;Extended Properties=&quot;EXCEL 12.0 XML;HDR=YES&quot;;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_OLTP.sa]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}"
-      DTS:ObjectName="HungNguyen.KhangNghi_OLTP.sa">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_Purchasing_OLTP.sa]"
-      DTS:CreationName="OLEDB"
-      DTS:DTSID="{9326787D-3890-497C-BB4E-EC2A15433802}"
-      DTS:ObjectName="HungNguyen.KhangNghi_Purchasing_OLTP.sa">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:ConnectRetryCount="1"
-          DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{9326787D-3890-497C-BB4E-EC2A15433802}HungNguyen.KhangNghi_Purchasing_OLTP.sa;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_Purchasing_OLTP.sa 1]"
       DTS:CreationName="OLEDB"
@@ -85,7 +25,12 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{756EB4E3-FE96-4619-BF98-72914CB453CC}HungNguyen.KhangNghi_Purchasing_OLTP.sa 1;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{9326787D-3890-497C-BB4E-EC2A15433802}HungNguyen.KhangNghi_Purchasing_OLTP.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABJehLFp6KbA2PAag2F7zMR2dAE1erp15vw/eiC1RHYjwAAAAAOgAAAAAIAACAAAACAFoBdvJuWc7Omh5Y1YIKS6eXcI8kAaoHYp1sRH5Z/VBAAAADxy8U7t+SXQPNhoFSh0oedQAAAALJjonXwH5lFvzEucJDQTMTpoxouDZrhXqHuwUYIOwpfCVD39cUiuHnTVXiBdkf5i8Y772k7AB/ZaEHLykDUMUI</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -97,31 +42,46 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{447755A6-0C52-4970-B13C-5E9675AB000D}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{447755A6-0C52-4970-B13C-5E9675AB000D}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAA7L9bKFyYtaGArFmi/yZN6aLFqQCO3GrujCEe2BQSA8gAAAAAOgAAAAAIAACAAAACHPsuW+LTq6x4CrBdm1CV68MGZi9Xo7ad+G5ttvLstJxAAAACUnGao/+wqazeZ206Yc017QAAAABwMSw3OFmfEe4Ou5CGjgplZ43x/WLU0gLs7Ytwg9fxR9+UNQ6URQ6vLouVor0jqnAlO3AA1A7HnCx+veJZ49xc</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.Nguon2_WebBanHang.sa]"
+      DTS:refId="Package.ConnectionManagers[SRC_Purchasing_VN_DRAFT]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{635B551F-4998-4ABE-8D1C-55000170A40B}"
-      DTS:ObjectName="HungNguyen.Nguon2_WebBanHang.sa">
+      DTS:DTSID="{9326787D-3890-497C-BB4E-EC2A15433802}"
+      DTS:ObjectName="SRC_Purchasing_VN_DRAFT">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=Nguon2_WebBanHang;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{635B551F-4998-4ABE-8D1C-55000170A40B}HungNguyen.Nguon2_WebBanHang.sa;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Purchasing_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-0_Nap_Staging-{9326787D-3890-497C-BB4E-EC2A15433802}HungNguyen.KhangNghi_Purchasing_OLTP.sa;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACSbEPFhSPakjn+cJ8cMyHg0PmqOURCjZcUpdcs59iNIAAAAAAOgAAAAAIAACAAAADV3k/g8zcIOPON1m0nqYCeC7kHUkHBjsn5ePySKEqleRAAAAAxCcAFvQJJ5U/521ZW2MefQAAAACuQYeuocYttK6MewhA6I6C8QOYDcSVaT5g0P4w/7uq6mNXe/D1rk8WjrWP11ZJPXAMzZCc//MFtqFzuaTNHdYk</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[HungNguyen.Nguon3_PhanMemNhapHang.sa]"
+      DTS:refId="Package.ConnectionManagers[SRC_Sales_VN_DRAFT]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{242C6042-4B59-4360-AA70-7EFDD84925E3}"
-      DTS:ObjectName="HungNguyen.Nguon3_PhanMemNhapHang.sa">
+      DTS:DTSID="{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}"
+      DTS:ObjectName="SRC_Sales_VN_DRAFT">
       <DTS:ObjectData>
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=Nguon3_PhanMemNhapHang;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-0_Nap_Staging-{242C6042-4B59-4360-AA70-7EFDD84925E3}HungNguyen.Nguon3_PhanMemNhapHang.sa;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_OLTP_VN_DRAFT;Provider=SQLNCLI11.1;Persist Security Info=True;Auto Translate=False;Application Name=SSIS-0_Nap_Staging-{F1C81C6F-16AB-4C4B-8BA3-07F3BAEE315F}HungNguyen.KhangNghi_OLTP.sa;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAASF93xWIYDoM5/PBc3aOVvtIu+YHfhPWlN16jVzSWexAAAAAAOgAAAAAIAACAAAAAa8wqtTmPcBssPPkCtful6KWgElfhdd7bfktX7axEjOBAAAABU6cJNjpc4Zn1xNBOHgcbbQAAAABT7rHxhGntRdVeq0ZjVLnGeYf4kbWWHEVhNd7xSi8y8LgTXtvH4q+yy+KVZpp68DFT+hbj/PGaEegGsKynyiy8</DTS:Password>
+        </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
@@ -151,7 +111,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{447755A6-0C52-4970-B13C-5E9675AB000D}"
-          SQLTask:SqlStatementSource="SELECT Last_Load_Date FROM ETL_Config WHERE TableName = 'KhangNghi_Orders'"
+          SQLTask:SqlStatementSource="SET NOCOUNT ON;UPDATE dbo.ETL_Config SET Last_Load_Date=(SELECT MIN(Last_Load_Date) FROM dbo.ETL_Config WHERE TableName IN(N'KhangNghi_Inventory',N'KhangNghi_Orders',N'KhangNghi_Purchases')) WHERE TableName=N'KhangNghi_Inventory';SELECT Last_Load_Date FROM ETL_Config WHERE TableName = 'KhangNghi_Orders'"
           SQLTask:ResultType="ResultSetType_SingleRow" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="0"
@@ -173,7 +133,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{447755A6-0C52-4970-B13C-5E9675AB000D}"
-          SQLTask:SqlStatementSource="UPDATE ETL_Config &#xA;SET Last_Load_Date = (SELECT MAX(OrderDate) FROM KhangNghi_OLTP.dbo.Orders) &#xA;WHERE TableName = 'KhangNghi_Orders'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="UPDATE ETL_Config &#xA;SET Last_Load_Date = (SELECT MAX(OrderDate) FROM KhangNghi_OLTP_VN_DRAFT.dbo.Orders) &#xA;WHERE TableName = 'KhangNghi_Orders'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -464,6 +424,27 @@
                       cachedName="Location ID"
                       externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Location ID]"
                       lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Location ID]" />
+                    <inputColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Warehouse]"
+                      cachedDataType="wstr"
+                      cachedLength="100"
+                      cachedName="Warehouse"
+                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse ]"
+                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Warehouse]" />
+                    <inputColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Service]"
+                      cachedDataType="wstr"
+                      cachedLength="255"
+                      cachedName="Service"
+                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service ]"
+                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Service]" />
+                    <inputColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[DeliveryStreetAddress]"
+                      cachedDataType="wstr"
+                      cachedLength="255"
+                      cachedName="DeliveryStreetAddress"
+                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryStreetAddress]"
+                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryStreetAddress]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -555,7 +536,7 @@
                       name="Product Name" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Sales]"
-                      dataType="r8"
+                      dataType="cy"
                       name="Sales" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Quantity]"
@@ -567,7 +548,7 @@
                       name="Discount" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Profit]"
-                      dataType="r8"
+                      dataType="cy"
                       name="Profit" />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Shipping Cost]"
@@ -578,6 +559,11 @@
                       dataType="wstr"
                       length="255"
                       name="Order Priority" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse ]"
+                      dataType="wstr"
+                      length="255"
+                      name="Warehouse " />
                     <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Payment Method]"
                       dataType="wstr"
@@ -594,6 +580,11 @@
                       length="255"
                       name="Manufacturer" />
                     <externalMetadataColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service ]"
+                      dataType="wstr"
+                      length="255"
+                      name="Service " />
+                    <externalMetadataColumn
                       refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Employee Name]"
                       dataType="wstr"
                       length="255"
@@ -609,15 +600,10 @@
                       length="255"
                       name="Location ID" />
                     <externalMetadataColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Warehouse]"
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryStreetAddress]"
                       dataType="wstr"
                       length="255"
-                      name="Warehouse" />
-                    <externalMetadataColumn
-                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Service]"
-                      dataType="wstr"
-                      length="255"
-                      name="Service" />
+                      name="DeliveryStreetAddress" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -671,7 +657,9 @@
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SET NOCOUNT ON;DECLARE @RestoreRows TABLE([DeliveryStreetAddress] nvarchar(255),[Order ID] nvarchar(50),[Order Date] date,[Order Priority] nvarchar(50),[Sales Channel] nvarchar(100),[Payment Method] nvarchar(100),[Customer Name] nvarchar(255),[Segment] nvarchar(100),[Postal Code] nvarchar(50),[City] nvarchar(100),[State] nvarchar(100),[Country] nvarchar(100),[Region] nvarchar(100),[Market] nvarchar(100),[Manufacturer] nvarchar(255),[Product ID] nvarchar(50),[Category] nvarchar(100),[Sub-Category] nvarchar(100),[Product Name] nvarchar(255),[Service] nvarchar(255),[Employee Name] nvarchar(255),[Promotion Name] nvarchar(255),[Quantity] int,[Sales] float,[Discount] float,[Profit] float,[Ship Date] date,[Ship Mode] nvarchar(100),[Shipping Cost] float,[Warehouse] nvarchar(100),[Row ID] bigint,[Customer ID] nvarchar(50),[Location ID] nvarchar(50));
+;WITH RestoreBatch AS(
+SELECT CAST(o.DeliveryStreetAddress AS nvarchar(255)) DeliveryStreetAddress, 
     ROW_NUMBER() OVER(ORDER BY o.OrderID) AS [Row ID],
     o.OrderID AS [Order ID],
     o.OrderDate AS [Order Date],
@@ -702,18 +690,20 @@
     od.Profit AS Profit,
     sh.ShipDate AS [Ship Date],
     sh.ShipMode AS [Ship Mode],
-    sh.ShippingCost AS [Shipping Cost],
+    CONVERT(float,CASE WHEN od.ProductID=sc.LastProduct THEN CONVERT(decimal(19,2),sh.ShippingCost)-ROUND(CONVERT(decimal(19,2),sh.ShippingCost)/sc.LineCount,2)*(sc.LineCount-1) ELSE ROUND(CONVERT(decimal(19,2),sh.ShippingCost)/sc.LineCount,2) END) AS [Shipping Cost],
     sh.Warehouse AS Warehouse
-FROM KhangNghi_OLTP.dbo.Orders o
-JOIN KhangNghi_OLTP.dbo.OrderDetails od ON o.OrderID = od.OrderID
-JOIN KhangNghi_OLTP.dbo.Customers c ON o.CustomerID = c.CustomerID
-JOIN KhangNghi_OLTP.dbo.Locations l ON o.LocationID = l.LocationID
-JOIN KhangNghi_OLTP.dbo.Products p ON od.ProductID = p.ProductID
-JOIN KhangNghi_OLTP.dbo.Manufacturers m ON p.ManufacturerID = m.ManufacturerID
-LEFT JOIN KhangNghi_OLTP.dbo.Employees e ON o.EmployeeID = e.EmployeeID
-LEFT JOIN KhangNghi_OLTP.dbo.Promotions pr ON o.PromotionID = pr.PromotionID
-LEFT JOIN KhangNghi_OLTP.dbo.Shipments sh ON o.OrderID = sh.OrderID
-WHERE o.OrderDate &gt; ?</property>
+FROM KhangNghi_OLTP_VN_DRAFT.dbo.Orders o
+JOIN KhangNghi_OLTP_VN_DRAFT.dbo.OrderDetails od ON o.OrderID = od.OrderID
+JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Customers c ON o.CustomerID = c.CustomerID
+JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Locations l ON o.LocationID = l.LocationID
+JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Products p ON od.ProductID = p.ProductID
+JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Manufacturers m ON p.ManufacturerID = m.ManufacturerID
+LEFT JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Employees e ON o.EmployeeID = e.EmployeeID
+LEFT JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Promotions pr ON o.PromotionID = pr.PromotionID
+LEFT JOIN KhangNghi_OLTP_VN_DRAFT.dbo.Shipments sh ON o.OrderID = sh.OrderID
+CROSS APPLY(SELECT COUNT_BIG(*) LineCount,MAX(d.ProductID) LastProduct FROM KhangNghi_OLTP_VN_DRAFT.dbo.OrderDetails d WHERE d.OrderID=o.OrderID) sc WHERE o.OrderDate &gt;= ? AND NOT EXISTS(SELECT 1 FROM KhangNghi_Staging.dbo.Stg_KhangNghiData x WHERE x.[Order ID]=o.OrderID AND x.[Product ID]=od.ProductID)
+) INSERT INTO @RestoreRows([DeliveryStreetAddress],[Order ID],[Order Date],[Order Priority],[Sales Channel],[Payment Method],[Customer Name],[Segment],[Postal Code],[City],[State],[Country],[Region],[Market],[Manufacturer],[Product ID],[Category],[Sub-Category],[Product Name],[Service],[Employee Name],[Promotion Name],[Quantity],[Sales],[Discount],[Profit],[Ship Date],[Ship Mode],[Shipping Cost],[Warehouse],[Row ID],[Customer ID],[Location ID]) SELECT [DeliveryStreetAddress],[Order ID],[Order Date],[Order Priority],[Sales Channel],[Payment Method],[Customer Name],[Segment],[Postal Code],[City],[State],[Country],[Region],[Market],[Manufacturer],[Product ID],[Category],[Sub-Category],[Product Name],[Service],[Employee Name],[Promotion Name],[Quantity],[Sales],[Discount],[Profit],[Ship Date],[Ship Mode],[Shipping Cost],[Warehouse],[Row ID],[Customer ID],[Location ID] FROM RestoreBatch;
+SELECT [DeliveryStreetAddress],[Order ID],[Order Date],[Order Priority],[Sales Channel],[Payment Method],[Customer Name],[Segment],[Postal Code],[City],[State],[Country],[Region],[Market],[Manufacturer],[Product ID],[Category],[Sub-Category],[Product Name],[Service],[Employee Name],[Promotion Name],[Quantity],[Sales],[Discount],[Profit],[Ship Date],[Ship Mode],[Shipping Cost],[Warehouse],[Row ID],[Customer ID],[Location ID] FROM @RestoreRows;</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -739,8 +729,8 @@ WHERE o.OrderDate &gt; ?</property>
               <connections>
                 <connection
                   refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[HungNguyen.KhangNghi_OLTP.sa]"
-                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.KhangNghi_OLTP.sa]"
+                  connectionManagerID="Package.ConnectionManagers[SRC_Sales_VN_DRAFT]"
+                  connectionManagerRefId="Package.ConnectionManagers[SRC_Sales_VN_DRAFT]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -1061,6 +1051,16 @@ WHERE o.OrderDate &gt; ?</property>
                       lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[Location ID]"
                       name="Location ID"
                       truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryStreetAddress]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryStreetAddress]"
+                      length="255"
+                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryStreetAddress]"
+                      name="DeliveryStreetAddress"
+                      truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1216,6 +1216,11 @@ WHERE o.OrderDate &gt; ?</property>
                       dataType="wstr"
                       length="50"
                       name="Location ID" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryStreetAddress]"
+                      dataType="wstr"
+                      length="255"
+                      name="DeliveryStreetAddress" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1419,6 +1424,12 @@ WHERE o.OrderDate &gt; ?</property>
                       lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
+                    <outputColumn
+                      refId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryStreetAddress]"
+                      dataType="wstr"
+                      length="255"
+                      lineageId="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryStreetAddress]"
+                      name="DeliveryStreetAddress" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -1566,6 +1577,20 @@ WHERE o.OrderDate &gt; ?</property>
                       cachedName="TotalCost"
                       externalMetadataColumnId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalCost]"
                       lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalCost]" />
+                    <inputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SupplierName]"
+                      cachedDataType="wstr"
+                      cachedLength="255"
+                      cachedName="SupplierName"
+                      externalMetadataColumnId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SupplierName]"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierName]" />
+                    <inputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SupplierID]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="SupplierID"
+                      externalMetadataColumnId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SupplierID]"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1578,11 +1603,6 @@ WHERE o.OrderDate &gt; ?</property>
                       refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PurchaseDate]"
                       dataType="dbTimeStamp"
                       name="PurchaseDate" />
-                    <externalMetadataColumn
-                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Manufacturer]"
-                      dataType="wstr"
-                      length="255"
-                      name="Manufacturer" />
                     <externalMetadataColumn
                       refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductID]"
                       dataType="wstr"
@@ -1605,6 +1625,16 @@ WHERE o.OrderDate &gt; ?</property>
                       refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalCost]"
                       dataType="r8"
                       name="TotalCost" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SupplierName]"
+                      dataType="wstr"
+                      length="255"
+                      name="SupplierName" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SupplierID]"
+                      dataType="wstr"
+                      length="50"
+                      name="SupplierID" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -1658,16 +1688,18 @@ WHERE o.OrderDate &gt; ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CAST(p.SupplierID AS nvarchar(50)) AS SupplierID,
     p.PurchaseID,
     p.PurchaseDate,
     d.ProductID,
     p.WarehouseID AS Warehouse,
     d.QuantityIn AS Quantity,
     d.UnitCost,
-    d.TotalCost
+    d.TotalCost,
+    s.SupplierName
 FROM dbo.Purchases p
-INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
+INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID
+LEFT JOIN dbo.Suppliers s ON p.SupplierID = s.SupplierID;</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -1693,8 +1725,8 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
               <connections>
                 <connection
                   refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[HungNguyen.KhangNghi_Purchasing_OLTP.sa]"
-                  connectionManagerRefId="Package.ConnectionManagers[HungNguyen.KhangNghi_Purchasing_OLTP.sa]"
+                  connectionManagerID="Package.ConnectionManagers[SRC_Purchasing_VN_DRAFT]"
+                  connectionManagerRefId="Package.ConnectionManagers[SRC_Purchasing_VN_DRAFT]"
                   description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
@@ -1769,6 +1801,26 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
                       lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalCost]"
                       name="TotalCost"
                       truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierName]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SupplierName]"
+                      length="255"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierName]"
+                      name="SupplierName"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SupplierID]"
+                      length="50"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].Columns[SupplierID]"
+                      name="SupplierID"
+                      truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1803,6 +1855,16 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
                       refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TotalCost]"
                       dataType="r8"
                       name="TotalCost" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SupplierName]"
+                      dataType="wstr"
+                      length="255"
+                      name="SupplierName" />
+                    <externalMetadataColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[SupplierID]"
+                      dataType="wstr"
+                      length="50"
+                      name="SupplierID" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1849,6 +1911,12 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
                       lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TotalCost]"
                       name="TotalCost" />
                     <outputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SupplierName]"
+                      dataType="wstr"
+                      length="255"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SupplierName]"
+                      name="SupplierName" />
+                    <outputColumn
                       refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
                       lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
@@ -1860,6 +1928,12 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
                       lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
+                    <outputColumn
+                      refId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SupplierID]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[SupplierID]"
+                      name="SupplierID" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -1935,37 +2009,37 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
         <NodeLayout
           Size="185.6,41.6"
           Id="Package\1 Lấy mốc thời gian cũ"
-          TopLeft="375.000000798277,33.6470587940364" />
+          TopLeft="378.571429377308,64.2352940613422" />
         <NodeLayout
           Size="217.6,41.6"
           Id="Package\2 Cập nhật Mốc thời gian mới"
-          TopLeft="356.428572187315,247.764705665178" />
+          TopLeft="360.714286482153,274.529411524071" />
         <NodeLayout
           Size="283.2,41.6"
           Id="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)"
-          TopLeft="319.142857488017,132.764705801918" />
+          TopLeft="327.000000361885,173.294117531097" />
         <NodeLayout
           Size="267.2,41.6"
           Id="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)"
-          TopLeft="29.8571419797985,144.764706029817" />
+          TopLeft="24.1428562533486,169.235294243662" />
         <NodeLayout
           Size="220.8,41.6"
           Id="Package\Xóa sạch Stg_PurchaseHistory"
-          TopLeft="51.4285715380492,36.7058823207671" />
+          TopLeft="48.5714286748242,63.4705881796598" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="464.271429143147,75.2470587940364">
+          TopLeft="469.985714869597,105.835294061342">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,57.5176470078816"
+              EndConnector="0,67.4588234697553"
               Start="0,0"
-              End="0,50.0176470078816">
+              End="0,59.9588234697553">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,50.0176470078816" />
+                    End="0,59.9588234697553" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1976,18 +2050,18 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="462.985714837666,174.364705801918">
+          TopLeft="469.057143422019,214.894117531097">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,73.3999998632599"
+              EndConnector="0,59.6352939929736"
               Start="0,0"
-              End="0,65.8999998632599">
+              End="0,52.1352939929736">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,65.8999998632599" />
+                    End="0,52.1352939929736" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1998,18 +2072,18 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="162.642856758924,78.3058823207671">
+          TopLeft="158.357142464086,105.07058817966">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,66.4588237090499"
+              EndConnector="0,64.1647060640018"
               Start="0,0"
-              End="0,58.9588237090499">
+              End="0,56.6647060640018">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,58.9588237090499" />
+                    End="0,56.6647060640018" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2025,35 +2099,37 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
     design-time-name="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="179.2,41.6"
           Id="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Destination 1"
-          TopLeft="475.873016886025,135.692810338576" />
+          TopLeft="362.301588072832,158.633986789055" />
         <NodeLayout
           Size="149.6,41.6"
           Id="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2)\OLE DB Source"
-          TopLeft="493.028572474694,35.9411764390849" />
+          TopLeft="130.88571456093,161.352941035039" />
         <EdgeLayout
           Id="Package\DFT - Gộp dữ liệu Bán Hàng (Nguồn 1 + 2).Paths[OLE DB Source Output]"
-          TopLeft="566.650794680359,77.5411764390849">
+          TopLeft="280.48571456093,180.793463912047">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,58.1516338994914"
+              EndConnector="81.8158735119025,0"
               Start="0,0"
-              End="0,50.6516338994914">
+              End="74.3158735119025,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,50.6516338994914" />
+                    End="74.3158735119025,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2088,25 +2164,25 @@ INNER JOIN dbo.PurchaseDetails d ON p.PurchaseID = d.PurchaseID;</property>
         <NodeLayout
           Size="149.6,41.6"
           Id="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Source"
-          TopLeft="322.999995186925,196.999997064471" />
+          TopLeft="145.857137666977,161.058820625387" />
         <NodeLayout
           Size="170.4,41.6"
           Id="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3)\OLE DB Destination"
-          TopLeft="649.999990314245,202.999996975064" />
+          TopLeft="426.428561266891,160.176467600836" />
         <EdgeLayout
           Id="Package\DFT - Hút dữ liệu Nhập Hàng (Nguồn 3).Paths[OLE DB Source Output]"
-          TopLeft="472.599995186925,220.799997019768">
+          TopLeft="295.457137666977,181.417644113111">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="177.39999512732,0"
+              EndConnector="130.971423599914,0"
               Start="0,0"
-              End="169.89999512732,0">
+              End="123.471423599914,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="169.89999512732,0" />
+                    End="123.471423599914,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>

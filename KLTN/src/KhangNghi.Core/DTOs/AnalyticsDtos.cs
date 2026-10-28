@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KhangNghi.Core.DTOs
 {
-    // === AUTH DTOs ===
+    // === AUTHENTICATION DTOs ===
     public class LoginRequest
     {
         public string Username { get; set; } = string.Empty;
@@ -135,9 +135,23 @@ namespace KhangNghi.Core.DTOs
     {
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
+        public long? FactRowCount { get; set; }
+        public bool HasRowProcessingMetrics { get; set; } = false;
         public int RowsProcessed { get; set; }
         public TimeSpan Duration { get; set; }
         public DateTime CompletedAt { get; set; }
+    }
+
+    // === SQL AGENT JOB HISTORY DTO ===
+    public class JobHistoryDto
+    {
+        public int InstanceId { get; set; }
+        public string JobName { get; set; } = string.Empty;
+        public string StepName { get; set; } = string.Empty;
+        public DateTime RunDateTime { get; set; }
+        public string RunStatus { get; set; } = string.Empty; // Succeeded, Failed, Retried
+        public TimeSpan RunDuration { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 
     // === PURCHASE ANALYTICS DTOs ===
@@ -204,4 +218,3 @@ namespace KhangNghi.Core.DTOs
         public string SourceFactTable { get; set; } = string.Empty;
     }
 }
-

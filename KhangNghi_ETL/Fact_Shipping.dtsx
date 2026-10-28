@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/20/2026 9:38:27 AM"
@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="14"
-  DTS:VersionGUID="{BE3B099C-825C-4CE5-8169-3C289CE95BFA}">
+  DTS:VersionBuild="16"
+  DTS:VersionGUID="{1C1E3D71-E7D2-4346-B465-9706EC8C0AED}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACnJlCH3iOEYNGKrPk1eI/qUDjTWCgJOw9sKV4tqcdYMwAAAAAOgAAAAAIAACAAAAAs3IUr+0SXp6khZKfJpLjVA4XqJKOXiGIiugr4buAaFRAAAAA/t63txSJZXD0gi9RH6oiUQAAAAO8ER1GQbbFdlbmag2YOuw1+Q0l1CdeA9wDnrwDIwt+bxbgbQWoXOe0crTwx57YVxqM6GL/7mVtEK9rjOWQ+rrc</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACJF3nj5Z+UQKdCWrtURW8dVeb92yn5bzyeOOGgMBDpXQAAAAAOgAAAAAIAACAAAAB6gzhvbUAk7pSVN13sU51nIQHpfBD3GKgv49m94gqVrxAAAAB7rfQCiTDTKuKpNMDEymgiQAAAAOGduFP4+zTM5RKMg9FDxHHsm2wXmpK2V3MJju2oDTedEJMmPdfyubDAV2YeYelkFfPX4ccnLQd2Ikr3SGxbmEo</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{0065F774-81B4-48AD-8D23-FD94D358CD2B}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{ECB529D3-6B0A-41DA-8229-5312DC451E58}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADG/agcNhla8ZaVYo21SpGtDbQf9gpck7gZExRsYK/KYQAAAAAOgAAAAAIAACAAAACPPl7WUHCj641vXIbjA0wYO2neuVyZMvbPFtE1GdjE5hAAAABC59k86Ji2uoVn3QY3mQpTQAAAADq2yyJC17D2MAGzPyxSep3ypr8ZX5Ca1eSWcPEXcgDQpGW/BqjuPaUUy5/6M8DuEXBQKv8/2yERVyXqj0K8iXM</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABHvfIHDuaBTb7XRaAZGGjoU3bHP6LTLJ1M9+4hoZhpQgAAAAAOgAAAAAIAACAAAAD2zHj2a+s+y6XQHp67nJjQECQ5+KVaqySDUUxbkE3daRAAAAAX8MnffBgTJ3LsCPFbpUhqQAAAAFHOaYto8/cPsGpqTyOVh1yWTIC8iOY6KP8TT5rNYWNigj+EClo8AB2+5v1QbolPs15ZeCy79Fl59lW/Db8asdc</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -59,11 +59,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{963B57E7-8DF4-4C06-99AA-2C2B6A803913}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{963B57E7-8DF4-4C06-99AA-2C2B6A803913}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADoWHHBNKtGI3wMgxEmd2E3fGMcIV1VYZx5VHwMVX/jXAAAAAAOgAAAAAIAACAAAAC7UjBguAnypiWi3XYcAQtfkLHC89yYfmWUl4iAIR49HhAAAABkizRtB4d5x5nHM9HPL+fHQAAAAG2lmIYtJ0jNNYMkfJgP6nTmQOhF9EBlEWegzxVKCnL9DYXfjVhjG3cHQ55UHcAJctA9Rbr+fx3AjFVrM4fnI10</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAD752yhbmD/39euIzn8ONUAcFW03lUWyV8GfeiMk9JANAAAAAAOgAAAAAIAACAAAAAydqsKSA1zgtH8WuLUu+DsxsqGBdJR/BFR7pfm5DRQuxAAAADjZs3cAfRLPMgiHSlw2UtNQAAAABYeFZ0fwQVDexFglpsfClyKfRtTLptEPKr+KT24qsaoTXmUbtoOpF4P9OEdPrusJTvfeixn/sVwwo9OxdCBlLI</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -116,7 +116,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{963B57E7-8DF4-4C06-99AA-2C2B6A803913}"
-          SQLTask:SqlStatementSource="UPDATE ETL_Config SET Last_Load_Date = GETDATE() WHERE TableName = 'KhangNghi_Shipping'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="UPDATE dbo.ETL_Config SET Last_Load_Date=COALESCE((SELECT MAX(CONVERT(date,[Ship Date])) FROM dbo.[Stg_KhangNghiData]),Last_Load_Date) WHERE TableName=N'KhangNghi_Shipping'" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -1203,28 +1203,15 @@ where [refTable].[WarehouseID] = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    [Order ID] AS OrderID,
-
-    -- Bọc tiền tố SALE_ cho các Key (Vì đang lấy chung nguồn Stg_KhangNghiData)
-    CAST('SALE_' + CAST(LTRIM(RTRIM([Location ID])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS LocationID,
-    CAST('SALE_' + CAST(LTRIM(RTRIM([Ship Mode])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS ShipperID,
-    CAST('SALE_' + CAST(LTRIM(RTRIM([Warehouse])) AS NVARCHAR(50)) AS NVARCHAR(50)) AS WarehouseID,
-    
-    -- Ép kiểu ngày giao hàng (Sẽ dùng Ship Date làm TimeKey cho Fact này)
-    CAST([Ship Date] AS DATE) AS [Ship Date],
-    
-    -- Các cột phí vận chuyển
-    [Shipping Cost] AS ShippingCost,
-    
-    -- SQL tự động tính số ngày giao hàng (Ngày giao trừ Ngày đặt)
-    DATEDIFF(DAY, [Order Date], [Ship Date]) AS DeliveryDays,
-    
-    -- Cột LateDays (Vì Staging không có ngày hẹn giao nên mình tạm gán = 0)
-    0 AS LateDays
-
-FROM dbo.Stg_KhangNghiData
-WHERE [Ship Date] &gt;= ?</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SET NOCOUNT ON;DECLARE @RestoreRows TABLE([OrderID] nvarchar(50),[ShippingCost] float,[DeliveryDays] int,[LateDays] int,[LocationID] nvarchar(50),[ShipperID] nvarchar(50),[WarehouseID] nvarchar(50),[Ship Date] date);
+;WITH RestoreBatch AS(
+SELECT CAST(N'SALE_'+s.[Order ID] AS nvarchar(50)) OrderID,
+CAST(N'SALE_'+s.[Location ID] AS nvarchar(50)) LocationID,CAST(N'SALE_'+s.[Ship Mode] AS nvarchar(50)) ShipperID,CAST(N'SALE_'+s.Warehouse AS nvarchar(50)) WarehouseID,
+CAST(s.[Ship Date] AS date) [Ship Date],CONVERT(float,SUM(CONVERT(decimal(19,2),s.[Shipping Cost]))) ShippingCost,DATEDIFF(DAY,MIN(s.[Order Date]),s.[Ship Date]) DeliveryDays,CAST(NULL AS int) LateDays
+FROM dbo.Stg_KhangNghiData s WHERE s.[Ship Date]&gt;=? AND NOT EXISTS(SELECT 1 FROM DWH_KhangNghi.dbo.Fact_Shipping f WHERE f.OrderID=N'SALE_'+s.[Order ID] AND f.SourceSystem=N'SSIS_ETL')
+GROUP BY s.[Order ID],s.[Location ID],s.[Ship Mode],s.Warehouse,s.[Ship Date]
+) INSERT INTO @RestoreRows([OrderID],[ShippingCost],[DeliveryDays],[LateDays],[LocationID],[ShipperID],[WarehouseID],[Ship Date]) SELECT [OrderID],[ShippingCost],[DeliveryDays],[LateDays],[LocationID],[ShipperID],[WarehouseID],[Ship Date] FROM RestoreBatch;
+SELECT [OrderID],[ShippingCost],[DeliveryDays],[LateDays],[LocationID],[ShipperID],[WarehouseID],[Ship Date] FROM @RestoreRows;</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -1526,33 +1513,21 @@ WHERE [Ship Date] &gt;= ?</property>
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="244.285714805734,196.52941159244" />
+          TopLeft="262.14285770089,183.529411603835" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="339.942857668959,107.364705824708">
+          TopLeft="338.642857684924,107.364705824708">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-20.4571428632253,89.1647057677324"
+              EndConnector="0,76.1647057791273"
               Start="0,0"
-              End="-20.4571428632253,81.6647057677324">
+              End="0,68.6647057791273">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,40.5823528838662" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,40.5823528838662"
-                    Point2="0,44.5823528838662"
-                    Point3="-4,44.5823528838662" />
-                  <mssgle:LineSegment
-                    End="-16.4571428632253,44.5823528838662" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-16.4571428632253,44.5823528838662"
-                    Point2="-20.4571428632253,44.5823528838662"
-                    Point3="-20.4571428632253,48.5823528838662" />
-                  <mssgle:LineSegment
-                    End="-20.4571428632253,81.6647057677324" />
+                    End="0,68.6647057791273" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1563,30 +1538,18 @@ WHERE [Ship Date] &gt;= ?</property>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="319.485714805734,238.12941159244">
+          TopLeft="336.642857663637,225.129411603835">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="16.4571428206509,61.635294027159"
+              EndConnector="0,74.6352940157641"
               Start="0,0"
-              End="16.4571428206509,54.135294027159">
+              End="0,67.1352940157641">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,26.8176470135795" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,26.8176470135795"
-                    Point2="0,30.8176470135795"
-                    Point3="4,30.8176470135795" />
-                  <mssgle:LineSegment
-                    End="12.4571428206509,30.8176470135795" />
-                  <mssgle:CubicBezierSegment
-                    Point1="12.4571428206509,30.8176470135795"
-                    Point2="16.4571428206509,30.8176470135795"
-                    Point3="16.4571428206509,34.8176470135795" />
-                  <mssgle:LineSegment
-                    End="16.4571428206509,54.135294027159" />
+                    End="0,67.1352940157641" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -1837,12 +1800,43 @@ WHERE [Ship Date] &gt;= ?</property>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Data Flow Task\Lookup Location">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[dbo].[Dim_Location]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
     design-time-name="Package\Data Flow Task\Lookup Time">
     <Properties>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -1878,7 +1872,7 @@ WHERE [Ship Date] &gt;= ?</property>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -1888,7 +1882,7 @@ WHERE [Ship Date] &gt;= ?</property>
       <Property>
         <Name>TableInfoObjectType</Name>
         <Value
-          type="q4:int">0</Value>
+          type="q4:string">0</Value>
       </Property>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -1901,38 +1895,7 @@ WHERE [Ship Date] &gt;= ?</property>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\OLE DB Source">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Data Flow Task\Lookup Location">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:boolean">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string">[dbo].[Dim_Location]</Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
+          type="q2:string">false</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>

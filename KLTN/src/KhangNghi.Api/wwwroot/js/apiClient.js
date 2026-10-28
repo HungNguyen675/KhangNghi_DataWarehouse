@@ -5,7 +5,7 @@
 
 window.KhangNghiApiClient = (function () {
   // Configurable Base URL (supports local dev & production relative paths)
-  let BASE_URL = window.location.origin.includes("localhost:5000") || window.location.origin.includes("localhost:8080") || window.location.origin.includes("127.0.0.1")
+  let BASE_URL = window.location.protocol === "file:" || window.location.origin.includes("localhost:5000") || window.location.origin.includes("localhost:8080") || window.location.origin.includes("127.0.0.1")
     ? "http://localhost:5000/api/v1"
     : "/api/v1";
 

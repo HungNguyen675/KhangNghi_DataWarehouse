@@ -17,12 +17,12 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/variables.css?v=20261023_05">
-  <link rel="stylesheet" href="css/layout.css?v=20261023_05">
-  <link rel="stylesheet" href="css/components.css?v=20261023_05">
-  <link rel="stylesheet" href="css/responsive.css?v=20261023_05">
-  <link rel="stylesheet" href="css/views.css?v=20261028_4">
-  <link rel="stylesheet" href="css/login.css?v=20261022_02">
+  <link rel="stylesheet" href="css/variables.css?v=20261028_19">
+  <link rel="stylesheet" href="css/layout.css?v=20261028_19">
+  <link rel="stylesheet" href="css/components.css?v=20261028_19">
+  <link rel="stylesheet" href="css/responsive.css?v=20261028_19">
+  <link rel="stylesheet" href="css/views.css?v=20261028_19">
+  <link rel="stylesheet" href="css/login.css?v=20261028_19">
 </head>
 <body data-theme="light">
 
@@ -84,14 +84,14 @@
           <i class="fa-solid fa-earth-asia nav-icon"></i>
           <span class="nav-text">Khu vực</span>
         </a>
-        <div class="menu-group-header">Phân tích nâng cao</div>
+        <div class="menu-group-header">Phân tích</div>
         <a href="#/cross-analysis" class="nav-item" data-tooltip="Phân tích chéo" data-roles="ALL">
           <i class="fa-solid fa-diagram-project nav-icon"></i>
           <span class="nav-text">Phân tích chéo</span>
         </a>
-        <a href="#/forecast" class="nav-item" data-tooltip="Dự báo doanh số" data-roles="CEO,Sales">
-          <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i>
-          <span class="nav-text">Dự báo doanh số</span>
+        <a href="#/multi-dim" class="nav-item" data-tooltip="Phân tích đa chiều" data-roles="ALL">
+          <i class="fa-solid fa-cubes-stacked nav-icon"></i>
+          <span class="nav-text">Phân tích đa chiều</span>
         </a>
         <a href="#/what-if" class="nav-item" data-tooltip="Phân tích giả định" data-roles="CEO,Sales">
           <i class="fa-solid fa-sliders nav-icon"></i>
@@ -101,15 +101,10 @@
           <i class="fa-solid fa-book-bookmark nav-icon"></i>
           <span class="nav-text">Câu hỏi phân tích</span>
         </a>
-        <div class="menu-group-header">Phân tích đa chiều &amp; AI</div>
-        <a href="#/multi-dim" class="nav-item" data-tooltip="Phân tích đa chiều" data-roles="ALL">
-          <i class="fa-solid fa-cubes-stacked nav-icon"></i>
-          <span class="nav-text">Phân tích đa chiều</span>
-        </a>
-
-        <a href="#/copilot" class="nav-item" data-tooltip="Trợ lý AI" data-roles="ALL" onclick="event.preventDefault(); KhangNghiApp.openCopilot();">
-          <i class="fa-solid fa-robot nav-icon"></i>
-          <span class="nav-text">Trợ lý AI</span>
+        <div class="menu-group-header">Dự báo</div>
+        <a href="#/forecast" class="nav-item" data-tooltip="Dự báo doanh số" data-roles="CEO,Sales">
+          <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i>
+          <span class="nav-text">Dự báo doanh số</span>
         </a>
       </nav>
 
@@ -163,8 +158,8 @@
 
         <span class="topbar-divider" aria-hidden="true"></span>
 
-        <button type="button" class="topbar-copilot-btn" id="topbar-copilot-btn" title="Trợ lý AI">
-          <i class="fa-solid fa-robot"></i> <span>Trợ lý AI</span>
+        <button type="button" class="topbar-action-btn" id="topbar-copilot-btn" title="Trợ lý AI" aria-label="Mở Trợ lý AI">
+          <i class="fa-solid fa-robot"></i>
         </button>
 
         <!-- Theme Toggle -->
@@ -428,7 +423,7 @@
         <div class="kpi-grid" id="overview-kpis"></div>
         <div class="grid-charts-2-1">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Doanh thu và lợi nhuận theo năm</h3><span class="chart-description" data-scope="ov-trend"></span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Doanh thu và lợi nhuận</h3><span class="chart-description" id="ov-trend-scope"></span></div><div class="segmented" id="ov-trend-tabs" role="tablist" aria-label="Kỳ hiển thị"></div></div>
             <div class="chart-canvas-wrapper" id="chart-ov-trend"></div>
           </div>
           <div class="glass-card chart-card">
@@ -454,7 +449,7 @@
         <div class="kpi-grid" id="sales-kpis"></div>
         <div class="grid-charts-2-1">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title" id="sales-trend-title">Xu hướng doanh thu và lợi nhuận</h3><span class="chart-description" data-scope="sal-trend"></span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Doanh thu và lợi nhuận</h3><span class="chart-description" id="sal-trend-scope"></span></div><div class="segmented" id="sal-trend-tabs" role="tablist" aria-label="Kỳ hiển thị"></div></div>
             <div class="chart-canvas-wrapper" id="chart-sal-trend"></div>
           </div>
           <div class="glass-card chart-card">
@@ -493,7 +488,7 @@
         <div class="kpi-grid" id="purchase-kpis"></div>
         <div class="grid-charts-2-1">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Chi phí mua theo tháng</h3><span class="chart-description" data-scope="pur-trend"></span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Chi phí mua hàng</h3><span class="chart-description" id="pur-trend-scope"></span></div><div class="segmented" id="pur-trend-tabs" role="tablist" aria-label="Kỳ hiển thị"></div></div>
             <div class="chart-canvas-wrapper" id="chart-pur-trend"></div>
           </div>
           <div class="glass-card chart-card">
@@ -534,7 +529,7 @@
         <div class="kpi-grid" id="inventory-kpis"></div>
         <div class="grid-charts-2-1">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Biến động nhập và xuất</h3><span class="chart-description" data-scope="inv-movement"></span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Biến động nhập và xuất</h3><span class="chart-description" id="inv-movement-scope"></span></div><div class="segmented" id="inv-movement-tabs" role="tablist" aria-label="Kỳ hiển thị"></div></div>
             <div class="chart-canvas-wrapper" id="chart-inv-movement"></div>
           </div>
           <div class="glass-card chart-card">
@@ -1115,15 +1110,15 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/apiClient.js?v=20261023_05"></script>
-  <script src="js/authService.js?v=20261023_05"></script>
-  <script src="js/analyticsService.js?v=20261028_3"></script>
-  <script src="js/components.js?v=20261023_05"></script>
-  <script src="js/charts.js?v=20261027_10"></script>
-  <script src="js/filters.js?v=20261023_05"></script>
-  <script src="js/router.js?v=20261027_07"></script>
-  <script src="js/copilotResponseRules.js?v=20261023_06"></script>
-  <script src="js/app.js?v=20261028_4"></script>
+  <script src="js/apiClient.js?v=20261028_19"></script>
+  <script src="js/authService.js?v=20261028_19"></script>
+  <script src="js/analyticsService.js?v=20261028_19"></script>
+  <script src="js/components.js?v=20261028_19"></script>
+  <script src="js/charts.js?v=20261028_19"></script>
+  <script src="js/filters.js?v=20261028_19"></script>
+  <script src="js/router.js?v=20261028_19"></script>
+  <script src="js/copilotResponseRules.js?v=20261028_19"></script>
+  <script src="js/app.js?v=20261028_19"></script>
 
   <!-- Modal Xem truy vấn MDX (mở từ Câu hỏi phân tích) -->
   <div class="modal-overlay" id="mdx-viewer-modal" onclick="if(event.target===this) KhangNghiApp.closeMdxModal()">

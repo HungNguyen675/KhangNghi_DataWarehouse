@@ -25,7 +25,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Package1-{0F63AD35-333E-41B8-9BA7-712208D8B375}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Package1-{0F63AD35-333E-41B8-9BA7-712208D8B375}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"

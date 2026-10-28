@@ -49,7 +49,7 @@ Giao diện Web Single Page Application hiện đại theo phong cách **Apple G
    * **Mua hàng & NCC (Q21 - Q25):** Chi phí nhập hàng, xếp hạng nhà cung cấp chiến lược, cơ cấu nhập khẩu theo vùng địa lý.
    * **Tồn kho & Cảnh báo (Q26 - Q30):** Giám sát hàng tồn kho với chỉ thị màu **ĐỎ (Nguy cấp) - VÀNG (Cảnh báo) - XANH (An toàn)** kèm số lượng thiếu hụt và khuyến nghị đặt hàng.
    * **Vận chuyển (Q31 - Q37):** Đơn vị giao hàng nhanh nhất, tỷ lệ giao trễ SLA theo từng khu vực.
-   * **Phân tích Chéo Đa Nghiệp Vụ (Q38 - Q40):** Đo **số ngày tồn kho** (tồn hiện tại ÷ bán TB ngày) để chỉ ra mặt hàng sắp hết (< 3 ngày) và tồn thừa (> 7 ngày); khu vực tốn phí giao hàng nhiều nhất trên mỗi đồng doanh thu.
+   * **Phân tích Chéo Đa Nghiệp Vụ (Q38 - Q40):** Hàng bán chạy nhưng tồn thấp (nguy cơ đứt hàng), hàng nhập nhiều nhưng bán ít (nguy cơ ứ đọng vốn).
 2. **Bản đồ Nhiệt Địa lý Tương tác (World Geo Heatmap):** Ghim tương tác 23 khu vực toàn cầu, hiển thị tức thì doanh số, số đơn hàng và tỷ lệ trễ hạn.
 3. **Bộ lọc Toàn diện theo Năm (2012 - 2015) & Khu vực (23 khu vực):** Tự động đồng bộ hóa lát cắt số liệu cho tất cả các chỉ số KPI, biểu đồ và bảng dữ liệu.
 4. **Mô phỏng Kịch bản What-If (What-If Scenario Simulation):** Cho phép kéo thanh trượt điều chỉnh Chiết khấu, Chi phí Ship và Tỷ lệ đứt hàng để dự báo tác động trực tiếp đến Lợi nhuận ròng.

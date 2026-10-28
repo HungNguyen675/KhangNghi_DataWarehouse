@@ -11,8 +11,8 @@
   DTS:LocaleID="1066"
   DTS:ObjectName="Dim_Service"
   DTS:PackageType="5"
-  DTS:VersionBuild="19"
-  DTS:VersionGUID="{F2804BA3-CD68-4223-BD2D-0AB12495356C}">
+  DTS:VersionBuild="20"
+  DTS:VersionGUID="{EEB7C6E5-E9CF-4FB9-9CF8-2752A100D65B}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -25,11 +25,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Service-{E16AF63A-83F3-4E90-8BE8-16FC700FAAD5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Service-{E16AF63A-83F3-4E90-8BE8-16FC700FAAD5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACdGZe1xYNhpDrG6dGpeBs9QomTRyI/n5lYX0S7NyeURgAAAAAOgAAAAAIAACAAAABhlwo7cfwV9cjPJ8A9Y6v64ZvQJ3H/ke0CLBmlH/VBmxAAAACX0Xr2VVTPHG7eVUdpCKl2QAAAALI+iAp2nouJYfT9DZivm72StSsi4nMuq6VJOrlG3pXnvJPOSStI2iUvU0ASysOVK1TSvNIrvDLWIdHhl/TN+zI</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAu/7MXSq3ZKcCdsNsk7oOAXqLB/bGOcTRiB/ZBRsNejAAAAAAOgAAAAAIAACAAAADOWgDfJJiDkbDY+4j1AfOkK112iwotzshl9leMtpylzxAAAAD/2Z2ah3Q3JBecd/eUeETCQAAAABiPqUbYJRPkNBA6fujk36+pWTwla0R+cZS7P3Z9oClvrOYntPJmq/ATz3sEhkFyXR/bXGbJ16uyZapGVwZAjkg</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -42,11 +42,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_SalesChannel-{ADDEF0B5-285D-4C7C-B91A-6D0A96030F6F}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Service-{E16AF63A-83F3-4E90-8BE8-16FC700FAAD5}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADaQVgjy2wNdIDKIt60vbST7lCsBkxzMFA3HGgALX1AsgAAAAAOgAAAAAIAACAAAADOgE1FaEjE/M8pIYgsu+x9PcJHfOAcHIU/7TYcQ/bQPRAAAAAoLaeTbCPsikP6h9PjJpa3QAAAAEG+kVNqy2++xKUZZxeKXsMWobcdY++/6g78udrWFP41D+FhEK5yKsAJglEve4mPHtUdlzDjDSe2iPCeJlN/ejw</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAAAbohjgO/i0bOd3fUwvZpzMaPvvz3Nq9svi91iKbbnMKAAAAAAOgAAAAAIAACAAAABcGez/exogtDY2y6OqrZo52dZX03WE9UqdOJqnBqU2/RAAAAAUlY6kxkONza+yea+AZB0xQAAAAJhI1woVxvn3BHbexC0XS+fVD68p39E6el4j6YQUc/+za348mhbJXH2gRkamS390RKQ+W8XtvKUUgJ5m2WSLxus</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -59,11 +59,11 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=DANNE\MSSQLSERVER2025;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Integrated Security=SSPI;Persist Security Info=True;Application Name=SSIS-Dim_Service-{B7C757E2-45C3-4B0F-96AD-1BA5DC0C7A09}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_Staging;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-Dim_Service-{B7C757E2-45C3-4B0F-96AD-1BA5DC0C7A09}HungNguyen.KhangNghi_Staging.sa;Auto Translate=False;">
           <DTS:Password
             DTS:Name="Password"
             Sensitive="1"
-            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABD+hV7JxG0+ln95d666KuQyW8FeQv86z2bdn33ckRezAAAAAAOgAAAAAIAACAAAAC/32GNGYLRcSVOAwMiIO61ImvbqyW6kRWtIfAMuOliaxAAAAAWAjuyvI6b3e+U4K04Yi7ZQAAAABMo1CpePz4vEhCN7nRVr4QPk2ae2VqK6rDnrMJREjkOtLFcVGqeKSdzAwcuX/o1J+/7BHz6bMoF2K5zwKQIi64</DTS:Password>
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACfrumQMkFsFagOiK8jcefiKxAuh3v5ag/Ovr3NFWdhtAAAAAAOgAAAAAIAACAAAACpswlLvMjm3XYYCSTguXylIeordEmh5bylgINnoIc8yBAAAACRNzvS9GMnoVRDnHPh93tAQAAAAETiYKPypjdXJKoC/WAYe15iImaK4QDYzIWROT/g3ax5k7mtZxahRP3r6ruUZH091KxVRNZu4dO2gXgdSKF7k0o</DTS:Password>
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -677,13 +677,7 @@ WHERE ServiceID = ?</property>
                   dataType="System.String"
                   description="The SQL command to be executed."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-    CAST('SALE_' + CAST([Service ] AS NVARCHAR(50)) AS NVARCHAR(50)) AS ServiceID,
-    CAST([Service ] AS NVARCHAR(255)) AS ServiceName,
-    CAST(NULL AS INT) AS WarrantyPeriod
-FROM dbo.Stg_KhangNghiData
-WHERE [Service ] IS NOT NULL
-GROUP BY [Service ]</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT CAST(N'SALE_'+s.Service AS nvarchar(50)) ServiceID,CAST(s.Service AS nvarchar(255)) ServiceName,p.WarrantyPeriod FROM dbo.Stg_KhangNghiData s JOIN KhangNghi_OLTP_VN_DRAFT.vn.ServicePolicy p ON p.ServiceName=s.Service</property>
                 <property
                   dataType="System.String"
                   description="The variable that contains the SQL command to be executed."
@@ -848,7 +842,7 @@ GROUP BY [Service ]</property>
         <NodeLayout
           Size="150.4,41.6"
           Id="Package\Data Flow Task"
-          TopLeft="300.714286354427,136.117646939511" />
+          TopLeft="228.571429057997,197.294117474123" />
       </GraphLayout>
     </LayoutInfo>
   </Package>
