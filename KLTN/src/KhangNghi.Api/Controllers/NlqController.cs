@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using KhangNghi.Infrastructure.Repositories;
+using KhangNghi.Infrastructure.Services;
 using KhangNghi.Infrastructure.Services.Copilot;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +19,38 @@ namespace KhangNghi.Api.Controllers
     {
         private readonly IDwhAnalyticsRepository _repo;
         private readonly ILlmCopilotService _llm;
+        private readonly ISalesForecastService _forecast;
         private readonly ILogger<NlqController> _logger;
 
-        public NlqController(IDwhAnalyticsRepository repo, ILlmCopilotService llm, ILogger<NlqController> logger)
+        public NlqController(IDwhAnalyticsRepository repo, ILlmCopilotService llm, ISalesForecastService forecast, ILogger<NlqController> logger)
         {
             _repo = repo;
             _llm = llm;
+            _forecast = forecast;
             _logger = logger;
         }
 
-        // Số tiền rút gọn: từ 1 tỷ hiện "tỷ ₫", nhỏ hơn hiện "triệu ₫"
-        private static string Short(double v) => Math.Abs(v) >= 1e9 ? $"{v / 1e9:N2} tỷ ₫" : $"{v / 1e6:N2} triệu ₫";
+        // Định dạng web dùng chung (số kiểu Việt Nam, kết luận in đậm, gạch đầu dòng)
+        private static string Short(double v) => CopilotWebFormat.Money(v);
+        private static double D(IDictionary<string, object> r, string key) => Convert.ToDouble(r.TryGetValue(key, out var v) ? v ?? 0 : 0);
+        // Tên hiển thị của dòng: ưu tiên cột *Name (khách hàng, nhà cung cấp…), không thì cột chữ đầu tiên
+        private static string Label(IDictionary<string, object> r) =>
+            (r.FirstOrDefault(kv => kv.Key.EndsWith("Name", StringComparison.OrdinalIgnoreCase) && kv.Value is string).Value
+             ?? r.Values.FirstOrDefault(v => v is string))?.ToString() ?? "-";
+        private static List<IDictionary<string, object>> Rows(IEnumerable<dynamic> d) => d.Cast<IDictionary<string, object>>().ToList();
+
+        // Doanh thu các năm: kết luận năm gần nhất và mức tăng so với năm đầu kỳ
+        private static string AllYearsAnswer(List<IDictionary<string, object>> years)
+        {
+            if (years.Count == 0) return CopilotResponseRules.EmptyDataMessage;
+            var sorted = years.OrderBy(r => Convert.ToInt32(r["Year"])).ToList();
+            var (first, last) = (sorted[0], sorted[^1]);
+            var best = sorted.OrderByDescending(r => D(r, "Revenue")).First();
+            return CopilotWebFormat.Answer(
+                $"Tổng doanh thu {first["Year"]} – {last["Year"]}: **{Short(sorted.Sum(r => D(r, "Revenue")))}**; năm cao nhất là **{best["Year"]}** ({Short(D(best, "Revenue"))}).",
+                $"Năm {last["Year"]} **{CopilotWebFormat.Growth(D(last, "Revenue"), D(first, "Revenue"))}** so với năm {first["Year"]}.",
+                $"Tổng lợi nhuận: {Short(sorted.Sum(r => D(r, "Profit")))}.");
+        }
 
         [HttpGet("query")]
         public async Task<IActionResult> Query([FromQuery] string q)
@@ -55,11 +76,24 @@ namespace KhangNghi.Api.Controllers
                 var outYears = intent.OutOfRangeYears.Count > 0 ? string.Join(", ", intent.OutOfRangeYears) : "yêu cầu";
                 return Ok(new
                 {
-                    Answer = $"Kho dữ liệu DWH_KhangNghi hiện chỉ lưu trữ dữ liệu hoạt động kinh doanh giai đoạn **2022 – 2025**. Năm **{outYears}** không có dữ liệu trong hệ thống.",
+                    Answer = CopilotWebFormat.Answer($"Năm **{outYears}** chưa có dữ liệu thực tế trong hệ thống.",
+                        "Kho DWH_KhangNghi lưu dữ liệu kinh doanh giai đoạn **2022 – 2025**.",
+                        intent.OutOfRangeYears.FirstOrDefault(y => y is "2026" or "2027") is { } fy
+                            ? "Cần số **dự báo**? " + CopilotWebFormat.Suggest($"dự báo doanh thu năm {fy}")
+                            : CopilotWebFormat.Suggest("doanh thu năm 2025", "so sánh doanh thu các năm")),
                     Data = (object?)null,
                     Source = "intent_guard",
                     QueriesUsed = Array.Empty<string>()
                 });
+            }
+
+            // Câu hỏi dự báo: kiểm tra quyền, phạm vi mô hình và chỉ số trước khi gọi Gemini
+            if (intent.IsForecast)
+            {
+                if (!BiQueryCatalog.IsAllowed("FORECAST", role))
+                    return Ok(new { Answer = CopilotWebFormat.Answer("Bạn **không có quyền** xem dự báo doanh thu.", $"Vai trò hiện tại: {role}. Dự báo dành cho Ban Giám đốc và phòng Kinh doanh."), Data = (object?)null, Source = "intent_guard", QueriesUsed = Array.Empty<string>() });
+                if (intent.Forecast == null)
+                    return Ok(new { Answer = intent.ForecastProblem ?? $"Mô hình chỉ dự báo doanh thu trong giai đoạn **{CopilotForecast.ModelRangeText}**.", Data = (object?)null, Source = "intent_guard", QueriesUsed = Array.Empty<string>() });
             }
 
             // Tầng 3: Nếu Gemini hoặc LLM được cấu hình, ưu tiên xử lý qua Gemini Function Calling
@@ -89,7 +123,8 @@ namespace KhangNghi.Api.Controllers
 
             // Tầng 2: Fallback khi chưa có API key hoặc khi Gemini gặp lỗi kết nối/hết quota
             // Lấy dữ liệu thật 100% từ DWH_KhangNghi qua repository
-            IActionResult FallbackOk(string answer, object? data, string[]? queries = null)
+            // Nhãn nguồn và chế độ offline do giao diện hiển thị, nên câu trả lời không lặp lại; footer chỉ dùng cho ghi chú bắt buộc
+            IActionResult FallbackOk(string answer, object? data, string[]? queries = null, string? footer = null)
             {
                 if (queries != null && queries.Length > 0)
                 {
@@ -99,7 +134,7 @@ namespace KhangNghi.Api.Controllers
                         {
                             return Ok(new
                             {
-                                Answer = $"Bạn không có quyền truy cập dữ liệu nghiệp vụ này theo phân quyền vai trò ({role}).\n\n*(Đang hiển thị dữ liệu tra cứu trực tiếp từ kho DWH Khang Nghị)*",
+                                Answer = CopilotWebFormat.Answer("Bạn **không có quyền** xem dữ liệu nghiệp vụ này.", $"Vai trò hiện tại: {role}. Liên hệ quản trị viên nếu cần cấp thêm quyền."),
                                 Data = (object?)null,
                                 Source = "fallback",
                                 FallbackReason = fallbackReason,
@@ -111,7 +146,7 @@ namespace KhangNghi.Api.Controllers
 
                 return Ok(new
                 {
-                    Answer = answer + "\n\n*(Đang hiển thị dữ liệu tra cứu trực tiếp từ kho DWH Khang Nghị)*",
+                    Answer = footer == null ? answer : answer + "\n\n" + footer,
                     Data = data,
                     Source = "fallback",
                     FallbackReason = fallbackReason,
@@ -124,7 +159,16 @@ namespace KhangNghi.Api.Controllers
                 // Kiểm tra bảo mật Prompt Injection
                 if (text.Contains("drop table") || text.Contains("select * from") || text.Contains("delete from") || text.Contains("gemini_api_key") || text.Contains("api_key"))
                 {
-                    return FallbackOk("Hệ thống từ chối yêu cầu. Các câu lệnh thao tác cơ sở dữ liệu và yêu cầu tiết lộ thông tin bí mật không được phép thực thi.", null);
+                    return FallbackOk(CopilotWebFormat.Answer("Yêu cầu **bị từ chối**.", "Trợ lý không thực thi câu lệnh thao tác cơ sở dữ liệu và không tiết lộ thông tin cấu hình bí mật."), null);
+                }
+
+                // Trường hợp G: Dự báo doanh thu bằng mô hình ModelKLTN (khoảng thời gian đã được kiểm tra ở trên)
+                if (intent.IsForecast && intent.Forecast != null)
+                {
+                    var summary = await CopilotForecast.RunAsync(_forecast, intent.Forecast);
+                    return FallbackOk(CopilotForecast.BuildAnswer(summary, intent.Order == BiOrder.Lowest),
+                        CopilotForecast.TableRows(summary).ToList(), new[] { "FORECAST" },
+                        "*(Số liệu dự báo từ mô hình ModelKLTN, không phải doanh thu thực tế)*");
                 }
 
                 // Xử lý Trường hợp A: Hỏi 1 chỉ số cụ thể trong 1 năm (VD: Doanh thu năm 2022, Lợi nhuận năm 2023)
@@ -138,14 +182,14 @@ namespace KhangNghi.Api.Controllers
                         if (intent.Metrics.Contains(BiMetric.Profit))
                         {
                             double profit = Convert.ToDouble(row.Profit);
-                            string ans = $"Lợi nhuận của Công ty Khang Nghị năm {year} đạt **{profit:N0} ₫** (khoảng **{profit / 1e9:N2} tỷ ₫**).";
+                            string ans = CopilotWebFormat.Answer($"Lợi nhuận năm {year}: **{Short(profit)}**.", $"Giá trị chính xác: {CopilotWebFormat.Vnd(profit)}.");
                             var filtered = new[] { new { Year = year, Profit = row.Profit } };
                             return FallbackOk(ans, filtered, new[] { "Q01" });
                         }
                         else
                         {
                             double revenue = Convert.ToDouble(row.Revenue);
-                            string ans = $"Doanh thu của Công ty Khang Nghị năm {year} đạt **{revenue:N0} ₫** (khoảng **{revenue / 1e9:N2} tỷ ₫**).";
+                            string ans = CopilotWebFormat.Answer($"Doanh thu năm {year}: **{Short(revenue)}**.", $"Giá trị chính xác: {CopilotWebFormat.Vnd(revenue)}.");
                             var filtered = new[] { new { Year = year, Revenue = row.Revenue } };
                             return FallbackOk(ans, filtered, new[] { "Q01" });
                         }
@@ -163,7 +207,9 @@ namespace KhangNghi.Api.Controllers
                         double rev = Convert.ToDouble(row.Revenue);
                         double prf = Convert.ToDouble(row.Profit);
                         double margin = rev > 0 ? (prf / rev * 100.0) : 0;
-                        string ans = $"Năm {year}, Công ty Khang Nghị đạt Doanh thu: **{rev:N0} ₫** ({rev / 1e9:N2} tỷ ₫) và Lợi nhuận: **{prf:N0} ₫** ({prf / 1e9:N2} tỷ ₫, Biên lợi nhuận: **{margin:N2}%**).";
+                        string ans = CopilotWebFormat.Answer($"Năm {year}: doanh thu **{Short(rev)}**, lợi nhuận **{Short(prf)}**.",
+                            $"Biên lợi nhuận: **{CopilotWebFormat.Pct(margin)}**.",
+                            $"Giá trị chính xác: doanh thu {CopilotWebFormat.Vnd(rev)}, lợi nhuận {CopilotWebFormat.Vnd(prf)}.");
                         var filtered = new[] { new { Year = year, Revenue = row.Revenue, Profit = row.Profit } };
                         return FallbackOk(ans, filtered, new[] { "Q01" });
                     }
@@ -172,29 +218,21 @@ namespace KhangNghi.Api.Controllers
                 // Xử lý Trường hợp E: So sánh giữa các năm cụ thể (VD: So sánh doanh thu 2022 và 2025)
                 if (intent.ResponseType == QuestionResponseType.Comparison && intent.TargetYears.Count >= 2)
                 {
-                    var rawData = (await _repo.Q01_RevenueByYearAsync(null)).ToList();
-                    var filtered = new List<dynamic>();
-                    var sbComp = new StringBuilder();
-                    sbComp.AppendLine($"So sánh kết quả kinh doanh giữa các năm ({string.Join(" và ", intent.TargetYears)}):");
-                    foreach (dynamic r in rawData)
-                    {
-                        int y = Convert.ToInt32(r.Year);
-                        if (intent.TargetYears.Contains(y))
-                        {
-                            filtered.Add(r);
-                            double rev = Convert.ToDouble(r.Revenue);
-                            double prf = Convert.ToDouble(r.Profit);
-                            sbComp.AppendLine($"- Năm {y}: Doanh thu **{rev:N0} ₫** ({rev / 1e9:N2} tỷ ₫), Lợi nhuận **{prf:N0} ₫** ({prf / 1e9:N2} tỷ ₫).");
-                        }
-                    }
-                    return FallbackOk(sbComp.ToString().TrimEnd(), filtered, new[] { "Q01" });
+                    var picked = Rows(await _repo.Q01_RevenueByYearAsync(null))
+                        .Where(r => intent.TargetYears.Contains(Convert.ToInt32(r["Year"]))).OrderBy(r => Convert.ToInt32(r["Year"])).ToList();
+                    if (picked.Count < 2) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q01" });
+                    var (r0, rN) = (picked[0], picked[^1]);
+                    string ans = CopilotWebFormat.Answer(
+                        $"Doanh thu năm {rN["Year"]} đạt **{Short(D(rN, "Revenue"))}**, **{CopilotWebFormat.Growth(D(rN, "Revenue"), D(r0, "Revenue"))}** so với năm {r0["Year"]} ({Short(D(r0, "Revenue"))}).",
+                        $"Lợi nhuận: {Short(D(r0, "Profit"))} → **{Short(D(rN, "Profit"))}** ({CopilotWebFormat.Growth(D(rN, "Profit"), D(r0, "Profit"))}).");
+                    return FallbackOk(ans, picked, new[] { "Q01" });
                 }
 
                 // Xử lý Trường hợp E2: Doanh thu các năm (toàn bộ 2022 - 2025)
                 if (intent.ResponseType == QuestionResponseType.Comparison && intent.IsAllYears)
                 {
-                    var data = await _repo.Q01_RevenueByYearAsync(null);
-                    return FallbackOk("Tổng doanh thu và lợi nhuận của Công ty Khang Nghị qua các năm: 2022, 2023, 2024, 2025:", data, new[] { "Q01" });
+                    var years = Rows(await _repo.Q01_RevenueByYearAsync(null));
+                    return FallbackOk(AllYearsAnswer(years), years, new[] { "Q01" });
                 }
 
                 // Nhóm sản phẩm (Category): tổng hợp theo nhóm bằng Q08 rồi xếp hạng theo đúng chỉ số được hỏi
@@ -213,14 +251,16 @@ namespace KhangNghi.Api.Controllers
 
                     string Fmt(double v) => key switch
                     {
-                        "ProfitMargin" => $"**{v:N2}%**",
-                        "Quantity" => $"**{v:N0}** sản phẩm",
-                        _ => $"**{v:N0} ₫** ({Short(v)})"
+                        "ProfitMargin" => CopilotWebFormat.Pct(v),
+                        "Quantity" => CopilotWebFormat.Num(v) + " sản phẩm",
+                        _ => Short(v)
                     };
                     var first = ranked[0];
                     string ans = ranked.Count == 1
-                        ? $"Nhóm sản phẩm có {name} {(asc ? "thấp" : "cao")} nhất là **{first["Category"]}**: {Fmt(Val(first))}."
-                        : $"{char.ToUpper(name[0]) + name[1..]} theo nhóm sản phẩm, xếp {(asc ? "tăng" : "giảm")} dần:";
+                        ? CopilotWebFormat.Answer($"Nhóm sản phẩm có {name} {(asc ? "thấp" : "cao")} nhất: **{first["Category"]}** – **{Fmt(Val(first))}**.",
+                            key is "Revenue" or "Profit" ? $"Chiếm {CopilotWebFormat.Pct(Val(first) / rows.Sum(Val) * 100, 1)} tổng {name} giai đoạn 2022 – 2025." : null)
+                        : CopilotWebFormat.Answer($"{(asc ? "Thấp" : "Cao")} nhất là **{first["Category"]}** với {name} **{Fmt(Val(first))}**.",
+                            $"Bảng dưới xếp {ranked.Count} nhóm sản phẩm theo {name} {(asc ? "tăng" : "giảm")} dần.");
                     return FallbackOk(ans, ranked, new[] { "Q08" });
                 }
 
@@ -229,12 +269,15 @@ namespace KhangNghi.Api.Controllers
                 {
                     // Chưa có truy vấn xếp khách hàng tăng dần: báo rõ thay vì trả nhầm danh sách cao nhất
                     if (intent.Order == BiOrder.Lowest)
-                        return FallbackOk("Hệ thống chưa có truy vấn xếp hạng khách hàng theo doanh thu **thấp nhất**. Bạn có thể hỏi: 'top 10 khách hàng doanh thu cao nhất'.", null);
+                        return FallbackOk(CopilotWebFormat.Answer("Hệ thống **chưa có truy vấn** xếp hạng khách hàng theo doanh thu thấp nhất.", CopilotWebFormat.Suggest("top 10 khách hàng doanh thu cao nhất")), null);
                     int top = intent.Limit ?? 10;
-                    var data = await _repo.Q11_TopCustomersByRevenueAsync(top);
+                    var data = Rows(await _repo.Q11_TopCustomersByRevenueAsync(top));
+                    if (data.Count == 0) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q11" });
                     string ans = top == 1
-                        ? "Khách hàng có doanh số mua hàng lớn nhất tại Khang Nghị (Khách hàng VIP đứng đầu):"
-                        : $"Top {top} khách hàng thân thiết có doanh số mua hàng lớn nhất:";
+                        ? CopilotWebFormat.Answer($"Khách hàng có doanh thu cao nhất: **{Label(data[0])}** – **{Short(D(data[0], "Revenue"))}**.",
+                            $"Số đơn hàng: {CopilotWebFormat.Num(D(data[0], "OrderCount"))}.")
+                        : CopilotWebFormat.Answer($"Dẫn đầu top {data.Count} khách hàng là **{Label(data[0])}** với **{Short(D(data[0], "Revenue"))}**.",
+                            $"Tổng doanh thu của {data.Count} khách hàng: {Short(data.Sum(r => D(r, "Revenue")))}.");
                     return FallbackOk(ans, data, new[] { "Q11" });
                 }
 
@@ -250,14 +293,16 @@ namespace KhangNghi.Api.Controllers
                     var rows = (asc
                         ? await _repo.GetLowestProductsAsync(top, byProfit)
                         : byProfit ? await _repo.Q07_TopProductsByProfitAsync(top) : await _repo.Q06_TopProductsByRevenueAsync(top)).ToList();
-                    if (rows.Count == 0) return FallbackOk("Chưa có sản phẩm nào phát sinh bán để xếp hạng.", null, new[] { qid });
+                    if (rows.Count == 0) return FallbackOk("**Chưa có sản phẩm** nào phát sinh bán để xếp hạng.", null, new[] { qid });
 
                     string scope = asc ? " (trong số sản phẩm đã phát sinh bán)" : "";
                     dynamic f0 = rows[0];
                     double v0 = Convert.ToDouble(byProfit ? f0.Profit : f0.Revenue);
                     string ans = top == 1
-                        ? $"Sản phẩm có {metric} {(asc ? "thấp" : "cao")} nhất{scope} là **{f0.ProductName}**: **{v0:N0} ₫** ({Short(v0)})."
-                        : $"Top {top} sản phẩm có {metric} {(asc ? "thấp" : "cao")} nhất{scope}, xếp {(asc ? "tăng" : "giảm")} dần:";
+                        ? CopilotWebFormat.Answer($"Sản phẩm có {metric} {(asc ? "thấp" : "cao")} nhất{scope}: **{f0.ProductName}** – **{Short(v0)}**.",
+                            $"Giá trị chính xác: {CopilotWebFormat.Vnd(v0)}.")
+                        : CopilotWebFormat.Answer($"{(asc ? "Thấp" : "Cao")} nhất là **{f0.ProductName}** với {metric} **{Short(v0)}**.",
+                            $"Bảng dưới liệt kê top {rows.Count} sản phẩm{scope}, xếp {(asc ? "tăng" : "giảm")} dần.");
                     return FallbackOk(ans, rows, new[] { qid });
                 }
 
@@ -265,57 +310,80 @@ namespace KhangNghi.Api.Controllers
                 if (intent.Dimension == "inventory")
                 {
                     int top = intent.Limit ?? 10;
-                    var data = await _repo.Q28_ReorderLevelAlertsAsync(top);
-                    return FallbackOk("Danh sách sản phẩm có số lượng tồn kho thấp dưới mức an toàn cần đặt hàng lại:", data, new[] { "Q28" });
+                    var data = (await _repo.Q28_ReorderLevelAlertsAsync(top)).ToList();
+                    if (data.Count == 0) return FallbackOk(CopilotWebFormat.Answer("**Không có sản phẩm** nào tồn kho dưới mức đặt hàng lại."), data, new[] { "Q28" });
+                    var worst = data.OrderByDescending(x => x.Deficit).First();
+                    string ans = CopilotWebFormat.Answer($"**{data.Count}** sản phẩm đang tồn kho dưới mức đặt hàng lại{(data.Count == top ? $" (hiển thị {top} sản phẩm đầu)" : "")}.",
+                        $"Thiếu nhiều nhất: **{worst.ProductName}**, tồn {CopilotWebFormat.Num(worst.QuantityOnHand)} / mức đặt lại {CopilotWebFormat.Num(worst.ReorderLevel)} (thiếu {CopilotWebFormat.Num(worst.Deficit)}).");
+                    return FallbackOk(ans, data, new[] { "Q28" });
                 }
 
                 // Xử lý Quý
                 if (text.Contains("quý"))
                 {
                     int? qYear = intent.TargetYears.Count == 1 ? intent.TargetYears[0] : (int?)null;
-                    var data = await _repo.Q02_RevenueByQuarterAsync(qYear);
-                    string ans = qYear.HasValue
-                        ? $"Tổng hợp doanh thu và lợi nhuận theo từng quý của năm {qYear.Value}:"
-                        : "Tổng hợp doanh thu và lợi nhuận theo từng quý của các năm:";
+                    var data = Rows(await _repo.Q02_RevenueByQuarterAsync(qYear));
+                    if (data.Count == 0) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q02" });
+                    var bestQ = data.OrderByDescending(r => D(r, "Revenue")).First();
+                    string ans = CopilotWebFormat.Answer(
+                        $"Quý có doanh thu cao nhất{(qYear.HasValue ? $" năm {qYear.Value}" : " giai đoạn 2022 – 2025")}: **{Label(bestQ)}** – **{Short(D(bestQ, "Revenue"))}**.",
+                        qYear.HasValue ? $"Tổng doanh thu năm {qYear.Value}: {Short(data.Sum(r => D(r, "Revenue")))}; lợi nhuận {Short(data.Sum(r => D(r, "Profit")))}." : null);
                     return FallbackOk(ans, data, new[] { "Q02" });
                 }
 
                 // Vận chuyển
                 if (intent.Dimension == "shipping" || text.Contains("vận chuyển") || text.Contains("giao hàng") || text.Contains("phí ship") || text.Contains("shipper") || text.Contains("cước"))
                 {
-                    var data = await _repo.Q32_ShippingCostByShipperAsync();
-                    return FallbackOk("Thống kê chi phí vận chuyển phân bổ theo từng đơn vị vận chuyển:", data, new[] { "Q32" });
+                    var data = Rows(await _repo.Q32_ShippingCostByShipperAsync());
+                    if (data.Count == 0) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q32" });
+                    double totalShip = data.Sum(r => D(r, "TotalShippingCost"));
+                    string ans = CopilotWebFormat.Answer($"Tổng chi phí vận chuyển: **{Short(totalShip)}**.",
+                        $"Cao nhất: **{Label(data[0])}** – {Short(D(data[0], "TotalShippingCost"))} ({CopilotWebFormat.Pct(D(data[0], "TotalShippingCost") / totalShip * 100, 1)}).");
+                    return FallbackOk(ans, data, new[] { "Q32" });
                 }
 
                 // Mua hàng / NCC
                 if (intent.Dimension == "purchase" || text.Contains("nhà cung cấp") || text.Contains("ncc") || text.Contains("nhập hàng"))
                 {
-                    var data = await _repo.Q21_TopSuppliersByAmountAsync();
-                    return FallbackOk("Top các nhà cung cấp có tổng giá trị nhập hàng lớn nhất:", data, new[] { "Q21" });
+                    var data = Rows(await _repo.Q21_TopSuppliersByAmountAsync());
+                    if (data.Count == 0) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q21" });
+                    string ans = CopilotWebFormat.Answer($"Nhà cung cấp có giá trị nhập hàng lớn nhất: **{Label(data[0])}** – **{Short(D(data[0], "TotalPurchaseAmount"))}**.",
+                        $"Bảng dưới xếp {data.Count} nhà cung cấp theo giá trị nhập giảm dần.");
+                    return FallbackOk(ans, data, new[] { "Q21" });
                 }
 
                 // Khu vực địa lý
                 if (text.Contains("khu vực") || text.Contains("vùng") || text.Contains("địa lý"))
                 {
-                    var data = await _repo.Q15_RevenueByRegionAsync();
-                    return FallbackOk("Doanh thu và lợi nhuận phân bổ theo từng khu vực địa lý:", data, new[] { "Q15" });
+                    var data = Rows(await _repo.Q15_RevenueByRegionAsync());
+                    if (data.Count == 0) return FallbackOk(CopilotResponseRules.EmptyDataMessage, null, new[] { "Q15" });
+                    double totalReg = data.Sum(r => D(r, "Revenue"));
+                    string ans = CopilotWebFormat.Answer($"Khu vực có doanh thu cao nhất: **{Label(data[0])}** – **{Short(D(data[0], "Revenue"))}**.",
+                        $"Chiếm {CopilotWebFormat.Pct(D(data[0], "Revenue") / totalReg * 100, 1)} tổng doanh thu; lợi nhuận {Short(D(data[0], "Profit"))}.");
+                    return FallbackOk(ans, data, new[] { "Q15" });
                 }
 
                 // Tổng quan (Sử dụng đúng mã truy vấn OVERVIEW đã đăng ký trong BiQueryCatalog)
                 if (intent.ResponseType == QuestionResponseType.Overview || text.Contains("tổng quan") || text.Contains("tóm tắt") || text.Contains("kpi") || text.Contains("tổng thể"))
                 {
                     var data = await _repo.GetDashboardSummaryAsync(null, null);
-                    return FallbackOk($"Tổng quan tình hình kinh doanh: Tổng doanh thu = {data.TotalRevenue:N0} ₫, Tổng lợi nhuận = {data.TotalProfit:N0} ₫, Biên lợi nhuận trung bình = {data.ProfitMargin:N2}%, Số đơn hàng = {data.TotalOrders:N0}.", data, new[] { "OVERVIEW" });
+                    string ans = CopilotWebFormat.Answer($"Tổng doanh thu giai đoạn 2022 – 2025: **{Short(data.TotalRevenue)}**.",
+                        $"Lợi nhuận: **{Short(data.TotalProfit)}** (biên lợi nhuận {CopilotWebFormat.Pct(data.ProfitMargin)}).",
+                        $"Số đơn hàng: {CopilotWebFormat.Num(data.TotalOrders)}; khách hàng: {CopilotWebFormat.Num(data.TotalCustomers)}.",
+                        data.LowStockAlertCount > 0 ? $"Cảnh báo tồn kho: {CopilotWebFormat.Num(data.LowStockAlertCount)} dòng tồn dưới mức đặt hàng lại." : null);
+                    return FallbackOk(ans, data, new[] { "OVERVIEW" });
                 }
 
                 // Mặc định câu hỏi doanh thu chung nếu không có năm cụ thể
                 if (text.Contains("doanh thu") || text.Contains("tiền bán") || text.Contains("doanh số") || text.Contains("lợi nhuận") || text.Contains("tiền lãi") || text.Contains("lãi"))
                 {
-                    var data = await _repo.Q01_RevenueByYearAsync(null);
-                    return FallbackOk("Tổng doanh thu và lợi nhuận của Công ty Khang Nghị qua các năm: 2022, 2023, 2024, 2025:", data, new[] { "Q01" });
+                    var years = Rows(await _repo.Q01_RevenueByYearAsync(null));
+                    return FallbackOk(AllYearsAnswer(years), years, new[] { "Q01" });
                 }
 
-                return FallbackOk(CopilotResponseRules.EmptyDataMessage + " Gợi ý câu hỏi: 'doanh thu năm 2022', 'doanh thu các năm', 'top 5 sản phẩm', 'hàng sắp hết', 'khách hàng doanh thu cao nhất', 'tổng quan kinh doanh'.", null);
+                return FallbackOk(CopilotWebFormat.Answer("Trợ lý **chưa tìm được dữ liệu** phù hợp với câu hỏi này.",
+                    "Trợ lý trả lời về doanh thu, lợi nhuận, sản phẩm, khách hàng, tồn kho, nhập hàng, vận chuyển và dự báo doanh thu.",
+                    CopilotWebFormat.Suggest("doanh thu năm 2025", "top 5 sản phẩm doanh thu cao nhất", "hàng sắp hết", "tổng quan kinh doanh", "dự báo doanh thu 6 tháng tới")), null);
             }
             catch (Exception ex)
             {

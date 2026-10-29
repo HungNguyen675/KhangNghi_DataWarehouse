@@ -121,3 +121,88 @@ Câu 1, 5, 6 **chưa chạy ở chế độ Gemini** để giữ giới hạn s�
 - `KLTN/src/KhangNghi.Api/wwwroot/js/app.js`: hàm `askCopilot`, `copilotModeBadge`
 - `KLTN/src/KhangNghi.Api/wwwroot/index.html`: phiên bản cache `?v=20261028_19`
 - `KLTN/src/KhangNghi.Api/.env`: model, timeout; **không commit**
+
+---
+
+## 6. Bổ sung 29/10/2026 — Dự báo doanh thu bằng ngôn ngữ tự nhiên
+
+Trợ lý AI gọi mô hình dự báo của nhóm (ModelKLTN, Hybrid Prophet + XGBoost + CatBoost) qua API sẵn có `ISalesForecastService`, **không sửa code mô hình**.
+
+### 6.1. Quy tắc ngôn ngữ tự nhiên (`Services/Copilot/CopilotForecast.cs`)
+
+| Quy tắc | Nội dung |
+|---|---|
+| Nhận diện câu dự báo | Có từ "dự báo / dự đoán / dự kiến / ước tính / ước lượng / forecast / sẽ đạt / sẽ là bao nhiêu"; hoặc cụm tương lai ("sắp tới", "tháng/quý/năm tới", "năm sau", "tiếp theo") **đi kèm doanh thu** |
+| Tách khoảng thời gian (ưu tiên theo thứ tự) | "từ tháng A/Y đến tháng B/Y" → "tháng M/Y", "tháng M năm Y" → "quý Q/Y" → "nửa đầu/cuối năm Y", "6 tháng đầu năm Y" → "N tháng/quý/tuần/ngày tới" → "tháng/quý/năm tới" → "năm Y" → mặc định **6 tháng tới** |
+| Mốc "sắp tới" | Tính từ **01/2026**, ngay sau kỳ dữ liệu thực tế cuối cùng (12/2025), và nói rõ trong câu trả lời |
+| Mức chi tiết | "theo / từng / hàng / mỗi tuần" → tuần; "… ngày" → ngày; còn lại → tháng |
+| Phạm vi mô hình | Chỉ 01/2026 – 12/2027. Hỏi 2022–2025 → hướng sang số thực tế; hỏi sau 12/2027 → báo ngoài phạm vi; hỏi vắt qua → cắt về phạm vi và nói rõ |
+| Chỉ số | Chỉ **doanh thu toàn công ty**. Hỏi dự báo lợi nhuận, số lượng, theo nhóm hàng / sản phẩm / khách hàng / khu vực → báo chưa hỗ trợ, gợi ý câu hỏi đúng |
+| Năm 2026–2027 hỏi số thực tế | Vẫn báo "không có dữ liệu" nhưng gợi ý "dự báo doanh thu năm …" |
+| Phân quyền | Truy vấn `FORECAST` chỉ cho Admin, Giám đốc, Kinh doanh (giống trang Dự báo) |
+
+### 6.2. Quy tắc trả lời theo hướng web (`CopilotResponseRules.cs`, mục 3b và Trường hợp G)
+
+- Câu đầu là kết luận, số chính in đậm; tối đa 3–4 gạch đầu dòng ngắn; bảng tối đa 12 dòng.
+- Luôn gọi là số **dự báo**; nêu tên mô hình, MAE ("sai số tuyệt đối trung bình"), RMSE; so với thực tế cùng kỳ 2025 khi có.
+- Không tự giải thích nguyên nhân (Tết, mùa vụ…) cho số dự báo.
+- Giao diện: bảng "Kỳ / Doanh thu dự báo / Cận dưới / Cận trên", nhãn "Nguồn: mô hình dự báo ModelKLTN (số dự báo, không phải thực tế)", nút gợi ý "Dự báo 6 tháng tới".
+
+### 6.3. Kiểm thử (đối chiếu với API `/forecast/sales` của trang Dự báo)
+
+Chế độ offline (Gemini giả lập lỗi 429): **16/16 đạt**; bộ hồi quy cũ: **14/14 đạt**.
+
+| # | Câu hỏi | Kết quả |
+|---|---|---|
+| 1 | Dự báo doanh thu 6 tháng tới | 6 kỳ 01–06/2026, tổng 36,59 tỷ ₫, tăng 25,7% so với cùng kỳ 2025 |
+| 2 | Dự báo doanh thu tháng 3 năm 2026 | 5,60 tỷ ₫, khoảng 4,99 – 6,21 tỷ ₫ |
+| 3 | Doanh thu quý 2/2026 dự kiến bao nhiêu? | 21,47 tỷ ₫, cao nhất T06/2026 |
+| 4 | Dự báo doanh thu năm 2027, tháng nào cao nhất? | 121,62 tỷ ₫, cao nhất T12/2027 |
+| 5 | Dự báo doanh thu 4 tuần tới theo tuần | Theo tuần, khớp API |
+| 6 | Trong dự báo năm 2026 tháng nào thấp nhất? | Nêu T02/2026 trước |
+| 7–10 | Dự báo 2028 / 2024 / lợi nhuận / nhóm biến tần | Báo ngoài phạm vi / đã có thực tế / chỉ dự báo doanh thu / chưa tách theo nhóm, không trả số |
+| 11 | Doanh thu năm 2026 (thực tế) | Không có dữ liệu + gợi ý hỏi dự báo |
+| 12 | Tài khoản `kho` hỏi dự báo | Từ chối theo vai trò |
+| 13 | Doanh thu năm sau sẽ là bao nhiêu? | Dự báo cả năm 2026 |
+| 14 | "top 5 sản phẩm tiếp theo" | Không bị nhầm thành dự báo |
+| 15–16 | Hồi quy Q06, Q01 | Đúng như trước |
+
+Gemini thật (`gemini-3.5-flash-lite`): "quý 2/2026 dự kiến bao nhiêu" và "6 tháng tới, tháng nào cao nhất" đều gọi `FORECAST`, số khớp API, trả lời 3–6 giây.
+
+### 6.4. Còn tồn tại
+
+- Nhãn tuần đầu năm của API dự báo ghi "Tuần 01/2025 (01/01)" cho tuần chứa ngày 01/01/2026 (lỗi đặt tên kỳ trong `SalesForecastService`, phần của mô hình dự báo).
+- "N tuần tới" bắt đầu từ 01/01/2026 (thứ Năm) nên có thể ra N+1 kỳ do tuần đầu và cuối không trọn.
+
+## 7. Chuẩn hóa định dạng web cho toàn bộ câu trả lời (29/10/2026)
+
+**Phạm vi:** áp dụng cho cả 3 đường trả lời: Gemini (`llm`), chế độ offline (`fallback`) và câu chặn trước khi gọi Gemini (`intent_guard`).
+
+**Khuôn trả lời chung:**
+1. Dòng 1 là kết luận trả lời thẳng câu hỏi; số chính hoặc tên chính in đậm.
+2. Tối đa 3–4 gạch đầu dòng ngắn.
+3. Bảng chỉ dùng khi có từ 3 dòng trở lên (tối đa 12 dòng, 4 cột).
+4. Khi không trả lời được thì thêm dòng `Gợi ý: "…" · "…"`.
+
+**Định dạng số:** kiểu Việt Nam, ví dụ `38,08 tỷ ₫` và `38.081.049.190 ₫`.
+
+**Không dùng:** emoji, tiêu đề, tên truy vấn trong câu trả lời, dòng chú thích lặp lại (giao diện đã hiển thị nhãn nguồn và nhãn chế độ).
+
+| Thay đổi | Tệp |
+|---|---|
+| Bộ định dạng dùng chung: `Money`, `Vnd`, `Pct`, `Growth`, `Answer`, `Suggest`. Không phụ thuộc culture của Docker | `Services/Copilot/CopilotWebFormat.cs` (mới) |
+| Mục 3b áp dụng cho mọi câu trả lời, kèm ví dụ chuẩn. Trường hợp E: so sánh 2 năm thì trả câu kết luận, không lập bảng. Cấm nhận định chung chung không kèm số | `CopilotResponseRules.cs` |
+| Tool trả thêm `shares`: tổng doanh thu/lợi nhuận và tỷ trọng % do máy chủ tính. Gemini chỉ được nêu tỷ trọng từ `shares` | `LlmCopilotService.cs` |
+| Viết lại toàn bộ câu trả lời offline theo khuôn web; bỏ footer lặp | `NlqController.cs` |
+| Câu chặn dự báo theo khuôn web | `CopilotForecast.cs`, `QuestionIntentParser.cs` |
+| Tổng quan offline dùng câu trả lời của máy chủ, không tự dựng tiêu đề `###` | `wwwroot/js/app.js` |
+
+**Lỗi đã sửa:** trước đây Gemini tự tính tỷ trọng theo khu vực và tính sai (Miền Trung 17,21% thay vì 17,43%). Sau khi thêm `shares`, Gemini nêu đúng 65,92% / 17,43% / 16,65%.
+
+**Kiểm thử:**
+- Offline 14/14.
+- Dự báo 16/16; hai bài kiểm tra cập nhật theo câu chữ mới.
+- 12 câu offline khác (quý, vận chuyển, nhà cung cấp, khu vực, tổng quan, tồn kho, so sánh 2 năm…) đều đúng khuôn.
+- Gemini thật: 9 câu (gồm 1 câu thử trên giao diện) trả lời đúng khuôn trong 2–6 giây.
+
+**Còn tồn tại:** mức tăng/giảm % giữa 2 năm vẫn do Gemini tự tính, có thể lệch ±0,01 điểm %. Ví dụ: sản lượng tăng 90,85% so với giá trị chính xác 90,84%.

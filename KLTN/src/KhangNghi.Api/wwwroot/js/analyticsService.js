@@ -63,6 +63,8 @@ window.analyticsService = (function () {
   function failMessage(res) {
     if (res.status === 403) return "Vai trò hiện tại không có quyền xem dữ liệu này.";
     if (res.status === 0 || res.status === 408) return "Không kết nối được máy chủ API. Kiểm tra dịch vụ KhangNghi.Api.";
+    // Lỗi có mã nghiệp vụ (vd. ETL_LOG_NOT_INITIALIZED) thì hiện đúng thông báo của máy chủ
+    if (res.status >= 500 && res.data && res.data.code && res.error) return res.error;
     if (res.status >= 500) return "Máy chủ gặp lỗi khi truy vấn kho dữ liệu (HTTP " + res.status + ").";
     return res.error || "Không truy vấn được dữ liệu.";
   }

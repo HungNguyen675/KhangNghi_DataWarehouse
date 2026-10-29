@@ -14,6 +14,7 @@ namespace KhangNghi.Infrastructure.Services.Copilot
         Comparison,     // So sánh giữa các năm (VD: So sánh doanh thu 2022 và 2025, hoặc Doanh thu các năm)
         ListOrTable,    // Danh sách bảng biểu nghiệp vụ (VD: Hàng sắp hết)
         OutOfRange,     // Năm được hỏi không có dữ liệu trong kho (ngoài 2022 - 2025)
+        Forecast,       // Dự báo doanh thu tương lai bằng mô hình ModelKLTN (01/2026 - 12/2027)
         General         // Câu hỏi chung khác
     }
 
@@ -50,6 +51,10 @@ namespace KhangNghi.Infrastructure.Services.Copilot
         public int? Limit { get; init; }
         public string? Dimension { get; init; }   // customer | product_group | product | inventory | shipping | purchase | region | quarter
         public BiOrder Order { get; init; } = BiOrder.Highest;
+        // Câu hỏi dự báo: khoảng thời gian đã tách (null nếu không dự báo được) và lý do không dự báo được
+        public bool IsForecast { get; init; }
+        public ForecastWindow? Forecast { get; init; }
+        public string? ForecastProblem { get; init; }
         public QuestionResponseType ResponseType { get; init; }
         public string? SuggestedQueryId { get; init; }
     }
@@ -67,6 +72,10 @@ namespace KhangNghi.Infrastructure.Services.Copilot
 
             var raw = question.Trim();
             var lower = raw.ToLowerInvariant();
+
+            // Câu hỏi về tương lai: năm 2026 - 2027 là phạm vi của mô hình dự báo, không phải "năm không có dữ liệu"
+            bool mentionsRevenue = lower.Contains("doanh thu") || lower.Contains("doanh số") || lower.Contains("tiền bán") || lower.Contains("revenue") || lower.Contains("sales");
+            bool isForecast = CopilotForecast.IsForecastQuestion(lower, mentionsRevenue);
 
             var metrics = new List<BiMetric>();
             var targetYears = new List<int>();
@@ -87,7 +96,7 @@ namespace KhangNghi.Infrastructure.Services.Copilot
                     {
                         if (!targetYears.Contains(y)) targetYears.Add(y);
                     }
-                    else
+                    else if (!isForecast)
                     {
                         isOutOfRange = true;
                         if (!outOfRangeYears.Contains(y.ToString())) outOfRangeYears.Add(y.ToString());
@@ -170,8 +179,28 @@ namespace KhangNghi.Infrastructure.Services.Copilot
 
             // 5. Xác định ResponseType và SuggestedQueryId
             QuestionResponseType responseType;
+            ForecastWindow? forecastWindow = null;
+            string? forecastProblem = null;
 
-            if (isOutOfRange)
+            if (isForecast)
+            {
+                responseType = QuestionResponseType.Forecast;
+                suggestedQueryId = "FORECAST";
+                dimension = "forecast";
+                bool otherMetricOnly = (hasProfit || hasQuantity || hasMargin) && !hasRevenue;
+                // Mô hình dự báo toàn công ty: hỏi theo nhóm/sản phẩm/khách/khu vực (kể cả tên nhóm cụ thể như "biến tần") thì báo chưa hỗ trợ
+                bool breakdown = hasProductGroup || hasProduct || hasCustomer
+                    || Regex.IsMatch(lower, @"\bnhóm\b|biến tần|vật tư|đóng cắt|tự động hóa|truyền tải|đo lường|miền|khu vực|vùng|tỉnh|thành phố|kênh|nhà cung cấp");
+                if (otherMetricOnly)
+                    forecastProblem = CopilotWebFormat.Answer("Mô hình chỉ dự báo **doanh thu toàn công ty**, chưa dự báo lợi nhuận hay số lượng bán.",
+                        CopilotWebFormat.Suggest("dự báo doanh thu 6 tháng tới"));
+                else if (breakdown)
+                    forecastProblem = CopilotWebFormat.Answer("Mô hình chỉ dự báo **doanh thu toàn công ty**, chưa tách theo sản phẩm, nhóm hàng, khách hàng hay khu vực.",
+                        CopilotWebFormat.Suggest("dự báo doanh thu quý 2 năm 2026"));
+                else
+                    (forecastWindow, forecastProblem) = CopilotForecast.FitToModel(CopilotForecast.ParseWindow(lower));
+            }
+            else if (isOutOfRange)
             {
                 responseType = QuestionResponseType.OutOfRange;
             }
@@ -264,6 +293,9 @@ namespace KhangNghi.Infrastructure.Services.Copilot
                 Limit = limit,
                 Dimension = dimension,
                 Order = isLowest ? BiOrder.Lowest : BiOrder.Highest,
+                IsForecast = isForecast,
+                Forecast = forecastWindow,
+                ForecastProblem = forecastProblem,
                 ResponseType = responseType,
                 SuggestedQueryId = suggestedQueryId
             };

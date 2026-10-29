@@ -2369,7 +2369,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setLoading(["etl-log-table"]);
     const sec = await Svc.getEtlLogs(50);
     if (!isCurrent()) return;
-    if (Comp.applySectionState("etl-log-table", sec, "Chưa có lần chạy ETL nào được ghi nhận trong Sys_EtlLog.")) {
+    if (Comp.applySectionState("etl-log-table", sec, "Chưa có lần chạy ETL nào được ghi nhận (bảng Sys_EtlExecution). Chạy ETL từ Desktop App hoặc lịch SQL Agent để có nhật ký.")) {
       const tone = { Success: ["success", "Thành công"], Failed: ["danger", "Thất bại"], Running: ["info", "Đang chạy"] };
       mountTable("etl-logs", "etl-log-table", [
         { key: "start", label: "Bắt đầu", render: r => esc(r.start ? new Date(r.start).toLocaleString("vi-VN") : "—") },
@@ -2475,10 +2475,11 @@ document.addEventListener("DOMContentLoaded", function () {
     customerid: ["Mã KH", "text"], segment: ["Phân khúc", "text"], ordercount: ["Số đơn", "number"], category: ["Danh mục", "text"],
     subcategory: ["Nhóm", "text"], suppliername: ["Nhà cung cấp", "text"], totalpurchaseamount: ["Chi phí mua", "vnd"],
     shippername: ["Đơn vị vận chuyển", "text"], totalshippingcost: ["Chi phí vận chuyển", "sales"], quantityonhand: ["Tồn", "number"],
-    reorderlevel: ["Mức đặt lại", "number"], deficit: ["Thiếu hụt", "number"], location: ["Vị trí", "text"]
+    reorderlevel: ["Mức đặt lại", "number"], deficit: ["Thiếu hụt", "number"], location: ["Vị trí", "text"],
+    period: ["Kỳ", "text"], forecastrevenue: ["Doanh thu dự báo", "sales"], lowerbound: ["Cận dưới", "sales"], upperbound: ["Cận trên", "sales"]
   };
 
-  // Bảng kết quả gọn từ dữ liệu NLQ trả về (tối đa 10 dòng, 4 cột)
+  // Bảng kết quả gọn từ dữ liệu NLQ trả về (tối đa 12 dòng, đủ một năm dự báo theo tháng; 4 cột)
   function chatTable(rows) {
     const keys = Object.keys(rows[0]).filter(k => !/key$|^statuscolor$|^recommendation$/i.test(k)).slice(0, 4);
     const cols = keys.map(k => {
@@ -2486,8 +2487,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const format = f === "sales" ? CUR : f;
       return { key: k, label, render: r => esc(fv(r[k], format)), align: format === "text" ? "" : "right" };
     });
-    const more = rows.length > 10 ? `<div class="cell-sub">Hiển thị 10 / ${rows.length} dòng.</div>` : "";
-    return Comp.renderTable(cols, rows.slice(0, 10)) + more;
+    const more = rows.length > 12 ? `<div class="cell-sub">Hiển thị 12 / ${rows.length} dòng.</div>` : "";
+    return Comp.renderTable(cols, rows.slice(0, 12)) + more;
   }
 
   // Nhãn chế độ trả lời dưới mỗi câu trả lời: Gemini hay offline (kèm lý do)
@@ -2559,15 +2560,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // TRƯỜNG HỢP 1: Phản hồi từ Tầng 3 LLM (đã áp dụng trọn vẹn Model Response Rules: Markdown, Table, Code Block MDX, số liệu BI)
     if (isLlm && window.CopilotResponseRules) {
-      const sourceNote = queriesUsed.length > 0
-        ? `Nguồn: kho DWH_KhangNghi (truy vấn ${queriesUsed.join(", ")})`
-        : "Nguồn: Khang Nghi AI Copilot";
+      const sourceNote = queriesUsed.includes("FORECAST")
+        ? "Nguồn: mô hình dự báo ModelKLTN (số dự báo, không phải thực tế)"
+        : queriesUsed.length > 0
+          ? `Nguồn: kho DWH_KhangNghi (truy vấn ${queriesUsed.join(", ")})`
+          : "Nguồn: Khang Nghi AI Copilot";
       place(window.CopilotResponseRules.createBotBubbleHtml(answer, sourceNote));
       return;
     }
 
     // TRƯỜNG HỢP 2: Dữ liệu fallback từ khóa hoặc khi chưa qua LLM
-    const source = `<div class="chat-source"><i class="fa-solid fa-database"></i> Nguồn: kho DWH_KhangNghi</div>`;
+    const source = queriesUsed.includes("FORECAST")
+      ? `<div class="chat-source"><i class="fa-solid fa-wand-magic-sparkles"></i> Nguồn: mô hình dự báo ModelKLTN</div>`
+      : `<div class="chat-source"><i class="fa-solid fa-database"></i> Nguồn: kho DWH_KhangNghi</div>`;
 
     if (data === null || data === undefined) {
       if (window.CopilotResponseRules) {
@@ -2601,13 +2606,14 @@ ${source}
       const g = k => data[k] ?? data[k.charAt(0).toLowerCase() + k.slice(1)];
       const totalOrders = Number(g("TotalOrders") || 0);
       if (totalOrders > 0) {
-        const mdText = `### Tổng quan kinh doanh
+        // Ưu tiên câu trả lời định dạng web của máy chủ; chỉ tự dựng khi máy chủ không gửi câu trả lời
+        const mdText = answer || `Tổng doanh thu: **${fv(g("TotalRevenue"), CUR)}**.
 - **Doanh thu:** ${fv(g("TotalRevenue"), CUR)}
 - **Lợi nhuận:** ${fv(g("TotalProfit"), CUR)}
 - **Biên lợi nhuận:** ${fv(g("ProfitMargin"), "percent")}
 - **Số đơn hàng:** ${fv(g("TotalOrders"))}`;
         if (window.CopilotResponseRules) {
-          place(window.CopilotResponseRules.createBotBubbleHtml(mdText, "Kho DWH_KhangNghi (tổng quan)"));
+          place(window.CopilotResponseRules.createBotBubbleHtml(mdText, "Nguồn: kho DWH_KhangNghi (tổng quan)"));
         } else {
           place(`<p>Tổng quan kinh doanh:</p><ul class="chat-list"><li>Doanh thu: <strong>${fv(g("TotalRevenue"), CUR)}</strong></li><li>Lợi nhuận: <strong>${fv(g("TotalProfit"), CUR)}</strong></li><li>Biên lợi nhuận: <strong>${fv(g("ProfitMargin"), "percent")}</strong></li><li>Số đơn hàng: <strong>${fv(g("TotalOrders"))}</strong></li></ul>${source}`);
         }

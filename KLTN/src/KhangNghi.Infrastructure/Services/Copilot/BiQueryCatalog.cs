@@ -7,7 +7,8 @@ using KhangNghi.Infrastructure.Repositories;
 namespace KhangNghi.Infrastructure.Services.Copilot
 {
     /// <summary>Tham số model truyền vào khi gọi tool run_bi_query.</summary>
-    public sealed record BiQueryArgs(int? Top, int? Year, string? Region, string? ProductName, string? Id);
+    public sealed record BiQueryArgs(int? Top, int? Year, string? Region, string? ProductName, string? Id,
+        string? StartDate = null, string? EndDate = null, string? Granularity = null, ISalesForecastService? Forecast = null);
 
     /// <summary>Một truy vấn phân tích có sẵn mà AI Copilot (tầng 3) được phép gọi.</summary>
     public sealed class BiQueryDefinition
@@ -33,7 +34,9 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             ["Purchase"] = new[] { "Admin", "Director", "PurchaseManager", "PurchaseStaff" },
             ["Inventory"] = new[] { "Admin", "Director", "InventoryManager", "InventoryStaff" },
             ["Shipping"] = new[] { "Admin", "Director", "ShippingStaff", "ShippingManager" },
-            ["Cross"] = new[] { "Admin", "Director" }
+            ["Cross"] = new[] { "Admin", "Director" },
+            // Cùng nhóm vai trò được xem trang Dự báo doanh số
+            ["Forecast"] = new[] { "Admin", "Director", "SalesManager", "SalesStaff" }
         };
 
         public static IReadOnlyList<BiQueryDefinition> All { get; } = new List<BiQueryDefinition>
@@ -96,7 +99,11 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             // Phân tích chéo (Q38 - Q40)
             Q("Q38", "Cross", "Mặt hàng sắp hết hàng: số ngày tồn kho (tồn / bán TB ngày) thấp nhất, dưới 3 ngày", async (r, a) => await r.Q38_HighSalesLowStockRiskAsync(Top(a)), "top"),
             Q("Q39", "Cross", "Mặt hàng tồn quá nhiều so với sức bán: số ngày tồn kho cao nhất, trên 7 ngày", async (r, a) => await r.Q39_HighPurchaseLowSalesRiskAsync(Top(a)), "top"),
-            Q("Q40", "Cross", "Khu vực tốn phí giao hàng nhiều nhất trên mỗi đồng doanh thu", async (r, a) => await r.Q40_RevenueVsShippingEfficiencyAsync())
+            Q("Q40", "Cross", "Khu vực tốn phí giao hàng nhiều nhất trên mỗi đồng doanh thu", async (r, a) => await r.Q40_RevenueVsShippingEfficiencyAsync()),
+
+            // Dự báo (mô hình ModelKLTN)
+            Q("FORECAST", "Forecast", "DỰ BÁO doanh thu tương lai toàn công ty (01/2026 - 12/2027) bằng mô hình Hybrid (Prophet + XGBoost + CatBoost), theo tháng/tuần/ngày; trả tổng, kỳ cao/thấp nhất, cùng kỳ 2025, MAE/RMSE",
+                async (r, a) => await RunForecastAsync(a), "start_date", "end_date", "granularity")
         };
 
         public static IReadOnlyList<BiQueryDefinition> ForRole(string? role) =>
@@ -114,6 +121,32 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             new() { Id = id, Domain = domain, Description = description, Execute = execute, Parameters = parameters };
 
         private static int Top(BiQueryArgs a) => Math.Clamp(a.Top ?? 10, 1, 50);
+
+        private static async Task<object?> RunForecastAsync(BiQueryArgs a)
+        {
+            if (a.Forecast == null) throw new InvalidOperationException("Dịch vụ dự báo chưa sẵn sàng.");
+            static DateTime? D(string? s) => DateTime.TryParseExact(s, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var d) ? d : null;
+            var start = D(a.StartDate) ?? CopilotForecast.ModelStart;
+            var end = D(a.EndDate) ?? start.AddMonths(6).AddDays(-1);
+            var gran = a.Granularity is "week" or "day" ? a.Granularity : "month";
+            var (w, problem) = CopilotForecast.FitToModel(new ForecastWindow(start, end, gran, $"từ {start:dd/MM/yyyy} đến {end:dd/MM/yyyy}", false));
+            if (w == null) return new { error = problem };
+            var s = await CopilotForecast.RunAsync(a.Forecast, w);
+            return new
+            {
+                model = s.ModelName,
+                kind = "DỰ BÁO (không phải số thực tế)",
+                period = s.Window.Label,
+                granularity = s.Window.Granularity,
+                total_forecast = s.Total,
+                peak = s.Peak == null ? null : new { s.Peak.Period, s.Peak.Forecast },
+                lowest = s.Low == null ? null : new { s.Low.Period, s.Low.Forecast },
+                same_period_actual_2025 = s.SamePeriodActualTotal > 0 ? s.SamePeriodActualTotal : (double?)null,
+                mae = Math.Round(s.Mae),
+                rmse = Math.Round(s.Rmse),
+                rows = CopilotForecast.TableRows(s)
+            };
+        }
 
         // Mã tự nhiên bên bán hàng được ETL gắn tiền tố SALE_ trong DWH
         private static string SaleId(BiQueryArgs a)

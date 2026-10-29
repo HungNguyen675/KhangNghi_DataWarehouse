@@ -36,8 +36,20 @@ namespace KhangNghi.Api.Controllers
         [HttpGet("logs")]
         public async Task<IActionResult> GetLogs([FromQuery] int limit = 20)
         {
-            var logs = await _etlService.GetLogsAsync(limit);
-            return Ok(logs);
+            try
+            {
+                var logs = await _etlService.GetLogsAsync(limit);
+                return Ok(logs);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 208)
+            {
+                // 208 = Invalid object name: CSDL chưa chạy script tạo bảng điều khiển ETL
+                return StatusCode(503, new
+                {
+                    code = "ETL_LOG_NOT_INITIALIZED",
+                    message = "Chưa khởi tạo bảng nhật ký ETL (dbo.Sys_EtlExecution). Chạy script KhangNghi.Infrastructure/Data/001_Etl_Control.sql trên DWH_KhangNghi."
+                });
+            }
         }
 
         [HttpGet("tables-status")]

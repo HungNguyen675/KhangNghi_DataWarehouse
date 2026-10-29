@@ -95,13 +95,15 @@ namespace KhangNghi.Infrastructure.Services.Copilot
         private readonly HttpClient _http;
         private readonly LlmOptions _options;
         private readonly IDwhAnalyticsRepository _repo;
+        private readonly ISalesForecastService _forecast;
         private readonly ILogger<LlmCopilotService> _logger;
 
-        public LlmCopilotService(HttpClient http, LlmOptions options, IDwhAnalyticsRepository repo, ILogger<LlmCopilotService> logger)
+        public LlmCopilotService(HttpClient http, LlmOptions options, IDwhAnalyticsRepository repo, ISalesForecastService forecast, ILogger<LlmCopilotService> logger)
         {
             _http = http;
             _options = options;
             _repo = repo;
+            _forecast = forecast;
             _logger = logger;
         }
 
@@ -234,12 +236,18 @@ namespace KhangNghi.Infrastructure.Services.Copilot
                 readTop = intent.Limit.Value;
             }
 
+            // Câu hỏi dự báo: khoảng thời gian do backend tách từ câu hỏi là căn cứ cuối cùng
+            var fw = intent.IsForecast ? intent.Forecast : null;
             var biArgs = new BiQueryArgs(
                 Top: readTop,
                 Year: readYear,
                 Region: ReadString(args, "region"),
                 ProductName: ReadString(args, "product_name"),
-                Id: ReadString(args, "id"));
+                Id: ReadString(args, "id"),
+                StartDate: fw != null ? fw.Start.ToString("yyyy-MM-dd") : ReadString(args, "start_date"),
+                EndDate: fw != null ? fw.End.ToString("yyyy-MM-dd") : ReadString(args, "end_date"),
+                Granularity: fw?.Granularity ?? ReadString(args, "granularity"),
+                Forecast: _forecast);
 
             object? data;
             try { data = await definition.Execute(_repo, biArgs); }
@@ -252,6 +260,7 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             // Backend Data Filter & Enforcement
             object? rowsForModel = data;
             int? totalRows = null;
+            object? shares = null;
             if (data is IEnumerable sequence && data is not string)
             {
                 var list = sequence.Cast<object?>().ToList();
@@ -311,9 +320,23 @@ namespace KhangNghi.Infrastructure.Services.Copilot
                 data = list;
                 totalRows = list.Count;
                 rowsForModel = list.Take(MaxRowsForModel).ToList();
+
+                // Tỷ trọng tính sẵn ở máy chủ để model không tự chia (Gemini từng tính sai % theo khu vực); chỉ khi có đủ các dòng
+                double totalRevenue = list.Sum(it => ReadNumber(it, "Revenue"));
+                if (list.Count > 1 && !intent.Limit.HasValue && totalRevenue > 0)
+                {
+                    double totalProfit = list.Sum(it => ReadNumber(it, "Profit"));
+                    shares = new
+                    {
+                        total_revenue = totalRevenue,
+                        total_profit = totalProfit,
+                        revenue_share_pct = list.Select(it => Math.Round(ReadNumber(it, "Revenue") / totalRevenue * 100, 2)).ToList(),
+                        profit_share_pct = totalProfit > 0 ? list.Select(it => Math.Round(ReadNumber(it, "Profit") / totalProfit * 100, 2)).ToList() : null
+                    };
+                }
             }
 
-            var payload = JsonSerializer.Serialize(new { query_id = definition.Id, total_rows = totalRows, rows = rowsForModel }, JsonOptions);
+            var payload = JsonSerializer.Serialize(new { query_id = definition.Id, total_rows = totalRows, rows = rowsForModel, shares }, JsonOptions);
             return (payload, definition.Id, data);
         }
 
@@ -323,7 +346,9 @@ namespace KhangNghi.Infrastructure.Services.Copilot
             if (queryId == null) return null;
             var id = queryId.ToUpperInvariant();
             string? mapped = null;
-            if (intent.Dimension == "product_group" && id is "Q06" or "Q07" or "Q06_LOW" or "Q07_LOW")
+            if (intent.IsForecast && id != "FORECAST")
+                mapped = "FORECAST";
+            else if (intent.Dimension == "product_group" && id is "Q06" or "Q07" or "Q06_LOW" or "Q07_LOW")
                 mapped = "Q08";
             else if (intent.Order == BiOrder.Lowest && id is "Q06" or "Q07")
                 mapped = id + "_LOW";
@@ -504,7 +529,10 @@ namespace KhangNghi.Infrastructure.Services.Copilot
                                 ["year"] = new JsonObject { ["type"] = "integer", ["description"] = "Năm cần lọc (2022 - 2025)" },
                                 ["region"] = new JsonObject { ["type"] = "string", ["description"] = "Tên khu vực cần lọc (chỉ dùng cho OVERVIEW)" },
                                 ["product_name"] = new JsonObject { ["type"] = "string", ["description"] = "Tên sản phẩm cần lọc (cho Q24)" },
-                                ["id"] = new JsonObject { ["type"] = "string", ["description"] = "Mã khách hàng hoặc mã đơn hàng (cho CUSTOMER hoặc ORDER)" }
+                                ["id"] = new JsonObject { ["type"] = "string", ["description"] = "Mã khách hàng hoặc mã đơn hàng (cho CUSTOMER hoặc ORDER)" },
+                                ["start_date"] = new JsonObject { ["type"] = "string", ["description"] = "Ngày bắt đầu kỳ dự báo YYYY-MM-DD (chỉ cho FORECAST, trong 2026-01-01 .. 2027-12-31)" },
+                                ["end_date"] = new JsonObject { ["type"] = "string", ["description"] = "Ngày kết thúc kỳ dự báo YYYY-MM-DD (chỉ cho FORECAST)" },
+                                ["granularity"] = new JsonObject { ["type"] = "string", ["enum"] = new JsonArray("month", "week", "day"), ["description"] = "Mức chi tiết dự báo (chỉ cho FORECAST)" }
                             },
                             ["required"] = new JsonArray("query_id")
                         }
