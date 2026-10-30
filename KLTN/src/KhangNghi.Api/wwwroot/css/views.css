@@ -1472,3 +1472,149 @@ h3.chat-heading {
 .qa-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); }
 [data-theme="dark"] .qa-answer.is-bad b { color: #f08a5d; }
 [data-theme="dark"] .qa-legend i.is-other { background: #5b6170; }
+
+/* --------------------------------------------------------------------------
+   THAO TÁC OLAP (ROLL-UP, DRILL-DOWN, SLICE, DICE)
+   -------------------------------------------------------------------------- */
+#view-multi-dim [hidden] { display: none !important; }
+#view-multi-dim .header-actions { flex-wrap: wrap; }
+.md-tabs { max-width: 100%; flex-wrap: wrap; }
+
+/* Thanh công cụ một hàng: số liệu, cách chia, bộ lọc */
+.md-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+.md-field { display: flex; flex-direction: column; gap: 5px; margin: 0; min-width: 0; }
+/* Hàng lọc nằm riêng bên dưới, nhãn đứng cạnh các nút */
+.md-field-grow {
+  order: 5;
+  flex: 1 1 100%;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+.md-field-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; }
+.md-toolbar .input { height: 36px; min-width: 160px; font-weight: 500; }
+.md-toolbar .segmented { width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.md-swap { height: 36px; width: 36px; padding: 0; justify-content: center; }
+.md-kpis { margin-bottom: 16px; }
+.md-result { margin-bottom: 16px; }
+.md-card-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.md-drill-hint { margin: -4px 0 6px; }
+.md-drill-hint:empty { display: none; }
+.chart-card-header .md-view-toggle { flex-wrap: nowrap; }
+
+/* Bộ lọc dạng danh sách thả xuống */
+.olap-dds { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.olap-dd { position: relative; }
+.olap-dd summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.olap-dd summary::-webkit-details-marker { display: none; }
+.olap-dd summary b { color: var(--text-main); font-weight: 600; }
+.olap-dd summary i { font-size: 10px; margin-left: 2px; }
+.olap-dd summary:hover { border-color: var(--color-primary-border); }
+.olap-dd.active summary { background: var(--color-primary-light); border-color: var(--color-primary-border); }
+.olap-dd.active summary b { color: var(--color-primary); }
+.olap-dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .14);
+}
+.olap-dd-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.olap-dd-opt:hover { background: var(--color-primary-light); }
+.olap-dd-opt input { accent-color: var(--color-primary); }
+
+.olap-hint { font-size: 12px; color: var(--text-secondary); }
+.olap-tech { padding: 0; margin-bottom: 20px; }
+.olap-tech summary {
+  cursor: pointer;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.olap-tech[open] summary { border-bottom: 1px solid var(--border-color); }
+.olap-tech-body { padding: 14px 20px 18px; display: flex; flex-direction: column; gap: 12px; }
+.olap-badges { display: flex; flex-direction: column; gap: 6px; }
+.olap-badge { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.olap-badge .status-badge { min-width: 104px; justify-content: center; gap: 6px; font-weight: 600; }
+.olap-badge-text { font-size: 13px; color: var(--text-main); }
+.olap-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; margin-top: 2px; margin-left: -6px; }
+.olap-crumb {
+  border: none;
+  background: transparent;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+.olap-crumb:hover:not(:disabled) { background: var(--color-primary-light); }
+.olap-crumb:disabled { color: var(--text-secondary); cursor: default; }
+.olap-crumb-sep { font-size: 9px; color: var(--text-secondary); }
+.olap-mdx {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface-secondary);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+@media (max-width: 600px) {
+  .md-toolbar .md-field:not(.md-field-grow) { flex: 1 1 140px; }
+  .md-toolbar .input { min-width: 0; width: 100%; }
+  .md-toolbar .md-field:has(.segmented) { flex: 1 1 100%; }
+  .md-toolbar .segmented { flex-wrap: nowrap; width: 100%; }
+  .md-toolbar .segmented-btn { flex: 1; justify-content: center; padding-left: 6px; padding-right: 6px; }
+  .md-field-grow { flex-direction: column; align-items: flex-start; }
+}

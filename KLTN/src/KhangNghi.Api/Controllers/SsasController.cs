@@ -11,7 +11,7 @@ namespace KhangNghi.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ssas")]
-    [Authorize] // Danh mục 40 câu hỏi BI (MDX) mở cho mọi vai trò đã đăng nhập
+    [Authorize] // Danh mục 50 câu hỏi BI (MDX) mở cho mọi vai trò đã đăng nhập
     public class SsasController : ControllerBase
     {
         private readonly ISsasRepository _ssasRepo;
@@ -34,7 +34,7 @@ namespace KhangNghi.Api.Controllers
         }
 
         /// <summary>
-        /// Danh mục 40 câu truy vấn MDX chuẩn hóa theo đề cương khóa luận Khang Nghi
+        /// Danh mục 50 câu truy vấn MDX chuẩn hóa theo đề cương khóa luận Khang Nghi (giữ route catalog-40 để tương thích)
         /// </summary>
         [HttpGet("catalog-40")]
         public IActionResult GetCatalog40()
@@ -168,6 +168,37 @@ namespace KhangNghi.Api.Controllers
                 return BadRequest(new { success = false, message = "Không thể phân tích đa chiều với các tham số đã chọn." });
             }
             return Ok(new { success = true, data = result });
+        }
+
+        /// <summary>
+        /// Thao tác OLAP: khoan sâu/cuộn lên theo phân cấp (path), lát cắt và lọc khối (years, regions, channels, categories)
+        /// </summary>
+        [HttpGet("olap-explore")]
+        public async Task<IActionResult> GetOlapExplore(
+            [FromQuery] string hierarchy = "time",
+            [FromQuery] string[]? path = null,
+            [FromQuery] string measure = "revenue",
+            [FromQuery] int[]? years = null,
+            [FromQuery] string[]? regions = null,
+            [FromQuery] string[]? channels = null,
+            [FromQuery] string[]? categories = null)
+        {
+            var result = await _dwhRepo.GetOlapExploreAsync(hierarchy, path ?? Array.Empty<string>(), measure,
+                years ?? Array.Empty<int>(), regions ?? Array.Empty<string>(), channels ?? Array.Empty<string>(), categories ?? Array.Empty<string>());
+            if (result == null)
+            {
+                return BadRequest(new { success = false, message = "Đường khoan sâu không hợp lệ." });
+            }
+            return Ok(new { success = true, data = result });
+        }
+
+        /// <summary>
+        /// Giá trị cho bộ lọc Slice/Dice: năm có phát sinh bán, khu vực, kênh bán, danh mục
+        /// </summary>
+        [HttpGet("olap-options")]
+        public async Task<IActionResult> GetOlapOptions()
+        {
+            return Ok(new { success = true, data = await _dwhRepo.GetOlapOptionsAsync() });
         }
     }
 

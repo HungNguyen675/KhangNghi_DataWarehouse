@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KhangNghi.Api.Controllers
 {
     /// <summary>
-    /// Câu trả lời trọng tâm cho từng câu trong 40 câu hỏi phân tích (MDX-01 .. MDX-40), truy vấn trực tiếp DWH.
+    /// Câu trả lời trọng tâm cho từng câu trong 50 câu hỏi phân tích (MDX-01 .. MDX-50), truy vấn trực tiếp DWH.
     /// Mỗi truy vấn trả về các cột thống nhất: Label, Value, Value2, Value3 (tùy câu), Grp (nhóm/cột ma trận), Note (ngữ cảnh, vd. năm).
     /// </summary>
     [ApiController]
@@ -73,9 +73,9 @@ namespace KhangNghi.Api.Controllers
                                ROW_NUMBER() OVER (PARTITION BY l.Region ORDER BY SUM(f.SalesAmount) DESC) AS rn
                         FROM Fact_Sales f JOIN Dim_Location l ON l.LocationKey = f.LocationKey GROUP BY l.Region, l.City) x
                     WHERE rn <= 5 ORDER BY Grp, Value DESC",
-            [15] = @"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value
-                    FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey JOIN Dim_Location l ON l.LocationKey = f.LocationKey
-                    WHERE l.Region = N'Miền Nam' GROUP BY p.Category ORDER BY Value DESC",
+            [15] = $@"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value, t.Year AS Note
+                    FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey JOIN Dim_Time t ON t.TimeKey = f.TimeKey
+                    WHERE t.Year = {LastSalesYear} GROUP BY t.Year, p.Category ORDER BY Value DESC",
             [16] = $@"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value, t.Year AS Note
                     FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey JOIN Dim_Location l ON l.LocationKey = f.LocationKey
                     JOIN Dim_Time t ON t.TimeKey = f.TimeKey
@@ -134,12 +134,51 @@ namespace KhangNghi.Api.Controllers
                          S AS (SELECT l.Region, SUM(f.ShippingCost) AS Ship FROM Fact_Shipping f JOIN Dim_Location l ON l.LocationKey = f.LocationKey GROUP BY l.Region)
                     SELECT R.Region AS Label, ISNULL(S.Ship, 0) * 100.0 / NULLIF(R.Rev, 0) AS Value, ISNULL(S.Ship, 0) AS Value2, R.Rev AS Value3,
                         (SELECT SUM(Ship) FROM S) * 100.0 / NULLIF((SELECT SUM(Rev) FROM R), 0) AS Note
-                    FROM R LEFT JOIN S ON S.Region = R.Region ORDER BY Value DESC"
+                    FROM R LEFT JOIN S ON S.Region = R.Region ORDER BY Value DESC",
+
+            // Mục 7: thao tác OLAP theo vai trò (Roll-up, Drill-down, Slice, Dice, Pivot, cùng kỳ)
+            [41] = @"SELECT l.Region AS Label, SUM(f.SalesAmount) AS Value, SUM(f.ProfitAmount) AS Value2, COUNT(DISTINCT l.City) AS Value3
+                    FROM Fact_Sales f JOIN Dim_Location l ON l.LocationKey = f.LocationKey GROUP BY l.Region ORDER BY Value DESC",
+            [42] = @"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value, SUM(f.ProfitAmount) AS Value2,
+                        SUM(f.ProfitAmount) * 100.0 / NULLIF(SUM(f.SalesAmount), 0) AS Value3, COUNT(DISTINCT p.ProductName) AS Note
+                    FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey GROUP BY p.Category ORDER BY Value DESC",
+            [43] = $@"SELECT N'Tháng ' + CAST(t.Month AS nvarchar(2)) AS Label, SUM(f.SalesAmount) AS Value, t.Year AS Note
+                    FROM Fact_Sales f JOIN Dim_Time t ON t.TimeKey = f.TimeKey WHERE t.Year = {LastSalesYear} AND t.Quarter = 4
+                    GROUP BY t.Year, t.Month ORDER BY t.Month",
+            [44] = @"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value
+                    FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey JOIN Dim_Location l ON l.LocationKey = f.LocationKey
+                    WHERE l.Region = N'Miền Nam' GROUP BY p.Category ORDER BY Value DESC",
+            [45] = @"SELECT CAST(t.Year AS nvarchar(10)) AS Label, SUM(f.SalesAmount) AS Value, SUM(f.ProfitAmount) AS Value2
+                    FROM Fact_Sales f JOIN Dim_Time t ON t.TimeKey = f.TimeKey JOIN Dim_SalesChannel c ON c.ChannelKey = f.ChannelKey
+                    WHERE c.ChannelName = N'Website Khang Nghị' GROUP BY t.Year ORDER BY t.Year",
+            [46] = @"SELECT p.Category AS Label, SUM(f.SalesAmount) AS Value
+                    FROM Fact_Sales f JOIN Dim_Product p ON p.ProductKey = f.ProductKey JOIN Dim_Time t ON t.TimeKey = f.TimeKey
+                    JOIN Dim_Location l ON l.LocationKey = f.LocationKey JOIN Dim_SalesChannel c ON c.ChannelKey = f.ChannelKey
+                    WHERE t.Year IN (2024, 2025) AND l.Region IN (N'Miền Bắc', N'Miền Trung') AND c.ChannelName IN (N'Đại lý', N'Cửa hàng')
+                    GROUP BY p.Category ORDER BY Value DESC",
+            [47] = @"SELECT s.SupplierName AS Label, SUM(f.TotalCost) AS Value, SUM(f.PurchaseQuantity) AS Value2
+                    FROM Fact_Purchase f JOIN Dim_Supplier s ON s.SupplierKey = f.SupplierKey JOIN Dim_Time t ON t.TimeKey = f.TimeKey
+                    JOIN Dim_Warehouse w ON w.WarehouseKey = f.WarehouseKey
+                    WHERE t.Year = 2025 AND w.WarehouseName = N'Kho TP. Hồ Chí Minh' GROUP BY s.SupplierName ORDER BY Value DESC",
+            [48] = @"SELECT CAST(t.Year AS nvarchar(10)) AS Label, l.Region AS Grp, SUM(f.SalesAmount) AS Value
+                    FROM Fact_Sales f JOIN Dim_Time t ON t.TimeKey = f.TimeKey JOIN Dim_Location l ON l.LocationKey = f.LocationKey
+                    GROUP BY t.Year, l.Region ORDER BY t.Year, l.Region",
+            [49] = $@"WITH Q AS (SELECT t.Year, t.Quarter, SUM(f.SalesAmount) AS Rev
+                        FROM Fact_Sales f JOIN Dim_Time t ON t.TimeKey = f.TimeKey GROUP BY t.Year, t.Quarter)
+                    SELECT N'Quý ' + CAST(c.Quarter AS nvarchar(2)) AS Label, (c.Rev / NULLIF(p.Rev, 0) - 1) * 100.0 AS Value,
+                        c.Rev AS Value2, p.Rev AS Value3, c.Year AS Note
+                    FROM Q c LEFT JOIN Q p ON p.Year = c.Year - 1 AND p.Quarter = c.Quarter
+                    WHERE c.Year = {LastSalesYear} ORDER BY c.Quarter",
+            [50] = LatestStock + @"SELECT p.Category AS Label, w.WarehouseName AS Grp, SUM(Lt.QuantityOnHand) AS Value
+                    FROM Lt JOIN Dim_Product p ON p.ProductKey = Lt.ProductKey JOIN Dim_Warehouse w ON w.WarehouseKey = Lt.WarehouseKey
+                    WHERE Lt.rn = 1 GROUP BY p.Category, w.WarehouseName ORDER BY p.Category, w.WarehouseName"
         };
 
         private static string PolicyFor(int n) => n switch
         {
-            <= 24 => "SalesAccess",
+            47 => "PurchaseAccess",
+            50 => "InventoryAccess",
+            <= 24 or > 40 => "SalesAccess",
             <= 29 => "PurchaseAccess",
             <= 35 => "InventoryAccess",
             _ => "ShippingAccess"
@@ -149,7 +188,7 @@ namespace KhangNghi.Api.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var digits = new string((id ?? string.Empty).Where(char.IsDigit).ToArray());
-            if (!int.TryParse(digits, out var n) || n < 1 || n > 40)
+            if (!int.TryParse(digits, out var n) || n < 1 || n > 50)
                 return NotFound(new { success = false, message = "Không có câu hỏi " + id });
 
             if (!(await _auth.AuthorizeAsync(User, PolicyFor(n))).Succeeded)

@@ -30,7 +30,10 @@ builder.Services.AddSingleton(builder.Configuration.GetSection("EtlSettings").Ge
 builder.Services.AddScoped<ISsasProcessingService, SsasProcessingService>();
 builder.Services.AddScoped<IEtlOrchestratorService, EtlOrchestratorService>();
 builder.Services.AddScoped<IEtlService, EtlService>();
-builder.Services.AddScoped<IDwhAnalyticsRepository, DwhAnalyticsRepository>();
+// Web BI đọc khối SSAS bằng MDX, tự dùng SQL khi khối không sẵn sàng (Analytics:DataSource = Auto | Ssas | Sql)
+builder.Services.AddScoped<DataSourceTracker>();
+builder.Services.AddScoped<DwhAnalyticsRepository>();
+builder.Services.AddScoped<IDwhAnalyticsRepository, CubeAnalyticsRepository>();
 builder.Services.AddScoped<ISalesForecastService, SalesForecastService>();
 builder.Services.AddScoped<ISsasRepository, SsasRepository>();
 
@@ -163,6 +166,19 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Báo nguồn số liệu của từng phản hồi (SSAS, SQL hoặc SSAS+SQL) qua header X-Data-Source
+app.Use(async (context, next) =>
+{
+    var tracker = context.RequestServices.GetRequiredService<DataSourceTracker>();
+    context.Response.OnStarting(() =>
+    {
+        var source = tracker.Summary;
+        if (source != null) context.Response.Headers["X-Data-Source"] = source;
+        return Task.CompletedTask;
+    });
+    await next();
+});
 
 app.MapControllers();
 

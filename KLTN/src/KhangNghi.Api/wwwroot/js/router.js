@@ -61,8 +61,8 @@ window.KhangNghiRouter = (function () {
       return;
     }
 
-    // Redirect olap-explorer to multi-dim
-    if (rawHash === "olap-explorer") {
+    // Redirect olap-explorer / olap to multi-dim
+    if (rawHash === "olap-explorer" || rawHash === "olap") {
       window.location.hash = "#/multi-dim";
       return;
     }

@@ -17,12 +17,12 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/variables.css?v=20261029_03">
-  <link rel="stylesheet" href="css/layout.css?v=20261029_03">
-  <link rel="stylesheet" href="css/components.css?v=20261029_03">
-  <link rel="stylesheet" href="css/responsive.css?v=20261029_03">
-  <link rel="stylesheet" href="css/views.css?v=20261029_03">
-  <link rel="stylesheet" href="css/login.css?v=20261029_03">
+  <link rel="stylesheet" href="css/variables.css?v=20261030_05">
+  <link rel="stylesheet" href="css/layout.css?v=20261030_05">
+  <link rel="stylesheet" href="css/components.css?v=20261030_05">
+  <link rel="stylesheet" href="css/responsive.css?v=20261030_05">
+  <link rel="stylesheet" href="css/views.css?v=20261030_05">
+  <link rel="stylesheet" href="css/login.css?v=20261030_05">
 </head>
 <body data-theme="light">
 
@@ -263,7 +263,7 @@
                 <li>
                   <span class="login-feature-icon"><i class="fa-solid fa-chart-column"></i></span>
                   <div>
-                    <div class="login-feature-title">40 câu hỏi phân tích nghiệp vụ</div>
+                    <div class="login-feature-title">50 câu hỏi phân tích nghiệp vụ</div>
                     <div class="login-feature-desc">Từ doanh thu theo quý đến rủi ro đứt hàng và ứ đọng vốn</div>
                   </div>
                 </li>
@@ -742,115 +742,163 @@
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title"><i class="fa-solid fa-cubes-stacked" style="color:var(--color-primary); margin-right:8px;"></i>Phân tích kinh doanh đa chiều</h1>
-            <p class="page-subtitle">Đối chiếu chỉ tiêu kinh doanh theo nhiều chiều dữ liệu (danh mục, kênh bán, thời gian, khu vực...)</p>
           </div>
           <div class="header-actions">
-            <button type="button" class="btn btn-primary" id="multi-dim-run-btn" onclick="KhangNghiApp.loadMultiDimAnalysis()">
-              <i class="fa-solid fa-arrows-rotate"></i> Xem phân tích
-            </button>
-            <button type="button" class="btn" onclick="KhangNghiApp.swapMultiDimAxes()" title="Hoán đổi dòng và cột">
-              <i class="fa-solid fa-right-left"></i> Đổi trục
-            </button>
-            <button type="button" class="btn btn-ghost" onclick="KhangNghiApp.resetMultiDim()" title="Đặt lại lựa chọn mặc định">
+            <div class="segmented md-tabs" role="tablist" aria-label="Chế độ phân tích" id="md-tabs">
+              <button type="button" class="segmented-btn active" role="tab" data-md-tab="pivot" onclick="KhangNghiApp.setMultiDimTab('pivot')"><i class="fa-solid fa-table-cells"></i>So sánh chéo</button>
+              <button type="button" class="segmented-btn" role="tab" data-md-tab="olap" onclick="KhangNghiApp.setMultiDimTab('olap')"><i class="fa-solid fa-layer-group"></i>Xem chi tiết &amp; lọc</button>
+            </div>
+            <button type="button" class="btn btn-ghost" onclick="KhangNghiApp.resetMultiDimTab()" title="Đặt lại lựa chọn mặc định">
               <i class="fa-solid fa-rotate-left"></i> Đặt lại
             </button>
           </div>
         </div>
 
-        <!-- Bộ chọn phân tích thân thiện với người dùng (tự động cập nhật ngay khi chọn) -->
-        <div class="glass-card grid-full" style="padding: 18px 20px; margin-bottom: 20px;">
-          <div class="grid-controls-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
-            <label class="field" style="margin:0;">
-              <span style="font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-calculator" style="color:var(--color-primary);"></i> Chỉ tiêu kinh doanh
-              </span>
-              <select id="multi-dim-measure" class="input" style="width: 100%; height: 40px; font-weight: 500;" onchange="KhangNghiApp.loadMultiDimAnalysis()">
-                <option value="revenue" selected>Doanh thu (VNĐ)</option>
-                <option value="profit">Lợi nhuận (VNĐ)</option>
-                <option value="quantity">Sản lượng bán (Sản phẩm)</option>
-                <option value="discount">Tiền chiết khấu (VNĐ)</option>
-                <option value="shipping">Chi phí vận chuyển (VNĐ)</option>
-              </select>
-            </label>
-
-            <label class="field" style="margin:0;">
-              <span style="font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-table-list" style="color:var(--tone-info);"></i> Phân tích theo dòng
-              </span>
-              <select id="multi-dim-rows" class="input" style="width: 100%; height: 40px; font-weight: 500;" onchange="KhangNghiApp.loadMultiDimAnalysis()">
-                <option value="category" selected>Danh mục sản phẩm</option>
-                <option value="subcategory">Nhóm sản phẩm</option>
-                <option value="channel">Kênh bán hàng</option>
-                <option value="region">Khu vực địa lý</option>
-                <option value="city">Tỉnh / Thành phố</option>
-                <option value="segment">Phân khúc khách hàng</option>
-                <option value="manufacturer">Hãng sản xuất</option>
-                <option value="employee">Nhân viên kinh doanh</option>
-                <option value="customer">Khách hàng lớn</option>
-                <option value="year">Năm</option>
-                <option value="quarter">Quý trong năm</option>
-              </select>
-            </label>
-
-            <label class="field" style="margin:0;">
-              <span style="font-weight: 600; font-size: 13px; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-table-columns" style="color:var(--tone-success);"></i> Đối chiếu theo cột
-              </span>
-              <select id="multi-dim-cols" class="input" style="width: 100%; height: 40px; font-weight: 500;" onchange="KhangNghiApp.loadMultiDimAnalysis()">
-                <option value="year" selected>Thời gian (Năm)</option>
-                <option value="quarter">Quý trong năm</option>
-                <option value="channel">Kênh bán hàng</option>
-                <option value="region">Khu vực địa lý</option>
-                <option value="segment">Phân khúc khách hàng</option>
-                <option value="none">Không chia cột (Xếp hạng 1 chiều)</option>
-              </select>
-            </label>
-          </div>
+        <div id="md-pane-pivot">
+        <div class="glass-card md-toolbar">
+          <label class="md-field">
+            <span class="md-field-label">Số liệu</span>
+            <select id="multi-dim-measure" class="input" onchange="KhangNghiApp.loadMultiDimAnalysis()">
+              <option value="revenue" selected>Doanh thu</option>
+              <option value="profit">Lợi nhuận</option>
+              <option value="quantity">Số lượng bán</option>
+              <option value="discount">Tiền giảm giá</option>
+              <option value="shipping">Phí vận chuyển</option>
+            </select>
+          </label>
+          <label class="md-field">
+            <span class="md-field-label">Hàng</span>
+            <select id="multi-dim-rows" class="input" onchange="KhangNghiApp.loadMultiDimAnalysis()">
+              <option value="category" selected>Danh mục sản phẩm</option>
+              <option value="subcategory">Nhóm sản phẩm</option>
+              <option value="channel">Kênh bán hàng</option>
+              <option value="region">Khu vực</option>
+              <option value="city">Tỉnh / Thành phố</option>
+              <option value="segment">Phân khúc khách hàng</option>
+              <option value="manufacturer">Hãng sản xuất</option>
+              <option value="employee">Nhân viên kinh doanh</option>
+              <option value="customer">Khách hàng lớn</option>
+              <option value="year">Năm</option>
+              <option value="quarter">Quý</option>
+            </select>
+          </label>
+          <button type="button" class="btn md-swap" onclick="KhangNghiApp.swapMultiDimAxes()" title="Đổi hàng ↔ cột" aria-label="Đổi hàng và cột">
+            <i class="fa-solid fa-right-left"></i>
+          </button>
+          <label class="md-field">
+            <span class="md-field-label">Cột</span>
+            <select id="multi-dim-cols" class="input" onchange="KhangNghiApp.loadMultiDimAnalysis()">
+              <option value="year" selected>Năm</option>
+              <option value="quarter">Quý</option>
+              <option value="channel">Kênh bán hàng</option>
+              <option value="region">Khu vực</option>
+              <option value="segment">Phân khúc khách hàng</option>
+              <option value="none">Không chia cột</option>
+            </select>
+          </label>
         </div>
 
-        <!-- Thẻ KPI tổng hợp nhanh -->
-        <div class="kpi-grid" id="multi-dim-kpis" style="margin-bottom: 20px;">
+        <div class="kpi-grid md-kpis" id="multi-dim-kpis">
           <div class="kpi-card glass-card">
-            <span class="kpi-label" id="multi-dim-kpi1-label">Tổng chỉ tiêu</span>
+            <span class="kpi-label" id="multi-dim-kpi1-label">Tổng</span>
             <div class="kpi-value" id="multi-dim-kpi-total">—</div>
-            <span class="kpi-note" id="multi-dim-kpi1-note">Tổng phát sinh toàn bộ dữ liệu</span>
           </div>
           <div class="kpi-card glass-card">
-            <span class="kpi-label" id="multi-dim-kpi2-label">Nhóm dẫn đầu</span>
+            <span class="kpi-label" id="multi-dim-kpi2-label">Cao nhất</span>
             <div class="kpi-value" id="multi-dim-kpi-top" style="font-size: 18px;">—</div>
-            <span class="kpi-note" id="multi-dim-kpi2-note">Đạt giá trị cao nhất</span>
-          </div>
-          <div class="kpi-card glass-card">
-            <span class="kpi-label">Quy mô phân tích</span>
-            <div class="kpi-value" id="multi-dim-kpi-scale">—</div>
-            <span class="kpi-note" id="multi-dim-kpi3-note">Tổ hợp phân rã dữ liệu</span>
           </div>
         </div>
 
-        <!-- Biểu đồ phân tích trực quan (ApexCharts) -->
-        <div class="glass-card chart-card grid-full" style="margin-bottom: 20px;">
+        <div class="glass-card chart-card grid-full md-result">
           <div class="chart-card-header">
             <div class="chart-title-group">
-              <h3 class="chart-title" id="multi-dim-chart-title">Biểu đồ đối chiếu trực quan</h3>
-              <span class="chart-description" id="multi-dim-chart-desc">Thể hiện diễn biến và tương quan giữa các nhóm dữ liệu</span>
+              <h3 class="chart-title" id="multi-dim-chart-title">Biểu đồ so sánh</h3>
             </div>
-            <span class="status-badge tone-info" id="multi-dim-chart-badge" style="font-weight: 600;">Dữ liệu DWH thực tế</span>
+            <div class="md-card-actions">
+              <button type="button" class="btn btn-sm" id="multi-dim-csv-btn" onclick="KhangNghiApp.exportMultiDimToCSV()" title="Xuất CSV" hidden>
+                <i class="fa-solid fa-file-csv"></i> CSV
+              </button>
+              <div class="segmented md-view-toggle" role="tablist" aria-label="Kiểu hiển thị" data-md-view-pane="pivot">
+                <button type="button" class="segmented-btn active" data-view="chart" onclick="KhangNghiApp.setMdView('pivot','chart')"><i class="fa-solid fa-chart-column"></i>Biểu đồ</button>
+                <button type="button" class="segmented-btn" data-view="table" onclick="KhangNghiApp.setMdView('pivot','table')"><i class="fa-solid fa-table"></i>Bảng</button>
+              </div>
+            </div>
           </div>
           <div class="chart-canvas-wrapper" id="multi-dim-chart-canvas" style="min-height: 320px;"></div>
+          <div id="multi-dim-table-wrap" hidden></div>
+        </div>
         </div>
 
-        <!-- Bảng số liệu đối chiếu chi tiết -->
-        <div class="glass-card grid-full">
-          <div class="card-toolbar">
-            <div class="chart-title-group">
-              <h3 class="chart-title" id="multi-dim-table-title">Bảng số liệu ma trận chi tiết</h3>
-              <span class="chart-description" id="multi-dim-table-desc">Số liệu cụ thể theo từng nhóm và tổng chu kỳ phân tích</span>
+        <div id="md-pane-olap" hidden>
+        <div class="glass-card md-toolbar">
+          <label class="md-field">
+            <span class="md-field-label">Số liệu</span>
+            <select id="olap-measure" class="input" onchange="KhangNghiApp.setOlapMeasure(this.value)">
+              <option value="revenue" selected>Doanh thu</option>
+              <option value="profit">Lợi nhuận</option>
+              <option value="quantity">Số lượng bán</option>
+              <option value="discount">Tiền giảm giá</option>
+            </select>
+          </label>
+          <div class="md-field">
+            <span class="md-field-label">Chia theo</span>
+            <div class="segmented" role="tablist" aria-label="Chia theo" id="olap-hierarchy-tabs">
+              <button type="button" class="segmented-btn active" data-hierarchy="time" onclick="KhangNghiApp.setOlapHierarchy('time')"><i class="fa-regular fa-calendar"></i>Thời gian</button>
+              <button type="button" class="segmented-btn" data-hierarchy="geo" onclick="KhangNghiApp.setOlapHierarchy('geo')"><i class="fa-solid fa-map-location-dot"></i>Khu vực</button>
+              <button type="button" class="segmented-btn" data-hierarchy="product" onclick="KhangNghiApp.setOlapHierarchy('product')"><i class="fa-solid fa-boxes-stacked"></i>Sản phẩm</button>
             </div>
-            <button type="button" class="btn btn-sm" onclick="KhangNghiApp.exportMultiDimToCSV()" title="Xuất CSV">
-              <i class="fa-solid fa-file-csv"></i> Xuất CSV
-            </button>
           </div>
-          <div id="multi-dim-table-wrap"></div>
+          <div class="md-field md-field-grow">
+            <span class="md-field-label">Lọc</span>
+            <div id="olap-filters" class="olap-dds"></div>
+          </div>
+          <label class="md-field">
+            <span class="md-field-label">Gợi ý</span>
+            <select id="olap-preset" class="input" onchange="if (this.value) KhangNghiApp.applyOlapPreset(this.value)">
+              <option value="">Chọn nhanh…</option>
+              <option value="rollup">Doanh thu từng năm</option>
+              <option value="drilldown">Các quý năm 2025</option>
+              <option value="slice">Nhóm hàng năm 2025</option>
+              <option value="dice">Nhóm hàng Miền Nam 2025</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="glass-card chart-card grid-full md-result">
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <h3 class="chart-title" id="olap-chart-title">Kết quả</h3>
+              <nav id="olap-breadcrumb" class="olap-breadcrumb" aria-label="Đang xem"></nav>
+            </div>
+            <div class="md-card-actions">
+              <button type="button" class="btn btn-sm" id="olap-rollup-btn" onclick="KhangNghiApp.olapRollUp()" title="Quay lại mức tổng quát hơn" disabled>
+                <i class="fa-solid fa-arrow-up"></i> Lên một mức
+              </button>
+              <span class="status-badge tone-info" id="olap-total-badge">—</span>
+              <div class="segmented md-view-toggle" role="tablist" aria-label="Kiểu hiển thị" data-md-view-pane="olap">
+                <button type="button" class="segmented-btn active" data-view="chart" onclick="KhangNghiApp.setMdView('olap','chart')"><i class="fa-solid fa-chart-column"></i>Biểu đồ</button>
+                <button type="button" class="segmented-btn" data-view="table" onclick="KhangNghiApp.setMdView('olap','table')"><i class="fa-solid fa-table"></i>Bảng</button>
+              </div>
+            </div>
+          </div>
+          <p class="olap-hint md-drill-hint" id="olap-chart-desc"></p>
+          <div class="chart-canvas-wrapper" id="olap-chart-canvas" style="min-height: 320px;"></div>
+          <div id="olap-table-wrap" hidden></div>
+        </div>
+
+        <details class="glass-card olap-tech">
+          <summary><i class="fa-solid fa-code"></i> Thông tin kỹ thuật</summary>
+          <div class="olap-tech-body">
+            <div id="olap-badges" class="olap-badges"></div>
+            <div class="card-toolbar" style="padding:0;">
+              <span class="chart-description">Câu truy vấn MDX trên khối KhangNghi_Cube (SSAS) cho kết quả này</span>
+              <button type="button" class="btn btn-sm" onclick="KhangNghiApp.copyOlapMdx()" title="Sao chép câu MDX">
+                <i class="fa-regular fa-copy"></i> Sao chép
+              </button>
+            </div>
+            <pre id="olap-mdx" class="olap-mdx"></pre>
+          </div>
+        </details>
         </div>
       </section>
 
@@ -1045,7 +1093,7 @@
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title">Câu hỏi phân tích</h1>
-            <p class="page-subtitle">40 câu hỏi doanh nghiệp hay đặt ra. Bấm vào một câu để xem câu trả lời bằng biểu đồ.</p>
+            <p class="page-subtitle">50 câu hỏi doanh nghiệp hay đặt ra. Bấm vào một câu để xem câu trả lời bằng biểu đồ.</p>
           </div>
         </div>
         <div class="qe-toolbar">
@@ -1212,15 +1260,15 @@
   </div>
 
   <!-- JavaScript Modules -->
-  <script src="js/apiClient.js?v=20261029_03"></script>
-  <script src="js/authService.js?v=20261029_03"></script>
-  <script src="js/analyticsService.js?v=20261029_03"></script>
-  <script src="js/components.js?v=20261029_03"></script>
-  <script src="js/charts.js?v=20261029_03"></script>
-  <script src="js/filters.js?v=20261029_03"></script>
-  <script src="js/router.js?v=20261029_03"></script>
-  <script src="js/copilotResponseRules.js?v=20261029_03"></script>
-  <script src="js/app.js?v=20261029_03"></script>
+  <script src="js/apiClient.js?v=20261030_05"></script>
+  <script src="js/authService.js?v=20261030_05"></script>
+  <script src="js/analyticsService.js?v=20261030_05"></script>
+  <script src="js/components.js?v=20261030_05"></script>
+  <script src="js/charts.js?v=20261030_05"></script>
+  <script src="js/filters.js?v=20261030_05"></script>
+  <script src="js/router.js?v=20261030_05"></script>
+  <script src="js/copilotResponseRules.js?v=20261030_05"></script>
+  <script src="js/app.js?v=20261030_05"></script>
 
   <!-- Modal Xem truy vấn MDX (mở từ Câu hỏi phân tích) -->
   <div class="modal-overlay" id="mdx-viewer-modal" onclick="if(event.target===this) KhangNghiApp.closeMdxModal()">
