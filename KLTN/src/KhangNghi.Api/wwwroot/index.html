@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="css/layout.css?v=20261030_05">
   <link rel="stylesheet" href="css/components.css?v=20261030_05">
   <link rel="stylesheet" href="css/responsive.css?v=20261030_05">
-  <link rel="stylesheet" href="css/views.css?v=20261030_05">
+  <link rel="stylesheet" href="css/views.css?v=20261103_01">
   <link rel="stylesheet" href="css/login.css?v=20261030_05">
 </head>
 <body data-theme="light">
@@ -84,24 +84,11 @@
           <i class="fa-solid fa-earth-asia nav-icon"></i>
           <span class="nav-text">Khu vực</span>
         </a>
-        <div class="menu-group-header">Phân tích</div>
-        <a href="#/cross-analysis" class="nav-item" data-tooltip="Phân tích chéo" data-roles="ALL">
-          <i class="fa-solid fa-diagram-project nav-icon"></i>
-          <span class="nav-text">Phân tích chéo</span>
+        <div class="menu-group-header">Phân tích &amp; dự báo</div>
+        <a href="#/analysis" class="nav-item" data-tooltip="Phân tích" data-roles="ALL" data-group="analysis">
+          <i class="fa-solid fa-magnifying-glass-chart nav-icon"></i>
+          <span class="nav-text">Phân tích</span>
         </a>
-        <a href="#/multi-dim" class="nav-item" data-tooltip="Phân tích đa chiều" data-roles="ALL">
-          <i class="fa-solid fa-cubes-stacked nav-icon"></i>
-          <span class="nav-text">Phân tích đa chiều</span>
-        </a>
-        <a href="#/what-if" class="nav-item" data-tooltip="Phân tích giả định" data-roles="CEO,Sales">
-          <i class="fa-solid fa-sliders nav-icon"></i>
-          <span class="nav-text">Phân tích giả định</span>
-        </a>
-        <a href="#/question-explorer" class="nav-item" data-tooltip="Câu hỏi phân tích" data-roles="ALL">
-          <i class="fa-solid fa-book-bookmark nav-icon"></i>
-          <span class="nav-text">Câu hỏi phân tích</span>
-        </a>
-        <div class="menu-group-header">Dự báo</div>
         <a href="#/forecast" class="nav-item" data-tooltip="Dự báo doanh số" data-roles="CEO,Sales">
           <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i>
           <span class="nav-text">Dự báo doanh số</span>
@@ -698,12 +685,18 @@
         </div>
       </section>
 
+      <!-- Thanh tab chung của nhóm Phân tích: chỉ hiện khi đang ở một trong bốn trang phân tích -->
+      <nav class="segmented analysis-tabs" id="analysis-tabs" role="tablist" aria-label="Loại phân tích" hidden>
+        <a href="#/cross-analysis" class="segmented-btn" role="tab" data-analysis-tab="cross-analysis"><i class="fa-solid fa-diagram-project"></i>Phân tích chéo</a>
+        <a href="#/multi-dim" class="segmented-btn" role="tab" data-analysis-tab="multi-dim"><i class="fa-solid fa-cubes-stacked"></i>Phân tích đa chiều</a>
+        <a href="#/question-explorer" class="segmented-btn" role="tab" data-analysis-tab="question-explorer"><i class="fa-solid fa-book-bookmark"></i>Câu hỏi phân tích</a>
+      </nav>
+
       <!-- ===================== PHÂN TÍCH CHÉO ===================== -->
       <section id="view-cross-analysis" class="view-section">
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title">Phân tích chéo</h1>
-            <p class="page-subtitle">Số ngày tồn kho = Tồn hiện tại ÷ Bán TB/ngày · <span class="cross-dot tone-danger"></span>Sắp hết &lt; 3 ngày <span class="cross-dot tone-success"></span>An toàn 3–7 <span class="cross-dot tone-warning"></span>Tồn thừa &gt; 7 · Bấm vào biểu đồ để xem cách tính</p>
           </div>
         </div>
 
@@ -711,22 +704,22 @@
 
         <div class="grid-charts-2">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Tình trạng tồn kho các mặt hàng</h3><span class="chart-description">Fact_Inventory × Fact_Sales · bấm từng phần để xem danh sách</span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Tình trạng tồn kho các mặt hàng</h3></div></div>
             <div class="chart-canvas-wrapper" id="chart-cross-status"></div>
           </div>
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Q38 · Mặt hàng nào sắp hết hàng?</h3><span class="chart-description">Số ngày còn đủ bán, ít nhất lên đầu</span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Mặt hàng nào sắp hết hàng?</h3></div></div>
             <div class="chart-canvas-wrapper" id="chart-cross-stockout"></div>
           </div>
         </div>
 
         <div class="grid-charts-2">
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Q39 · Mặt hàng nào tồn quá nhiều?</h3><span class="chart-description">Số ngày tồn kho, nhiều nhất lên đầu</span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Mặt hàng nào tồn quá nhiều?</h3></div></div>
             <div class="chart-canvas-wrapper" id="chart-cross-overstock"></div>
           </div>
           <div class="glass-card chart-card">
-            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Q40 · Khu vực nào tốn phí giao hàng nhất?</h3><span class="chart-description" data-scope="cross-eff"></span></div></div>
+            <div class="chart-card-header"><div class="chart-title-group"><h3 class="chart-title">Khu vực nào tốn phí giao hàng nhất?</h3></div></div>
             <div class="chart-canvas-wrapper" id="chart-cross-eff"></div>
           </div>
         </div>
@@ -849,17 +842,17 @@
             </div>
           </div>
           <div class="md-field md-field-grow">
-            <span class="md-field-label">Lọc</span>
+            <span class="md-field-label" title="Chọn 1 điều kiện là Slice, từ 2 điều kiện trở lên là Dice">Slice / Dice</span>
             <div id="olap-filters" class="olap-dds"></div>
           </div>
           <label class="md-field">
             <span class="md-field-label">Gợi ý</span>
             <select id="olap-preset" class="input" onchange="if (this.value) KhangNghiApp.applyOlapPreset(this.value)">
               <option value="">Chọn nhanh…</option>
-              <option value="rollup">Doanh thu từng năm</option>
-              <option value="drilldown">Các quý năm 2025</option>
-              <option value="slice">Nhóm hàng năm 2025</option>
-              <option value="dice">Nhóm hàng Miền Nam 2025</option>
+              <option value="rollup">Roll-up · Doanh thu từng năm</option>
+              <option value="drilldown">Drill-down · Các quý năm 2025</option>
+              <option value="slice">Slice · Nhóm hàng năm 2025</option>
+              <option value="dice">Dice · Nhóm hàng Miền Nam 2025</option>
             </select>
           </label>
         </div>
@@ -871,8 +864,8 @@
               <nav id="olap-breadcrumb" class="olap-breadcrumb" aria-label="Đang xem"></nav>
             </div>
             <div class="md-card-actions">
-              <button type="button" class="btn btn-sm" id="olap-rollup-btn" onclick="KhangNghiApp.olapRollUp()" title="Quay lại mức tổng quát hơn" disabled>
-                <i class="fa-solid fa-arrow-up"></i> Lên một mức
+              <button type="button" class="btn btn-sm" id="olap-rollup-btn" onclick="KhangNghiApp.olapRollUp()" title="Roll-up: quay lại mức tổng quát hơn" disabled>
+                <i class="fa-solid fa-arrow-up"></i> Roll-up
               </button>
               <span class="status-badge tone-info" id="olap-total-badge">—</span>
               <div class="segmented md-view-toggle" role="tablist" aria-label="Kiểu hiển thị" data-md-view-pane="olap">
@@ -886,19 +879,6 @@
           <div id="olap-table-wrap" hidden></div>
         </div>
 
-        <details class="glass-card olap-tech">
-          <summary><i class="fa-solid fa-code"></i> Thông tin kỹ thuật</summary>
-          <div class="olap-tech-body">
-            <div id="olap-badges" class="olap-badges"></div>
-            <div class="card-toolbar" style="padding:0;">
-              <span class="chart-description">Câu truy vấn MDX trên khối KhangNghi_Cube (SSAS) cho kết quả này</span>
-              <button type="button" class="btn btn-sm" onclick="KhangNghiApp.copyOlapMdx()" title="Sao chép câu MDX">
-                <i class="fa-regular fa-copy"></i> Sao chép
-              </button>
-            </div>
-            <pre id="olap-mdx" class="olap-mdx"></pre>
-          </div>
-        </details>
         </div>
       </section>
 
@@ -1028,79 +1008,34 @@
         </div>
       </section>
 
-      <!-- ===================== PHÂN TÍCH GIẢ ĐỊNH ===================== -->
-      <section id="view-what-if" class="view-section">
-        <div class="page-header">
-          <div class="page-title-group">
-            <h1 class="page-title">Phân tích giả định</h1>
-            <p class="page-subtitle">Thử một quyết định trước khi làm thật: chọn kịch bản hoặc kéo thanh trượt, hệ thống tính lại lợi nhuận từ số liệu thật trong kho dữ liệu</p>
-          </div>
-          <div class="filter-chips"></div>
-        </div>
-        <div id="whatif-notice"></div>
-
-        <div class="whatif-presets" id="whatif-presets">
-          <span class="whatif-presets-label">Kịch bản mẫu</span>
-          <button type="button" class="whatif-preset" data-preset="promo" onclick="KhangNghiApp.applyWhatIfPreset('promo')"><i class="fa-solid fa-tags"></i><span><b>Khuyến mãi lấy doanh số</b>Chiết khấu 2%, doanh thu +10%</span></button>
-          <button type="button" class="whatif-preset" data-preset="slow" onclick="KhangNghiApp.applyWhatIfPreset('slow')"><i class="fa-solid fa-arrow-trend-down"></i><span><b>Thị trường chững lại</b>Doanh thu −10%</span></button>
-          <button type="button" class="whatif-preset" data-preset="fuel" onclick="KhangNghiApp.applyWhatIfPreset('fuel')"><i class="fa-solid fa-gas-pump"></i><span><b>Giá xăng tăng</b>Phí vận chuyển +20%</span></button>
-          <button type="button" class="whatif-preset" data-preset="carrier" onclick="KhangNghiApp.applyWhatIfPreset('carrier')"><i class="fa-solid fa-truck-fast"></i><span><b>Đổi đơn vị giao hàng</b>Phí vận chuyển −15%</span></button>
-        </div>
-
-        <div class="grid-charts-2" id="whatif-body">
-          <div class="glass-card">
-            <div class="card-toolbar">
-              <div class="chart-title-group"><h3 class="chart-title">1. Bạn muốn thử điều gì?</h3><span class="chart-description" id="whatif-base-label">Số liệu gốc</span></div>
-              <button type="button" class="btn" onclick="KhangNghiApp.resetWhatIf()"><i class="fa-solid fa-rotate-left"></i> Đặt lại</button>
-            </div>
-            <div class="slider-field">
-              <label for="slider-growth">Doanh thu thay đổi</label><output id="val-growth">0%</output>
-              <input type="range" id="slider-growth" min="-30" max="30" step="1" value="0" oninput="KhangNghiApp.updateWhatIf()">
-              <p class="whatif-hint" id="hint-growth"></p>
-            </div>
-            <div class="slider-field">
-              <label for="slider-discount">Chiết khấu thêm cho khách</label><output id="val-discount">0%</output>
-              <input type="range" id="slider-discount" min="0" max="20" step="0.5" value="0" oninput="KhangNghiApp.updateWhatIf()">
-              <p class="whatif-hint" id="hint-discount"></p>
-            </div>
-            <div class="slider-field">
-              <label for="slider-ship">Phí vận chuyển thay đổi</label><output id="val-ship">0%</output>
-              <input type="range" id="slider-ship" min="-50" max="50" step="1" value="0" oninput="KhangNghiApp.updateWhatIf()">
-              <p class="whatif-hint" id="hint-ship"></p>
-            </div>
-            <details class="whatif-method">
-              <summary>Cách tính</summary>
-              <p>Lợi nhuận giả định = Lợi nhuận hiện tại × (1 + % doanh thu) − Doanh thu mới × % chiết khấu − Phí vận chuyển × % thay đổi phí.</p>
-              <p>Số liệu gốc: doanh thu và lợi nhuận từ Fact_Sales, phí vận chuyển từ Fact_Shipping, toàn bộ giai đoạn. Giả định biên lợi nhuận không đổi khi doanh thu thay đổi (chưa tách chi phí cố định).</p>
-            </details>
-          </div>
-          <div class="glass-card">
-            <div class="card-toolbar">
-              <div class="chart-title-group"><h3 class="chart-title">2. Lợi nhuận thay đổi thế nào?</h3></div>
-              <button type="button" class="btn" onclick="KhangNghiApp.saveWhatIfScenario()"><i class="fa-solid fa-bookmark"></i> Lưu kịch bản</button>
-            </div>
-            <div id="whatif-results"></div>
-          </div>
-        </div>
-        <div class="glass-card grid-full">
-          <div class="card-toolbar"><div class="chart-title-group"><h3 class="chart-title">Kịch bản đã lưu</h3><span class="chart-description">Lưu trên trình duyệt này</span></div></div>
-          <div id="whatif-saved"></div>
-        </div>
-      </section>
-
       <!-- ===================== CÂU HỎI PHÂN TÍCH ===================== -->
       <section id="view-question-explorer" class="view-section">
         <div class="page-header">
           <div class="page-title-group">
             <h1 class="page-title">Câu hỏi phân tích</h1>
-            <p class="page-subtitle">50 câu hỏi doanh nghiệp hay đặt ra. Bấm vào một câu để xem câu trả lời bằng biểu đồ.</p>
+            <p class="page-subtitle">50 câu hỏi doanh nghiệp hay đặt ra. Chọn một câu bên trái, câu trả lời hiện ngay bên phải.</p>
           </div>
         </div>
-        <div class="qe-toolbar">
-          <div class="qe-chips" id="question-chips" role="tablist" aria-label="Lọc theo phân hệ"></div>
-          <input type="search" class="table-search qe-search" id="question-search" placeholder="Tìm câu hỏi…" oninput="KhangNghiApp.renderQuestions()" aria-label="Tìm câu hỏi">
+        <div class="qe-layout">
+          <aside class="glass-card qe-list" aria-label="Danh sách câu hỏi">
+            <input type="search" class="table-search qe-search" id="question-search" placeholder="Tìm câu hỏi…" oninput="KhangNghiApp.renderQuestions()" aria-label="Tìm câu hỏi">
+            <div id="question-table"></div>
+          </aside>
+          <article class="glass-card qa-panel" id="qa-panel" aria-live="polite">
+            <div class="qa-head-top"><span class="qe-no" id="qa-no">01</span><span class="qa-section" id="qa-section"></span></div>
+            <h2 id="qa-title" class="qa-title">Chọn một câu hỏi bên trái</h2>
+            <div id="qa-body">
+              <div id="qa-answer" class="qa-answer"></div>
+              <div id="qa-legend" class="qa-legend"></div>
+              <div id="qa-chart" class="chart-canvas-wrapper"></div>
+              <div id="qa-matrix"></div>
+              <p id="qa-note" class="qa-note"></p>
+            </div>
+            <div class="qa-foot">
+              <a class="btn" id="qa-route" href="#/sales"><i class="fa-solid fa-arrow-up-right-from-square"></i> Trang chi tiết</a>
+            </div>
+          </article>
         </div>
-        <div id="question-table"></div>
       </section>
 
       <!-- ===================== TRẠNG THÁI DỮ LIỆU ===================== -->
@@ -1266,9 +1201,9 @@
   <script src="js/components.js?v=20261030_05"></script>
   <script src="js/charts.js?v=20261030_05"></script>
   <script src="js/filters.js?v=20261030_05"></script>
-  <script src="js/router.js?v=20261030_05"></script>
+  <script src="js/router.js?v=20261103_01"></script>
   <script src="js/copilotResponseRules.js?v=20261030_05"></script>
-  <script src="js/app.js?v=20261030_05"></script>
+  <script src="js/app.js?v=20261103_02"></script>
 
   <!-- Modal Xem truy vấn MDX (mở từ Câu hỏi phân tích) -->
   <div class="modal-overlay" id="mdx-viewer-modal" onclick="if(event.target===this) KhangNghiApp.closeMdxModal()">
@@ -1292,28 +1227,6 @@
 
 
   <!-- Quick Chart Modal dùng chung cho MDX-19 đến MDX-24 -->
-  <div class="modal-overlay" id="qa-modal" role="dialog" aria-modal="true" aria-labelledby="qa-title" onclick="if(event.target===this) KhangNghiApp.closeQuestionAnswer()">
-    <div class="modal-box qa-box">
-      <div class="detail-head">
-        <div>
-          <div class="qa-head-top"><span class="qe-no" id="qa-no">01</span><span class="qa-section" id="qa-section"></span></div>
-          <h2 id="qa-title" class="qa-title">Câu hỏi</h2>
-        </div>
-        <button type="button" class="panel-close-btn" onclick="KhangNghiApp.closeQuestionAnswer()" aria-label="Đóng">&times;</button>
-      </div>
-      <div id="qa-body">
-        <div id="qa-answer" class="qa-answer"></div>
-        <div id="qa-legend" class="qa-legend"></div>
-        <div id="qa-chart" class="chart-canvas-wrapper"></div>
-        <div id="qa-matrix"></div>
-        <p id="qa-note" class="qa-note"></p>
-      </div>
-      <div class="qa-foot">
-        <a class="btn" id="qa-route" href="#/sales" onclick="KhangNghiApp.closeQuestionAnswer()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Trang chi tiết</a>
-      </div>
-    </div>
-  </div>
-
   <div class="modal-overlay" id="quick-chart-modal" role="dialog" aria-modal="true" aria-labelledby="quick-chart-title" onclick="if(event.target===this) KhangNghiApp.closeQuickChart()">
     <div class="modal-box" style="max-width: 880px; width: 95%; max-height: 90vh;">
       <div class="detail-head">

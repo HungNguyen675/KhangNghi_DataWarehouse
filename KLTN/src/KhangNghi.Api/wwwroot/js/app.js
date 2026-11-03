@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let forecastHorizon = 6;
   let forecastStartDate = "";
   let forecastEndDate = "";
-  let whatIfBase = null;
   // Khai báo trước renderCurrentView() bên dưới: tải lại trang ngay trên route sẽ gọi renderer trước khi chạy tới phần thân
   let crossCache = { items: [], eff: [] };   // Phân tích chéo: dữ liệu lần vẽ gần nhất cho cửa sổ diễn giải
   let currentMultiDimData = null;            // Phân tích đa chiều: bảng đang hiển thị
@@ -137,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "olap-explorer": renderMultiDim,
       "mdx-studio": renderMdxStudio,
       "forecast": renderForecast,
-      "what-if": renderWhatIf,
       "question-explorer": renderQuestionExplorer,
       "system-status": renderSystemStatus,
       "etl-logs": renderEtlLogs,
@@ -852,7 +850,6 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Tồn thừa", value: ready ? over.length : null, icon: "fa-boxes-stacked", note: "Tồn trên 7 ngày bán" }) +
       kpi({ label: "Phí giao cao nhất", value: eff.length ? `${eff[0].label} · ${(eff[0].ratio || 0).toFixed(1)}%` : null, format: "text", icon: "fa-truck-fast", note: "% doanh thu" })
     );
-    setScope("cross-eff", "% chi phí vận chuyển / doanh thu", d.efficiency);
 
     draw("chart-cross-status", d.cover, () => Charts.donut("chart-cross-status",
       ["Sắp hết", "An toàn", "Tồn thừa"].map(s => ({ label: s, value: byStatus(s).length })),
@@ -1204,7 +1201,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let olapOptions = null;
   let olapData = null;
   let olapSeq = 0;
-  let olapLastRollUp = null;   // cấp vừa cuộn lên từ đó (để hiện đúng thao tác Roll-up)
 
   async function renderOlap() {
     if (olapData) return;   // giữ nguyên trạng thái khi quay lại tab
@@ -1270,7 +1266,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const descEl = document.getElementById("olap-chart-desc");
     const totalEl = document.getElementById("olap-total-badge");
     if (titleEl) titleEl.textContent = `${d.measure} theo ${d.levelLabel.toLowerCase()}`;
-    if (descEl) descEl.textContent = d.canDrill ? `Bấm vào cột để xem theo ${d.levels[d.depth + 1].toLowerCase()}` : "";
+    if (descEl) descEl.textContent = d.canDrill ? `Drill-down: bấm vào cột để xem theo ${d.levels[d.depth + 1].toLowerCase()}` : "";
     if (totalEl) totalEl.textContent = `Tổng: ${Comp.formatValue(d.total, fmt)}`;
 
     syncMdView("olap");
@@ -1282,12 +1278,10 @@ document.addEventListener("DOMContentLoaded", function () {
         { key: "value", label: d.measure, format: fmt },
         { key: "share", label: "Chiếm", format: "percent" }
       ];
-      if (d.canDrill) cols.push({ key: "key", label: "", render: r => `<button type="button" class="btn btn-sm btn-ghost" onclick="KhangNghiApp.olapDrillAt(${d.rows.indexOf(r)})" title="Xem chi tiết theo ${esc(d.levels[d.depth + 1].toLowerCase())}">Xem chi tiết <i class="fa-solid fa-chevron-right"></i></button>` });
+      if (d.canDrill) cols.push({ key: "key", label: "", render: r => `<button type="button" class="btn btn-sm btn-ghost" onclick="KhangNghiApp.olapDrillAt(${d.rows.indexOf(r)})" title="Drill-down xuống ${esc(d.levels[d.depth + 1].toLowerCase())}">Drill-down <i class="fa-solid fa-chevron-right"></i></button>` });
       tableWrap.innerHTML = Comp.renderTable(cols, d.rows, { empty: "Không có giao dịch thỏa mãn các điều kiện đã chọn." });
     }
 
-    const mdxEl = document.getElementById("olap-mdx");
-    if (mdxEl) mdxEl.textContent = d.mdx || "";
   }
 
   function drawOlapChart(d) {
@@ -1311,33 +1305,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Thanh vị trí trên biểu đồ; tên thao tác OLAP chỉ hiện trong mục Thông tin kỹ thuật
+  // Thanh vị trí (breadcrumb) trên biểu đồ và nút Roll-up
   function renderOlapStatus(d) {
-    const badges = [];
-    const leaf = d.levelLabel.toLowerCase();
-    const rolled = olapLastRollUp;
-    olapLastRollUp = null;
-    if (rolled) {
-      const scope = d.depth > 0 ? ` trong ${d.path[d.path.length - 1].label}` : "";
-      badges.push({ op: "Roll-up", icon: "fa-arrow-up", text: `Cuộn lên từ cấp ${rolled.toLowerCase()} lên cấp ${leaf}${scope}` });
-    } else if (d.depth > 0) {
-      const from = d.path[d.path.length - 1].label;
-      badges.push({ op: "Drill-down", icon: "fa-arrow-down", text: `Khoan sâu từ ${from} xuống cấp ${leaf}` });
-    } else {
-      badges.push({ op: "Roll-up", icon: "fa-arrow-up", text: `Cộng gộp lên cấp ${leaf}, cấp cao nhất của phân cấp ${d.hierarchyName.toLowerCase()}` });
-    }
-    const conds = OLAP_FILTERS.filter(f => d.filters[f.key].length)
-      .map(f => `${f.attr} = ${d.filters[f.key].join(", ")}`);
-    if (d.filterOperation === "slice") badges.push({ op: "Slice", icon: "fa-scissors", text: `Cắt lát theo ${conds[0]}` });
-    if (!d.filterOperation || d.filterOperation === "none") badges.push({ op: "Không lọc", icon: "fa-filter-circle-xmark", text: "Tính trên toàn bộ khối dữ liệu" });
-    if (d.filterOperation === "dice") badges.push({ op: "Dice", icon: "fa-cube", text: `Lọc khối con theo ${conds.join("; ")}` });
-
-    const el = document.getElementById("olap-badges");
-    if (el) {
-      el.innerHTML = badges.map(b =>
-        `<div class="olap-badge"><span class="status-badge tone-info"><i class="fa-solid ${b.icon}"></i> ${b.op}</span><span class="olap-badge-text">${esc(b.text)}</span></div>`).join("");
-    }
-
     const bc = document.getElementById("olap-breadcrumb");
     if (bc) {
       const crumbs = [`<button type="button" class="olap-crumb" onclick="KhangNghiApp.olapGoTo(0)"${d.depth === 0 ? " disabled" : ""}>${esc(OLAP_ROOT[d.hierarchy])}</button>`];
@@ -1373,13 +1342,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function olapRollUp() {
     if (!olapState.path.length) return;
-    olapLastRollUp = olapData ? olapData.levelLabel : null;
     olapState.path = olapState.path.slice(0, -1);
     loadOlap();
   }
 
   function olapGoTo(depth) {
-    if (depth < olapState.path.length) olapLastRollUp = olapData ? olapData.levelLabel : null;
     olapState.path = olapState.path.slice(0, depth);
     loadOlap();
   }
@@ -1422,14 +1389,6 @@ document.addEventListener("DOMContentLoaded", function () {
     OLAP_FILTERS.forEach(f => { olapState[f.key] = []; });
     renderOlapFilters();
     loadOlap();
-  }
-
-  function copyOlapMdx() {
-    const text = olapData && olapData.mdx;
-    if (!text) return;
-    navigator.clipboard.writeText(text)
-      .then(() => Comp.showToast("Đã sao chép câu MDX.", "success"))
-      .catch(() => Comp.showToast("Không sao chép được, hãy chọn và sao chép thủ công.", "warning"));
   }
 
   // --------------------------------------------------------------------------
@@ -1907,166 +1866,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // --------------------------------------------------------------------------
-  // 14. PHÂN TÍCH GIẢ ĐỊNH (tính từ số liệu thật, công thức hiển thị trên trang)
-  // --------------------------------------------------------------------------
-  async function renderWhatIf(filters, isCurrent) {
-    document.getElementById("whatif-results").innerHTML = Comp.renderState("loading", { compact: true });
-    const s = await Svc.getSummary();
-    if (!isCurrent()) return;
-    gate("what-if", s, { title: "Chưa có số liệu gốc", emptyMessage: "Cần doanh thu và lợi nhuận thực tế trong Fact_Sales để mô phỏng." });
-    renderSavedScenarios();
-    if (s.state !== "ready") { whatIfBase = null; return; }
-    whatIfBase = s.data;
-    document.getElementById("whatif-base-label").textContent = `Số liệu gốc: ${ALL_TIME}`;
-    updateWhatIf();
-  }
-
-  // Kịch bản mẫu: mỗi kịch bản là một quyết định nghiệp vụ thường gặp
-  const WHATIF_PRESETS = {
-    promo: { growth: 10, discount: 2, ship: 0 },
-    slow: { growth: -10, discount: 0, ship: 0 },
-    fuel: { growth: 0, discount: 0, ship: 20 },
-    carrier: { growth: 0, discount: 0, ship: -15 }
-  };
-
-  function whatIfInputs() {
-    return {
-      growth: Number(document.getElementById("slider-growth").value),
-      discount: Number(document.getElementById("slider-discount").value),
-      ship: Number(document.getElementById("slider-ship").value)
-    };
-  }
-
-  function computeWhatIf(b, p) {
-    const revenue = b.revenue * (1 + p.growth / 100);
-    const shipBase = b.shippingCost || 0;
-    const profit = b.profit * (1 + p.growth / 100) - revenue * (p.discount / 100) - shipBase * (p.ship / 100);
-    return { revenue, profit, margin: revenue > 0 ? (profit / revenue) * 100 : null, diff: profit - b.profit };
-  }
-
-  function applyWhatIfPreset(key) {
-    const p = WHATIF_PRESETS[key];
-    if (!p) return;
-    document.getElementById("slider-growth").value = p.growth;
-    document.getElementById("slider-discount").value = p.discount;
-    document.getElementById("slider-ship").value = p.ship;
-    updateWhatIf();
-  }
-
-  function updateWhatIf() {
-    const p = whatIfInputs();
-    const sign = v => (v > 0 ? "+" : "");
-    const signed = v => `${v >= 0 ? "+" : "−"}${fv(Math.abs(v), CUR)}`;
-    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-    setText("val-growth", `${sign(p.growth)}${p.growth}%`);
-    setText("val-discount", `${p.discount}%`);
-    setText("val-ship", `${sign(p.ship)}${p.ship}%`);
-    document.querySelectorAll("#whatif-presets .whatif-preset").forEach(btn => {
-      const x = WHATIF_PRESETS[btn.dataset.preset];
-      btn.classList.toggle("is-active", !!x && x.growth === p.growth && x.discount === p.discount && x.ship === p.ship);
-    });
-    if (!whatIfBase) return;
-
-    const b = whatIfBase;
-    const r = computeWhatIf(b, p);
-    const ship = b.shippingCost || 0;
-    setText("hint-growth", `Hiện tại ${fv(b.revenue, CUR)}${p.growth ? ` → ${fv(r.revenue, CUR)}` : ""}`);
-    setText("hint-discount", p.discount ? `Giảm giá cho khách ${fv(r.revenue * p.discount / 100, CUR)}` : "Chưa giảm giá thêm");
-    setText("hint-ship", ship ? `Hiện tại ${fv(ship, CUR)}${p.ship ? ` → ${fv(ship * (1 + p.ship / 100), CUR)}` : ""}` : "Chưa có chi phí vận chuyển thực tế");
-
-    // Cầu nối lợi nhuận: hiện tại ± từng yếu tố = giả định (cộng lại khớp computeWhatIf)
-    const parts = [
-      { label: p.growth >= 0 ? `Lời thêm khi doanh thu ${sign(p.growth)}${p.growth}%` : `Lời mất đi khi doanh thu ${p.growth}%`, value: b.profit * p.growth / 100 },
-      { label: `Chiết khấu thêm ${p.discount}% cho khách`, value: -r.revenue * p.discount / 100 },
-      { label: `Phí vận chuyển ${sign(p.ship)}${p.ship}%`, value: -ship * p.ship / 100 }
-    ].filter(x => Math.abs(x.value) > 0.5);
-    const maxAbs = Math.max(...parts.map(x => Math.abs(x.value)), 1);
-    const pct = b.profit ? (r.diff / Math.abs(b.profit)) * 100 : 0;
-    const flat = Math.abs(pct) < 0.5;
-    const tone = flat ? "flat" : r.diff > 0 ? "up" : "down";
-
-    let headline = "Chưa thay đổi gì";
-    let reason = "Chọn một kịch bản mẫu ở trên hoặc kéo thanh trượt bên trái để bắt đầu.";
-    if (parts.length) {
-      headline = flat ? "Lợi nhuận gần như không đổi" : r.diff > 0 ? `Lợi nhuận tăng ${fv(r.diff, CUR)}` : `Lợi nhuận giảm ${fv(-r.diff, CUR)}`;
-      const pos = parts.filter(x => x.value > 0).sort((a, c) => c.value - a.value)[0];
-      const neg = parts.filter(x => x.value < 0).sort((a, c) => a.value - c.value)[0];
-      if (pos && neg) reason = `${pos.label} (${signed(pos.value)}) ${pos.value + neg.value >= 0 ? "lớn hơn" : "không bù được"} ${neg.label.toLowerCase()} (${signed(neg.value)}).`;
-      else reason = `Do ${(pos || neg).label.toLowerCase()} (${signed((pos || neg).value)}).`;
-    }
-    // Mức chiết khấu tối đa để lợi nhuận không thấp hơn hiện tại, với mức doanh thu đang chọn
-    const breakEven = p.growth > 0 ? ((b.profit * p.growth / 100) - ship * p.ship / 100) / r.revenue * 100 : null;
-
-    const row = (label, value, cls, bar) => `
-      <div class="whatif-bridge-row ${cls}">
-        <span class="whatif-bridge-label">${esc(label)}</span>
-        <span class="whatif-bridge-bar">${bar || ""}</span>
-        <strong>${esc(value)}</strong>
-      </div>`;
-    document.getElementById("whatif-results").innerHTML = `
-      <div class="whatif-verdict is-${tone}">
-        <div class="whatif-verdict-main">${esc(headline)}${parts.length ? `<small>${flat ? "≈ 0%" : `${pct > 0 ? "+" : ""}${pct.toFixed(1)}%`}</small>` : ""}</div>
-        <p>${esc(reason)}</p>
-      </div>
-      <div class="whatif-bridge">
-        ${row("Lợi nhuận hiện tại", fv(b.profit, CUR), "is-base")}
-        ${parts.map(x => row(x.label, signed(x.value), x.value >= 0 ? "is-up" : "is-down",
-          `<i style="width:${Math.max(4, Math.abs(x.value) / maxAbs * 100)}%"></i>`)).join("")}
-        ${row("Lợi nhuận giả định", fv(r.profit, CUR), "is-total")}
-      </div>
-      <div class="whatif-compare">
-        ${Comp.field("Doanh thu", p.growth ? `${fv(b.revenue, CUR)} → ${fv(r.revenue, CUR)}` : fv(b.revenue, CUR))}
-        ${Comp.field("Biên lợi nhuận", parts.length ? `${fv(b.margin, "percent")} → ${fv(r.margin, "percent")}` : fv(b.margin, "percent"))}
-      </div>
-      ${breakEven !== null ? `<p class="whatif-tip"><i class="fa-solid fa-lightbulb"></i><span>Với doanh thu ${sign(p.growth)}${p.growth}%, chiết khấu tối đa khoảng <b>${breakEven > 0 ? breakEven.toFixed(1) : 0}%</b> thì lợi nhuận mới không thấp hơn hiện tại.</span></p>` : ""}`;
-  }
-
-  function resetWhatIf() {
-    document.getElementById("slider-growth").value = 0;
-    document.getElementById("slider-discount").value = 0;
-    document.getElementById("slider-ship").value = 0;
-    updateWhatIf();
-  }
-
-  function readScenarios() {
-    try { return JSON.parse(localStorage.getItem("kn_whatif_scenarios") || "[]"); } catch (e) { return []; }
-  }
-
-  function saveWhatIfScenario() {
-    if (!whatIfBase) return Comp.showToast("Chưa có số liệu gốc để lưu kịch bản.", "warning");
-    const p = whatIfInputs();
-    const name = prompt("Tên kịch bản:", `Doanh thu ${p.growth >= 0 ? "+" : ""}${p.growth}%, chiết khấu ${p.discount}%, vận chuyển ${p.ship >= 0 ? "+" : ""}${p.ship}%`);
-    if (!name) return;
-    const r = computeWhatIf(whatIfBase, p);
-    const list = readScenarios();
-    list.push({ name, date: new Date().toLocaleDateString("vi-VN"), growth: p.growth, discount: p.discount, ship: p.ship, profit: r.profit, diff: r.diff });
-    try { localStorage.setItem("kn_whatif_scenarios", JSON.stringify(list)); } catch (e) { /* trình duyệt chặn lưu trữ */ }
-    renderSavedScenarios();
-    Comp.showToast(`Đã lưu kịch bản "${name}".`);
-  }
-
-  function deleteScenario(idx) {
-    const list = readScenarios();
-    list.splice(Number(idx), 1);
-    try { localStorage.setItem("kn_whatif_scenarios", JSON.stringify(list)); } catch (e) { /* bỏ qua */ }
-    renderSavedScenarios();
-  }
-
-  function renderSavedScenarios() {
-    const el = document.getElementById("whatif-saved");
-    if (!el) return;
-    const list = readScenarios().map((s, i) => ({ ...s, idx: i, params: `DT ${s.growth >= 0 ? "+" : ""}${s.growth}% · CK ${s.discount}% · VC ${s.ship >= 0 ? "+" : ""}${s.ship}%` }));
-    el.innerHTML = Comp.renderTable([
-      { key: "name", label: "Kịch bản" },
-      { key: "date", label: "Ngày lưu" },
-      { key: "params", label: "Tham số" },
-      { key: "profit", label: "Lợi nhuận ước tính", format: CUR },
-      { key: "diff", label: "Chênh lệch", format: CUR },
-      { key: "", label: "", render: r => `<button type="button" class="btn btn-sm btn-ghost" onclick="KhangNghiApp.deleteScenario(${r.idx})" aria-label="Xóa kịch bản"><i class="fa-solid fa-trash"></i></button>` }
-    ], list, { empty: "Điều chỉnh tham số rồi bấm Lưu kịch bản.", emptyTitle: "Chưa có kịch bản" });
-  }
-
-  // --------------------------------------------------------------------------
   // 15. CÂU HỎI PHÂN TÍCH (danh mục 50 truy vấn MDX từ API)
   // --------------------------------------------------------------------------
   const SECTION_ROUTE = {
@@ -2162,12 +1961,15 @@ document.addEventListener("DOMContentLoaded", function () {
     "multi-dim": "Phân tích đa chiều", olap: "Phân tích đa chiều"
   };
   let questionSection = "";
+  let currentQuestion = "MDX-01";
+  const openQuestionGroups = new Set();
 
   async function renderQuestionExplorer() {
     const el = document.getElementById("question-table");
     if (el && !mdxCatalog) el.innerHTML = Comp.renderState("loading", { compact: true });
     await loadCatalog();
     renderQuestions();
+    if (mdxCatalog && mdxCatalog.state === "ready") openQuestion(currentQuestion);
   }
 
   function setQuestionSection(sec) {
@@ -2258,12 +2060,7 @@ document.addEventListener("DOMContentLoaded", function () {
       answer: (r, f) => `Nhóm hàng tồn nhiều nhất ở mỗi kho: ${qaPerGroup(r, f, qaNum)}.`, note: "Lượng tồn ở lần kiểm kê gần nhất, chia theo kho và nhóm hàng." }
   };
 
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && document.getElementById("qa-modal")?.classList.contains("active")) closeQuestionAnswer();
-  });
-
   function closeQuestionAnswer() {
-    document.getElementById("qa-modal")?.classList.remove("active");
     Charts.destroy("qa-chart");
   }
 
@@ -2284,8 +2081,14 @@ document.addEventListener("DOMContentLoaded", function () {
   async function openQuestion(id) {
     const spec = QA_SPEC[id];
     const q = mdxCatalog && mdxCatalog.items.find(x => x.id === id);
-    const modal = document.getElementById("qa-modal");
-    if (!spec || !modal) return;
+    if (!spec || !document.getElementById("qa-panel")) return;
+    currentQuestion = id;
+    if (q) openQuestionGroups.add(q.section);
+    document.querySelectorAll(".qe-item").forEach(el => {
+      const on = el.dataset.id === id;
+      el.classList.toggle("is-active", on);
+      el.setAttribute("aria-current", on ? "true" : "false");
+    });
     const set = (elId, html) => { const e = document.getElementById(elId); if (e) e.innerHTML = html; };
     const m = q ? (SECTION_META[q.section] || { short: q.section }) : { short: "" };
     set("qa-no", esc(id.replace("MDX-", "")));
@@ -2302,13 +2105,11 @@ document.addEventListener("DOMContentLoaded", function () {
       link.href = "#/" + (tab ? "multi-dim" : route);
       link.onclick = () => {
         if (tab) { multiDimTab = tab; try { localStorage.setItem("kn.multiDimTab", tab); } catch (e) { /* bỏ qua */ } }
-        closeQuestionAnswer();
       };
       link.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> Trang ${esc(ROUTE_LABEL[route] || "chi tiết")}`;
     }
-    modal.classList.add("active");
-
     const res = await Svc.getQuestionAnswer(id);
+    if (currentQuestion !== id) return;   // người dùng đã chọn câu khác trong lúc chờ
     if (res.state !== "ready") {
       const ans = document.getElementById("qa-answer");
       if (ans) ans.className = "qa-answer is-empty";
@@ -2372,29 +2173,31 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!g) groups.push(g = { section: r.section, items: [] });
       g.items.push(r);
     });
+    const cur = mdxCatalog.items.find(x => x.id === currentQuestion);
+    if (cur) openQuestionGroups.add(cur.section);
     el.innerHTML = groups.map(g => {
       const m = SECTION_META[g.section] || { icon: "fa-folder", short: g.section };
-      return `<div class="qe-group">
-        <h2 class="qe-group-title"><i class="fa-solid ${m.icon}"></i> ${esc(g.section)} <span>${g.items.length} câu</span></h2>
-        <div class="qe-grid">${g.items.map(r => {
+      const open = q || openQuestionGroups.has(g.section);
+      return `<details class="qe-group"${open ? " open" : ""} data-section="${esc(g.section)}" ontoggle="KhangNghiApp.toggleQuestionGroup(this)">
+        <summary class="qe-group-title"><i class="fa-solid ${m.icon}"></i> ${esc(m.short)} <span>${g.items.length}</span></summary>
+        <ul class="qe-items">${g.items.map(r => {
           const [plain, kind] = QUESTION_PLAIN[r.id] || [r.title, "compare"];
           const k = ANSWER_KIND[kind];
-          const dest = "Xem câu trả lời";
-          return `<article class="qe-card" tabindex="0" role="button" title="${esc(r.title)}"
-              onclick="KhangNghiApp.openQuestion('${esc(r.id)}')"
-              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();KhangNghiApp.openQuestion('${esc(r.id)}')}">
-            <div class="qe-card-top">
-              <span class="qe-no">${esc(r.id.replace("MDX-", ""))}</span>
-              <span class="qe-kind"><i class="fa-solid ${k.icon}"></i> ${k.label}</span>
-            </div>
-            <p class="qe-question">${esc(plain)}</p>
-            <div class="qe-card-foot">
-              <span class="qe-dest">${esc(dest)} <i class="fa-solid fa-arrow-right"></i></span>
-            </div>
-          </article>`;
-        }).join("")}</div>
-      </div>`;
+          const on = r.id === currentQuestion;
+          return `<li><button type="button" class="qe-item${on ? " is-active" : ""}" data-id="${esc(r.id)}" aria-current="${on}"
+              onclick="KhangNghiApp.openQuestion('${esc(r.id)}')">
+            <span class="qe-no">${esc(r.id.replace("MDX-", ""))}</span>
+            <span class="qe-question">${esc(plain)}</span>
+            <i class="fa-solid ${k.icon} qe-kind" title="${k.label}"></i>
+          </button></li>`;
+        }).join("")}</ul>
+      </details>`;
     }).join("");
+  }
+
+  function toggleQuestionGroup(el) {
+    const sec = el.dataset.section;
+    if (el.open) openQuestionGroups.add(sec); else openQuestionGroups.delete(sec);
   }
 
   function openQuestionMdx(id) {
@@ -3164,21 +2967,16 @@ ${source}
     applyOlapPreset,
     resetOlap,
     clearOlapFilters,
-    copyOlapMdx,
     setForecastGranularity,
     setForecastHorizon,
     applyForecastDates,
     resetForecastDates,
     selectForecastDrillMonth,
     setPeriodView,
-    updateWhatIf,
-    resetWhatIf,
-    applyWhatIfPreset,
-    saveWhatIfScenario,
-    deleteScenario,
     renderQuestions,
     setQuestionSection,
     openQuestion,
+    toggleQuestionGroup,
     closeQuestionAnswer,
     openQuestionMdx,
     openQuickChart,

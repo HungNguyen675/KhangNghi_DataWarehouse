@@ -18,7 +18,6 @@ window.KhangNghiRouter = (function () {
     "multi-dim": "crossAnalysis.view",
     "olap-explorer": "crossAnalysis.view",
     "forecast": "forecast.view",
-    "what-if": "whatIf.view",
     "question-explorer": "biQuestions.view",
     "system-status": "systemStatus.view",
     "etl-logs": "systemStatus.view",
@@ -26,6 +25,15 @@ window.KhangNghiRouter = (function () {
   };
 
   const VALID_ROUTES = Object.keys(ROUTE_PERMISSIONS);
+
+  // Ba trang phân tích dùng chung một mục sidebar "Phân tích" và một thanh tab
+  const ANALYSIS_ROUTES = ["cross-analysis", "multi-dim", "question-explorer"];
+
+  function canView(route) {
+    const auth = window.KhangNghiAuth;
+    const perm = ROUTE_PERMISSIONS[route];
+    return !!auth && (!perm || auth.hasPermission(perm));
+  }
 
   let currentRoute = "overview";
   const routeChangeCallbacks = [];
@@ -64,6 +72,12 @@ window.KhangNghiRouter = (function () {
     // Redirect olap-explorer / olap to multi-dim
     if (rawHash === "olap-explorer" || rawHash === "olap") {
       window.location.hash = "#/multi-dim";
+      return;
+    }
+
+    // Mục "Phân tích" -> mở tab đầu tiên mà vai trò được xem
+    if (rawHash === "analysis") {
+      window.location.hash = `#/${ANALYSIS_ROUTES.find(canView) || ANALYSIS_ROUTES[0]}`;
       return;
     }
 
@@ -134,12 +148,24 @@ window.KhangNghiRouter = (function () {
     // 3. Highlight Active Nav Item
     document.querySelectorAll(".nav-item").forEach(el => {
       const href = el.getAttribute("href") || "";
-      if (href.endsWith(route)) {
+      const inGroup = el.dataset.group === "analysis" && ANALYSIS_ROUTES.includes(route);
+      if (href.endsWith(route) || inGroup) {
         el.classList.add("active");
       } else {
         el.classList.remove("active");
       }
     });
+
+    // Thanh tab nhóm Phân tích
+    const analysisTabs = document.getElementById("analysis-tabs");
+    if (analysisTabs) {
+      analysisTabs.hidden = !ANALYSIS_ROUTES.includes(route);
+      analysisTabs.querySelectorAll("[data-analysis-tab]").forEach(tab => {
+        const on = tab.dataset.analysisTab === route;
+        tab.classList.toggle("active", on);
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+      });
+    }
 
     // 4. Update Topbar Breadcrumb & Profile Header
     updateNavigationUI();
@@ -164,7 +190,6 @@ window.KhangNghiRouter = (function () {
       "multi-dim": { cat: "Phân tích", title: "Phân tích đa chiều" },
       "olap-explorer": { cat: "Phân tích", title: "Phân tích đa chiều" },
       "forecast": { cat: "Dự báo", title: "Dự báo doanh số" },
-      "what-if": { cat: "Phân tích", title: "Phân tích giả định" },
       "question-explorer": { cat: "Phân tích", title: "Câu hỏi phân tích" },
       "system-status": { cat: "Hệ thống", title: "Trạng thái dữ liệu" },
       "etl-logs": { cat: "Hệ thống", title: "Nhật ký ETL" },
@@ -211,6 +236,11 @@ window.KhangNghiRouter = (function () {
     document.querySelectorAll("#sidebar .nav-item").forEach(el => {
       const href = el.getAttribute("href") || "";
       const routeKey = href.replace("#/", "");
+      if (routeKey === "analysis") {
+        el.style.display = ANALYSIS_ROUTES.some(canView) ? "flex" : "none";
+        if (el.dataset.tooltip) el.title = el.dataset.tooltip;
+        return;
+      }
       const requiredPerm = ROUTE_PERMISSIONS[routeKey];
       // Tooltip gốc của trình duyệt cho sidebar thu gọn (tooltip CSS bị vùng cuộn của menu cắt mất)
       if (el.dataset.tooltip) el.title = el.dataset.tooltip;
@@ -220,6 +250,11 @@ window.KhangNghiRouter = (function () {
       } else {
         el.style.display = "none";
       }
+    });
+
+    // Chỉ hiện các tab phân tích mà vai trò được xem
+    document.querySelectorAll("#analysis-tabs [data-analysis-tab]").forEach(tab => {
+      tab.style.display = canView(tab.dataset.analysisTab) ? "" : "none";
     });
 
     // Hide empty menu group headers
