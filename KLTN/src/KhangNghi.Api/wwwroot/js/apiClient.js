@@ -111,6 +111,9 @@ window.KhangNghiApiClient = (function () {
       }
 
       const data = await response.json();
+      // Nguồn số liệu của phản hồi (SSAS / SQL) để thanh trên cùng hiển thị
+      const source = response.headers.get("X-Data-Source");
+      if (source) window.dispatchEvent(new CustomEvent("kn:data-source", { detail: source }));
       return { success: true, status: response.status, data };
     } catch (err) {
       clearTimeout(timeoutId);

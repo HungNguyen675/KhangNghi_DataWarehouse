@@ -1,48 +1,75 @@
 -- ==============================================================
--- CÁC CÂU TRUY VẤN MDX MẪU TRÊN KHỐI DỮ LIỆU ĐA CHIỀU (OLAP)
--- CSDL: KhangNghi_SSAS_DB
+-- CÁC CÂU TRUY VẤN MDX MẪU – 4 THAO TÁC OLAP (ROLL-UP, DRILL-DOWN, SLICE, DICE)
+-- Khối: [KhangNghi_Cube] – dự án KhangNghi_SSAS
+-- Bộ đầy đủ 50 câu và kết quả tham chiếu: docs/40_CAU_TRUY_VAN_MDX.md
 -- ==============================================================
 
--- 1. Xem Tổng Doanh Thu theo Từng Năm
+-- 1. ROLL-UP: Tổng hợp doanh thu, lợi nhuận từ ngày/tháng/quý lên Năm
 SELECT 
-    [Measures].[Total Sales] ON COLUMNS,
-    [Dim Time].[Year].MEMBERS ON ROWS
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } ON COLUMNS,
+    NON EMPTY [Dim Time].[PhanCap_ThoiGian].[Year].MEMBERS ON ROWS
 FROM [KhangNghi_Cube];
 
--- 2. Xem Doanh Thu theo Danh Mục Sản Phẩm và Khu Vực (Cross-Tab / Ma Trận)
+-- 2. DRILL-DOWN: Doanh thu năm 2025 chi tiết xuống Quý và Tháng
 SELECT 
-    [Dim Location].[Region].MEMBERS ON COLUMNS,
-    [Dim Product].[Category].MEMBERS ON ROWS
-FROM [KhangNghi_Cube]
-WHERE ([Measures].[Total Sales]);
-
--- 3. Top 10 Sản Phẩm Mang Lại Lợi Nhuận Cao Nhất
-SELECT 
-    [Measures].[Total Profit] ON COLUMNS,
-    TOPCOUNT([Dim Product].[Product Name].MEMBERS, 10, [Measures].[Total Profit]) ON ROWS
-FROM [KhangNghi_Cube];
-
--- 4. Drill-down: Phân tích Doanh Thu Quý 4 năm 2026 chi tiết theo Từng Quốc Gia
-SELECT 
-    [Measures].[Total Sales] ON COLUMNS,
-    [Dim Location].[Country].MEMBERS ON ROWS
-FROM [KhangNghi_Cube]
-WHERE ([Dim Time].[Year].&[2026], [Dim Time].[Quarter].&[4]);
-
--- 5. Cảnh báo tồn kho: Liệt kê các sản phẩm có Tồn kho thực tế < Mức tái đặt hàng
--- (Tính bằng Calculated Member)
-WITH MEMBER [Measures].[Stock Deficit] AS 
-    [Measures].[Reorder Level] - [Measures].[Quantity On Hand]
-SELECT 
-    { [Measures].[Quantity On Hand], [Measures].[Reorder Level], [Measures].[Stock Deficit] } ON COLUMNS,
-    FILTER(
-        [Dim Product].[Product Name].MEMBERS,
-        [Measures].[Quantity On Hand] < [Measures].[Reorder Level]
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } ON COLUMNS,
+    DESCENDANTS(
+        [Dim Time].[PhanCap_ThoiGian].[Year].&[2025],
+        [Dim Time].[PhanCap_ThoiGian].[Month],
+        SELF_AND_BEFORE
     ) ON ROWS
 FROM [KhangNghi_Cube];
 
--- 6. Xem chi phí vận chuyển trung bình theo từng Nhà vận chuyển
+-- 3. SLICE: Doanh thu sản phẩm (theo danh mục) trong năm 2025
 SELECT 
-    [Measures].[Average Shipping Cost] ON COLUMNS,
-    [Dim Shipper].[Shipper Name].MEMBERS ON ROWS
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } ON COLUMNS,
+    NON EMPTY [Dim Product].[Category].[Category].MEMBERS ON ROWS
+FROM [KhangNghi_Cube]
+WHERE ( [Dim Time].[Year].&[2025] );
+
+-- 4. DICE: Doanh thu sản phẩm đồng thời theo Năm 2025 và Khu vực Miền Nam
+SELECT 
+    { [Measures].[Sales Amount], [Measures].[Profit Amount] } ON COLUMNS,
+    NON EMPTY [Dim Product].[Category].[Category].MEMBERS ON ROWS
+FROM [KhangNghi_Cube]
+WHERE ( [Dim Time].[Year].&[2025], [Dim Location].[Region].&[Miền Nam] );
+
+-- 5. PIVOT: Ma trận Danh mục sản phẩm × Khu vực
+SELECT 
+    NON EMPTY [Dim Location].[Region].[Region].MEMBERS ON COLUMNS,
+    NON EMPTY [Dim Product].[Category].[Category].MEMBERS ON ROWS
+FROM [KhangNghi_Cube]
+WHERE ( [Measures].[Sales Amount] );
+
+-- 6. Top 10 sản phẩm mang lại lợi nhuận cao nhất
+SELECT 
+    [Measures].[Profit Amount] ON COLUMNS,
+    TOPCOUNT([Dim Product].[Product Name].[Product Name].MEMBERS, 10, [Measures].[Profit Amount]) ON ROWS
+FROM [KhangNghi_Cube];
+
+-- 7. Cảnh báo tồn kho chạm ngưỡng tái đặt hàng tại kỳ kiểm kê gần nhất
+--    (Quantity On Hand là độ đo bán cộng dồn nên lấy kỳ cuối, không cộng qua thời gian)
+WITH 
+MEMBER [Measures].[Ton Cuoi Ky] AS
+    ( [Measures].[Quantity On Hand],
+      TAIL(NONEMPTY([Dim Time].[Full Date].[Full Date].MEMBERS, [Measures].[Quantity On Hand]), 1).ITEM(0) )
+MEMBER [Measures].[Nguong Cuoi Ky] AS
+    ( [Measures].[Reorder Level],
+      TAIL(NONEMPTY([Dim Time].[Full Date].[Full Date].MEMBERS, [Measures].[Reorder Level]), 1).ITEM(0) )
+SELECT 
+    { [Measures].[Ton Cuoi Ky], [Measures].[Nguong Cuoi Ky] } ON COLUMNS,
+    FILTER(
+        NONEMPTY([Dim Product].[Product Name].[Product Name].MEMBERS, [Measures].[Quantity On Hand]),
+        [Measures].[Ton Cuoi Ky] <= [Measures].[Nguong Cuoi Ky]
+    ) ON ROWS
+FROM [KhangNghi_Cube];
+
+-- 8. Chi phí vận chuyển và số ngày giao trung bình theo phương thức vận chuyển
+WITH MEMBER [Measures].[Avg Delivery Days] AS
+    IIF([Measures].[Fact Shipping Count] = 0, NULL,
+        [Measures].[Delivery Days] / [Measures].[Fact Shipping Count]),
+    FORMAT_STRING = "0.00"
+SELECT 
+    { [Measures].[Shipping Cost], [Measures].[Avg Delivery Days] } ON COLUMNS,
+    NON EMPTY [Dim Shipper].[Shipping Method].[Shipping Method].MEMBERS ON ROWS
 FROM [KhangNghi_Cube];

@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let forecastHorizon = 6;
   let forecastStartDate = "";
   let forecastEndDate = "";
-  let whatIfBase = null;
   // Khai báo trước renderCurrentView() bên dưới: tải lại trang ngay trên route sẽ gọi renderer trước khi chạy tới phần thân
   let crossCache = { items: [], eff: [] };   // Phân tích chéo: dữ liệu lần vẽ gần nhất cho cửa sổ diễn giải
   let currentMultiDimData = null;            // Phân tích đa chiều: bảng đang hiển thị
@@ -101,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
   checkConnection();
 
   Filters.onChange(() => renderCurrentView());
-  Router.onRouteChanged(() => renderCurrentView());
+  Router.onRouteChanged(() => { resetPageSources(); renderCurrentView(); });
   if (window.KhangNghiAuth) window.KhangNghiAuth.onAuthStateChanged(user => { if (user) checkConnection(); });
 
   // --------------------------------------------------------------------------
@@ -137,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "olap-explorer": renderMultiDim,
       "mdx-studio": renderMdxStudio,
       "forecast": renderForecast,
-      "what-if": renderWhatIf,
       "question-explorer": renderQuestionExplorer,
       "system-status": renderSystemStatus,
       "etl-logs": renderEtlLogs,
@@ -852,7 +850,6 @@ document.addEventListener("DOMContentLoaded", function () {
       kpi({ label: "Tồn thừa", value: ready ? over.length : null, icon: "fa-boxes-stacked", note: "Tồn trên 7 ngày bán" }) +
       kpi({ label: "Phí giao cao nhất", value: eff.length ? `${eff[0].label} · ${(eff[0].ratio || 0).toFixed(1)}%` : null, format: "text", icon: "fa-truck-fast", note: "% doanh thu" })
     );
-    setScope("cross-eff", "% chi phí vận chuyển / doanh thu", d.efficiency);
 
     draw("chart-cross-status", d.cover, () => Charts.donut("chart-cross-status",
       ["Sắp hết", "An toàn", "Tồn thừa"].map(s => ({ label: s, value: byStatus(s).length })),
@@ -963,11 +960,74 @@ document.addEventListener("DOMContentLoaded", function () {
   // --------------------------------------------------------------------------
   // 11. PHÂN TÍCH KINH DOANH ĐA CHIỀU (MULTI-DIMENSIONAL BUSINESS ANALYTICS)
   // --------------------------------------------------------------------------
+  // Trang có 2 tab: Bảng chéo (Pivot) và Khoan sâu & lọc (Roll-up, Drill-down, Slice, Dice)
+  let multiDimTab = "pivot";
+  try { if (localStorage.getItem("kn.multiDimTab") === "olap") multiDimTab = "olap"; } catch (e) { /* bỏ qua */ }
+
   async function renderMultiDim() {
+    syncMultiDimTab();
+    if (multiDimTab === "olap") {
+      await renderOlap();
+      return;
+    }
     // Tự động tải phân tích mặc định ngay khi vào trang, không để màn hình trống
     if (!currentMultiDimData) {
       await loadMultiDimAnalysis();
     }
+  }
+
+  function syncMultiDimTab() {
+    const isOlap = multiDimTab === "olap";
+    document.querySelectorAll("#md-tabs .segmented-btn").forEach(b => {
+      const on = b.dataset.mdTab === multiDimTab;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on);
+    });
+    const show = (id, on) => { const el = document.getElementById(id); if (el) el.hidden = !on; };
+    show("md-pane-pivot", !isOlap);
+    show("md-actions-pivot", !isOlap);
+    show("md-pane-olap", isOlap);
+    show("md-actions-olap", isOlap);
+  }
+
+  function resetMultiDimTab() {
+    if (multiDimTab === "olap") resetOlap(); else resetMultiDim();
+  }
+
+  // Mỗi tab hiện biểu đồ hoặc bảng số liệu (chuyển bằng nút Biểu đồ / Bảng)
+  const mdView = { pivot: "chart", olap: "chart" };
+  const MD_VIEW_IDS = { pivot: ["multi-dim-chart-canvas", "multi-dim-table-wrap"], olap: ["olap-chart-canvas", "olap-table-wrap"] };
+
+  function syncMdView(pane) {
+    const isChart = mdView[pane] === "chart";
+    const [chartId, tableId] = MD_VIEW_IDS[pane];
+    const chartEl = document.getElementById(chartId);
+    const tableEl = document.getElementById(tableId);
+    if (chartEl) chartEl.hidden = !isChart;
+    if (tableEl) tableEl.hidden = isChart;
+    document.querySelectorAll(`[data-md-view-pane="${pane}"] .segmented-btn`).forEach(b => b.classList.toggle("active", b.dataset.view === mdView[pane]));
+    if (pane === "pivot") {
+      const csv = document.getElementById("multi-dim-csv-btn");
+      if (csv) csv.hidden = isChart;
+    }
+  }
+
+  function setMdView(pane, view) {
+    if (!MD_VIEW_IDS[pane] || mdView[pane] === view) return;
+    mdView[pane] = view;
+    syncMdView(pane);
+    // Biểu đồ vẽ lúc đang ẩn sẽ sai kích thước nên vẽ lại khi hiện ra
+    if (view === "chart") {
+      if (pane === "pivot" && currentMultiDimData) renderMultiDimChart(currentMultiDimData);
+      if (pane === "olap" && olapData) drawOlapChart(olapData);
+    }
+  }
+
+  function setMultiDimTab(tab) {
+    if (tab !== "pivot" && tab !== "olap") return;
+    multiDimTab = tab;
+    try { localStorage.setItem("kn.multiDimTab", tab); } catch (e) { /* bỏ qua */ }
+    renderMultiDim();
   }
 
   // Tải và hiển thị kết quả phân tích đa chiều tự động ngay khi chọn
@@ -992,7 +1052,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (tableWrap && !currentMultiDimData) {
-      tableWrap.innerHTML = Comp.renderState("loading", { message: "Đang truy vấn số liệu đa chiều từ kho DWH...", compact: true });
+      tableWrap.innerHTML = Comp.renderState("loading", { message: "Đang tải số liệu...", compact: true });
     }
 
     const res = await Svc.getMultiDimAnalysis(measure, row, col);
@@ -1037,11 +1097,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // 2. Tiêu đề biểu đồ và bảng
-    if (chartTitle) chartTitle.textContent = `Biểu đồ ${d.measure} theo ${d.rowLabel} ${d.isMultiDim ? "và " + d.colLabel : ""}`;
-    if (chartDesc) chartDesc.textContent = d.isMultiDim ? `So sánh đối chiếu ${d.measure} giữa các ${d.rowLabel} qua từng ${d.colLabel}` : `Xếp hạng mức độ đóng góp ${d.measure} theo ${d.rowLabel}`;
-    if (tableTitle) tableTitle.textContent = `Bảng số liệu ma trận ${d.measure}`;
+    if (chartTitle) chartTitle.textContent = `${d.measure} theo ${d.rowLabel}${d.isMultiDim ? " và " + d.colLabel : ""}`;
+    if (chartDesc) chartDesc.textContent = d.isMultiDim ? `So sánh ${d.measure} giữa các ${d.rowLabel} qua từng ${d.colLabel}` : `Xếp hạng ${d.measure} theo ${d.rowLabel}`;
+    if (tableTitle) tableTitle.textContent = `Bảng số liệu ${d.measure}`;
 
     // 3. Render biểu đồ ApexCharts
+    syncMdView("pivot");
     renderMultiDimChart(d);
 
     // 4. Render Bảng ma trận số liệu
@@ -1116,6 +1177,218 @@ document.addEventListener("DOMContentLoaded", function () {
     const t = currentMultiDimData.table;
     const cols = t.columns.map(c => ({ key: c.key, label: c.label }));
     Svc.exportToCSV(t.rows, `BaoCao_PhanTichDaChieu_${Date.now()}.csv`, cols);
+  }
+
+  // --------------------------------------------------------------------------
+  // 11b. THAO TÁC OLAP (ROLL-UP, DRILL-DOWN, SLICE, DICE)
+  //   Trạng thái = phân cấp + đường khoan sâu + bộ lọc; mỗi lần đổi gọi lại /ssas/olap-explore
+  // --------------------------------------------------------------------------
+  const OLAP_DEFAULT = () => ({ hierarchy: "time", path: [], measure: "revenue", years: [], regions: [], channels: [], categories: [] });
+  const OLAP_PRESETS = {
+    rollup: { hierarchy: "time" },
+    drilldown: { hierarchy: "time", path: ["2025"] },
+    slice: { hierarchy: "product", years: [2025] },
+    dice: { hierarchy: "product", years: [2025], regions: ["Miền Nam"] }
+  };
+  const OLAP_ROOT = { time: "Tất cả các năm", geo: "Toàn quốc", product: "Tất cả danh mục" };
+  const OLAP_FILTERS = [
+    { key: "years", label: "Năm", attr: "Năm", say: v => "năm " + v.join(", ") },
+    { key: "regions", label: "Khu vực", attr: "Khu vực", say: v => v.join(", ") },
+    { key: "channels", label: "Kênh bán", attr: "Kênh bán", say: v => "kênh " + v.join(", ") },
+    { key: "categories", label: "Danh mục", attr: "Danh mục", say: v => "nhóm hàng " + v.join(", ") }
+  ];
+  let olapState = OLAP_DEFAULT();
+  let olapOptions = null;
+  let olapData = null;
+  let olapSeq = 0;
+
+  async function renderOlap() {
+    if (olapData) return;   // giữ nguyên trạng thái khi quay lại tab
+    if (!olapOptions) {
+      const res = await Svc.getOlapOptions();
+      if (res.state === "ready") olapOptions = res.data;
+    }
+    renderOlapFilters();
+    await loadOlap();
+  }
+
+  // Mỗi chiều lọc là một danh sách thả xuống có ô đánh dấu; giữ danh sách đang mở khi vẽ lại
+  function renderOlapFilters() {
+    const wrap = document.getElementById("olap-filters");
+    if (!wrap) return;
+    if (!olapOptions) {
+      wrap.innerHTML = `<span class="olap-hint">Không tải được danh sách lọc.</span>`;
+      return;
+    }
+    const open = Array.from(wrap.querySelectorAll("details[open]")).map(el => el.dataset.key);
+    const any = OLAP_FILTERS.some(f => olapState[f.key].length);
+    wrap.innerHTML = OLAP_FILTERS.map(f => {
+      const sel = olapState[f.key];
+      const opts = (olapOptions[f.key] || []).map((v, i) => {
+        const on = sel.map(String).includes(String(v));
+        return `<label class="olap-dd-opt"><input type="checkbox"${on ? " checked" : ""} onchange="KhangNghiApp.toggleOlapFilter('${f.key}', ${i})"><span>${esc(String(v))}</span></label>`;
+      }).join("");
+      const val = !sel.length ? "Tất cả" : sel.length === 1 ? String(sel[0]) : `${sel.length} mục`;
+      return `<details class="olap-dd${sel.length ? " active" : ""}" data-key="${f.key}"${open.includes(f.key) ? " open" : ""}>` +
+        `<summary>${f.label}: <b>${esc(val)}</b><i class="fa-solid fa-chevron-down"></i></summary>` +
+        `<div class="olap-dd-menu">${opts}</div></details>`;
+    }).join("") +
+      (any ? `<button type="button" class="btn btn-sm btn-ghost olap-clear" onclick="KhangNghiApp.clearOlapFilters()" title="Bỏ hết điều kiện lọc"><i class="fa-solid fa-xmark"></i> Bỏ lọc</button>` : "");
+  }
+
+  // Bấm ra ngoài thì đóng danh sách lọc đang mở
+  document.addEventListener("click", e => {
+    document.querySelectorAll("#olap-filters .olap-dd[open]").forEach(dd => { if (!dd.contains(e.target)) dd.open = false; });
+  });
+
+  async function loadOlap() {
+    const seq = ++olapSeq;
+    const canvasId = "olap-chart-canvas";
+    Charts.destroy(canvasId);
+    const canvas = document.getElementById(canvasId);
+    const tableWrap = document.getElementById("olap-table-wrap");
+    if (canvas) canvas.innerHTML = Comp.renderState("loading", { compact: true });
+    syncOlapControls();
+
+    const res = await Svc.getOlapExplore(olapState);
+    if (seq !== olapSeq) return;   // đã có thao tác mới hơn
+    if (res.state !== "ready" || !res.data) {
+      if (canvas) canvas.innerHTML = Comp.renderState("error", { title: "Không tải được số liệu", message: res.message || "", compact: true });
+      if (tableWrap) tableWrap.innerHTML = "";
+      return;
+    }
+    const d = olapData = res.data;
+    const fmt = d.measureFormat === "number" ? "number" : CUR;
+
+    renderOlapStatus(d);
+
+    const titleEl = document.getElementById("olap-chart-title");
+    const descEl = document.getElementById("olap-chart-desc");
+    const totalEl = document.getElementById("olap-total-badge");
+    if (titleEl) titleEl.textContent = `${d.measure} theo ${d.levelLabel.toLowerCase()}`;
+    if (descEl) descEl.textContent = d.canDrill ? `Drill-down: bấm vào cột để xem theo ${d.levels[d.depth + 1].toLowerCase()}` : "";
+    if (totalEl) totalEl.textContent = `Tổng: ${Comp.formatValue(d.total, fmt)}`;
+
+    syncMdView("olap");
+    drawOlapChart(d);
+
+    if (tableWrap) {
+      const cols = [
+        { key: "label", label: d.levelLabel, render: r => `<strong>${esc(r.label)}</strong>` },
+        { key: "value", label: d.measure, format: fmt },
+        { key: "share", label: "Chiếm", format: "percent" }
+      ];
+      if (d.canDrill) cols.push({ key: "key", label: "", render: r => `<button type="button" class="btn btn-sm btn-ghost" onclick="KhangNghiApp.olapDrillAt(${d.rows.indexOf(r)})" title="Drill-down xuống ${esc(d.levels[d.depth + 1].toLowerCase())}">Drill-down <i class="fa-solid fa-chevron-right"></i></button>` });
+      tableWrap.innerHTML = Comp.renderTable(cols, d.rows, { empty: "Không có giao dịch thỏa mãn các điều kiện đã chọn." });
+    }
+
+  }
+
+  function drawOlapChart(d) {
+    const canvasId = "olap-chart-canvas";
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    Charts.destroy(canvasId);
+    if (!d.rows.length) {
+      canvas.innerHTML = Comp.renderState("empty", { title: "Không có dữ liệu", message: "Không có giao dịch thỏa mãn các điều kiện đã chọn.", compact: true });
+      return;
+    }
+    canvas.innerHTML = "";
+    const horizontal = d.hierarchy !== "time";
+    Charts.bar(canvasId, d.rows, {
+      horizontal,
+      format: d.measureFormat === "number" ? "number" : CUR,
+      seriesName: d.measure,
+      max: 60,
+      height: horizontal ? Math.max(260, d.rows.length * 34) : 340,
+      onClick: d.canDrill ? item => olapDrill(item.key) : null
+    });
+  }
+
+  // Thanh vị trí (breadcrumb) trên biểu đồ và nút Roll-up
+  function renderOlapStatus(d) {
+    const bc = document.getElementById("olap-breadcrumb");
+    if (bc) {
+      const crumbs = [`<button type="button" class="olap-crumb" onclick="KhangNghiApp.olapGoTo(0)"${d.depth === 0 ? " disabled" : ""}>${esc(OLAP_ROOT[d.hierarchy])}</button>`];
+      d.path.forEach((p, i) => {
+        const last = i === d.path.length - 1;
+        crumbs.push(`<i class="fa-solid fa-chevron-right olap-crumb-sep"></i><button type="button" class="olap-crumb" onclick="KhangNghiApp.olapGoTo(${i + 1})"${last ? " disabled" : ""}>${esc(p.label)}</button>`);
+      });
+      bc.innerHTML = crumbs.join("");
+    }
+    const up = document.getElementById("olap-rollup-btn");
+    if (up) up.disabled = d.depth === 0;
+  }
+
+  function syncOlapControls() {
+    const m = document.getElementById("olap-measure");
+    if (m) m.value = olapState.measure;
+    document.querySelectorAll("#olap-hierarchy-tabs .segmented-btn").forEach(b => b.classList.toggle("active", b.dataset.hierarchy === olapState.hierarchy));
+    // Ô Gợi ý hiện mẫu đang khớp đúng lựa chọn hiện tại
+    const cur = JSON.stringify(olapState);
+    const preset = document.getElementById("olap-preset");
+    if (preset) preset.value = Object.keys(OLAP_PRESETS).find(k => JSON.stringify(Object.assign(OLAP_DEFAULT(), OLAP_PRESETS[k])) === cur) || "";
+  }
+
+  function olapDrill(key) {
+    if (!olapData || !olapData.canDrill) return;
+    olapState.path = olapData.path.map(p => p.key).concat(String(key));
+    loadOlap();
+  }
+
+  function olapDrillAt(i) {
+    if (olapData && olapData.rows[i]) olapDrill(olapData.rows[i].key);
+  }
+
+  function olapRollUp() {
+    if (!olapState.path.length) return;
+    olapState.path = olapState.path.slice(0, -1);
+    loadOlap();
+  }
+
+  function olapGoTo(depth) {
+    olapState.path = olapState.path.slice(0, depth);
+    loadOlap();
+  }
+
+  function setOlapHierarchy(h) {
+    if (olapState.hierarchy === h) return;
+    olapState.hierarchy = h;
+    olapState.path = [];
+    loadOlap();
+  }
+
+  function setOlapMeasure(m) {
+    olapState.measure = m;
+    loadOlap();
+  }
+
+  function toggleOlapFilter(key, index) {
+    const v = olapOptions && olapOptions[key] ? olapOptions[key][index] : undefined;
+    if (v === undefined) return;
+    const list = olapState[key];
+    const pos = list.map(String).indexOf(String(v));
+    if (pos >= 0) list.splice(pos, 1); else list.push(v);
+    renderOlapFilters();
+    loadOlap();
+  }
+
+  function applyOlapPreset(name) {
+    const p = OLAP_PRESETS[name];
+    if (!p) return;
+    olapState = Object.assign(OLAP_DEFAULT(), JSON.parse(JSON.stringify(p)));
+    renderOlapFilters();
+    loadOlap();
+  }
+
+  function resetOlap() {
+    applyOlapPreset("rollup");
+  }
+
+  function clearOlapFilters() {
+    OLAP_FILTERS.forEach(f => { olapState[f.key] = []; });
+    renderOlapFilters();
+    loadOlap();
   }
 
   // --------------------------------------------------------------------------
@@ -1593,174 +1866,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // --------------------------------------------------------------------------
-  // 14. PHÂN TÍCH GIẢ ĐỊNH (tính từ số liệu thật, công thức hiển thị trên trang)
-  // --------------------------------------------------------------------------
-  async function renderWhatIf(filters, isCurrent) {
-    document.getElementById("whatif-results").innerHTML = Comp.renderState("loading", { compact: true });
-    const s = await Svc.getSummary();
-    if (!isCurrent()) return;
-    gate("what-if", s, { title: "Chưa có số liệu gốc", emptyMessage: "Cần doanh thu và lợi nhuận thực tế trong Fact_Sales để mô phỏng." });
-    renderSavedScenarios();
-    if (s.state !== "ready") { whatIfBase = null; return; }
-    whatIfBase = s.data;
-    document.getElementById("whatif-base-label").textContent = `Số liệu gốc: ${ALL_TIME}`;
-    updateWhatIf();
-  }
-
-  // Kịch bản mẫu: mỗi kịch bản là một quyết định nghiệp vụ thường gặp
-  const WHATIF_PRESETS = {
-    promo: { growth: 10, discount: 2, ship: 0 },
-    slow: { growth: -10, discount: 0, ship: 0 },
-    fuel: { growth: 0, discount: 0, ship: 20 },
-    carrier: { growth: 0, discount: 0, ship: -15 }
-  };
-
-  function whatIfInputs() {
-    return {
-      growth: Number(document.getElementById("slider-growth").value),
-      discount: Number(document.getElementById("slider-discount").value),
-      ship: Number(document.getElementById("slider-ship").value)
-    };
-  }
-
-  function computeWhatIf(b, p) {
-    const revenue = b.revenue * (1 + p.growth / 100);
-    const shipBase = b.shippingCost || 0;
-    const profit = b.profit * (1 + p.growth / 100) - revenue * (p.discount / 100) - shipBase * (p.ship / 100);
-    return { revenue, profit, margin: revenue > 0 ? (profit / revenue) * 100 : null, diff: profit - b.profit };
-  }
-
-  function applyWhatIfPreset(key) {
-    const p = WHATIF_PRESETS[key];
-    if (!p) return;
-    document.getElementById("slider-growth").value = p.growth;
-    document.getElementById("slider-discount").value = p.discount;
-    document.getElementById("slider-ship").value = p.ship;
-    updateWhatIf();
-  }
-
-  function updateWhatIf() {
-    const p = whatIfInputs();
-    const sign = v => (v > 0 ? "+" : "");
-    const signed = v => `${v >= 0 ? "+" : "−"}${fv(Math.abs(v), CUR)}`;
-    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-    setText("val-growth", `${sign(p.growth)}${p.growth}%`);
-    setText("val-discount", `${p.discount}%`);
-    setText("val-ship", `${sign(p.ship)}${p.ship}%`);
-    document.querySelectorAll("#whatif-presets .whatif-preset").forEach(btn => {
-      const x = WHATIF_PRESETS[btn.dataset.preset];
-      btn.classList.toggle("is-active", !!x && x.growth === p.growth && x.discount === p.discount && x.ship === p.ship);
-    });
-    if (!whatIfBase) return;
-
-    const b = whatIfBase;
-    const r = computeWhatIf(b, p);
-    const ship = b.shippingCost || 0;
-    setText("hint-growth", `Hiện tại ${fv(b.revenue, CUR)}${p.growth ? ` → ${fv(r.revenue, CUR)}` : ""}`);
-    setText("hint-discount", p.discount ? `Giảm giá cho khách ${fv(r.revenue * p.discount / 100, CUR)}` : "Chưa giảm giá thêm");
-    setText("hint-ship", ship ? `Hiện tại ${fv(ship, CUR)}${p.ship ? ` → ${fv(ship * (1 + p.ship / 100), CUR)}` : ""}` : "Chưa có chi phí vận chuyển thực tế");
-
-    // Cầu nối lợi nhuận: hiện tại ± từng yếu tố = giả định (cộng lại khớp computeWhatIf)
-    const parts = [
-      { label: p.growth >= 0 ? `Lời thêm khi doanh thu ${sign(p.growth)}${p.growth}%` : `Lời mất đi khi doanh thu ${p.growth}%`, value: b.profit * p.growth / 100 },
-      { label: `Chiết khấu thêm ${p.discount}% cho khách`, value: -r.revenue * p.discount / 100 },
-      { label: `Phí vận chuyển ${sign(p.ship)}${p.ship}%`, value: -ship * p.ship / 100 }
-    ].filter(x => Math.abs(x.value) > 0.5);
-    const maxAbs = Math.max(...parts.map(x => Math.abs(x.value)), 1);
-    const pct = b.profit ? (r.diff / Math.abs(b.profit)) * 100 : 0;
-    const flat = Math.abs(pct) < 0.5;
-    const tone = flat ? "flat" : r.diff > 0 ? "up" : "down";
-
-    let headline = "Chưa thay đổi gì";
-    let reason = "Chọn một kịch bản mẫu ở trên hoặc kéo thanh trượt bên trái để bắt đầu.";
-    if (parts.length) {
-      headline = flat ? "Lợi nhuận gần như không đổi" : r.diff > 0 ? `Lợi nhuận tăng ${fv(r.diff, CUR)}` : `Lợi nhuận giảm ${fv(-r.diff, CUR)}`;
-      const pos = parts.filter(x => x.value > 0).sort((a, c) => c.value - a.value)[0];
-      const neg = parts.filter(x => x.value < 0).sort((a, c) => a.value - c.value)[0];
-      if (pos && neg) reason = `${pos.label} (${signed(pos.value)}) ${pos.value + neg.value >= 0 ? "lớn hơn" : "không bù được"} ${neg.label.toLowerCase()} (${signed(neg.value)}).`;
-      else reason = `Do ${(pos || neg).label.toLowerCase()} (${signed((pos || neg).value)}).`;
-    }
-    // Mức chiết khấu tối đa để lợi nhuận không thấp hơn hiện tại, với mức doanh thu đang chọn
-    const breakEven = p.growth > 0 ? ((b.profit * p.growth / 100) - ship * p.ship / 100) / r.revenue * 100 : null;
-
-    const row = (label, value, cls, bar) => `
-      <div class="whatif-bridge-row ${cls}">
-        <span class="whatif-bridge-label">${esc(label)}</span>
-        <span class="whatif-bridge-bar">${bar || ""}</span>
-        <strong>${esc(value)}</strong>
-      </div>`;
-    document.getElementById("whatif-results").innerHTML = `
-      <div class="whatif-verdict is-${tone}">
-        <div class="whatif-verdict-main">${esc(headline)}${parts.length ? `<small>${flat ? "≈ 0%" : `${pct > 0 ? "+" : ""}${pct.toFixed(1)}%`}</small>` : ""}</div>
-        <p>${esc(reason)}</p>
-      </div>
-      <div class="whatif-bridge">
-        ${row("Lợi nhuận hiện tại", fv(b.profit, CUR), "is-base")}
-        ${parts.map(x => row(x.label, signed(x.value), x.value >= 0 ? "is-up" : "is-down",
-          `<i style="width:${Math.max(4, Math.abs(x.value) / maxAbs * 100)}%"></i>`)).join("")}
-        ${row("Lợi nhuận giả định", fv(r.profit, CUR), "is-total")}
-      </div>
-      <div class="whatif-compare">
-        ${Comp.field("Doanh thu", p.growth ? `${fv(b.revenue, CUR)} → ${fv(r.revenue, CUR)}` : fv(b.revenue, CUR))}
-        ${Comp.field("Biên lợi nhuận", parts.length ? `${fv(b.margin, "percent")} → ${fv(r.margin, "percent")}` : fv(b.margin, "percent"))}
-      </div>
-      ${breakEven !== null ? `<p class="whatif-tip"><i class="fa-solid fa-lightbulb"></i><span>Với doanh thu ${sign(p.growth)}${p.growth}%, chiết khấu tối đa khoảng <b>${breakEven > 0 ? breakEven.toFixed(1) : 0}%</b> thì lợi nhuận mới không thấp hơn hiện tại.</span></p>` : ""}`;
-  }
-
-  function resetWhatIf() {
-    document.getElementById("slider-growth").value = 0;
-    document.getElementById("slider-discount").value = 0;
-    document.getElementById("slider-ship").value = 0;
-    updateWhatIf();
-  }
-
-  function readScenarios() {
-    try { return JSON.parse(localStorage.getItem("kn_whatif_scenarios") || "[]"); } catch (e) { return []; }
-  }
-
-  function saveWhatIfScenario() {
-    if (!whatIfBase) return Comp.showToast("Chưa có số liệu gốc để lưu kịch bản.", "warning");
-    const p = whatIfInputs();
-    const name = prompt("Tên kịch bản:", `Doanh thu ${p.growth >= 0 ? "+" : ""}${p.growth}%, chiết khấu ${p.discount}%, vận chuyển ${p.ship >= 0 ? "+" : ""}${p.ship}%`);
-    if (!name) return;
-    const r = computeWhatIf(whatIfBase, p);
-    const list = readScenarios();
-    list.push({ name, date: new Date().toLocaleDateString("vi-VN"), growth: p.growth, discount: p.discount, ship: p.ship, profit: r.profit, diff: r.diff });
-    try { localStorage.setItem("kn_whatif_scenarios", JSON.stringify(list)); } catch (e) { /* trình duyệt chặn lưu trữ */ }
-    renderSavedScenarios();
-    Comp.showToast(`Đã lưu kịch bản "${name}".`);
-  }
-
-  function deleteScenario(idx) {
-    const list = readScenarios();
-    list.splice(Number(idx), 1);
-    try { localStorage.setItem("kn_whatif_scenarios", JSON.stringify(list)); } catch (e) { /* bỏ qua */ }
-    renderSavedScenarios();
-  }
-
-  function renderSavedScenarios() {
-    const el = document.getElementById("whatif-saved");
-    if (!el) return;
-    const list = readScenarios().map((s, i) => ({ ...s, idx: i, params: `DT ${s.growth >= 0 ? "+" : ""}${s.growth}% · CK ${s.discount}% · VC ${s.ship >= 0 ? "+" : ""}${s.ship}%` }));
-    el.innerHTML = Comp.renderTable([
-      { key: "name", label: "Kịch bản" },
-      { key: "date", label: "Ngày lưu" },
-      { key: "params", label: "Tham số" },
-      { key: "profit", label: "Lợi nhuận ước tính", format: CUR },
-      { key: "diff", label: "Chênh lệch", format: CUR },
-      { key: "", label: "", render: r => `<button type="button" class="btn btn-sm btn-ghost" onclick="KhangNghiApp.deleteScenario(${r.idx})" aria-label="Xóa kịch bản"><i class="fa-solid fa-trash"></i></button>` }
-    ], list, { empty: "Điều chỉnh tham số rồi bấm Lưu kịch bản.", emptyTitle: "Chưa có kịch bản" });
-  }
-
-  // --------------------------------------------------------------------------
-  // 15. CÂU HỎI PHÂN TÍCH (danh mục 40 truy vấn MDX từ API)
+  // 15. CÂU HỎI PHÂN TÍCH (danh mục 50 truy vấn MDX từ API)
   // --------------------------------------------------------------------------
   const SECTION_ROUTE = {
     "Bán hàng & Doanh thu": "sales",
     "Khách hàng & Thị trường": "customer",
     "Quản lý Kho & Tồn kho": "inventory",
     "Mua hàng & Nhà cung cấp": "purchase",
-    "Vận chuyển & Logistics": "shipping"
+    "Vận chuyển & Logistics": "shipping",
+    "Xem tổng hợp, chi tiết & lọc": "olap"
   };
 
   // Câu hỏi diễn đạt bằng thuật ngữ nghiệp vụ (doanh thu, lợi nhuận, chi phí...); kind = dạng câu trả lời
@@ -1779,7 +1893,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "MDX-12": ["Top 10 khách hàng có doanh thu cao nhất", "rank"],
     "MDX-13": ["Doanh thu và lợi nhuận theo vùng miền", "compare"],
     "MDX-14": ["Tỉnh/thành có doanh thu cao nhất trong từng vùng", "compare"],
-    "MDX-15": ["Doanh thu theo nhóm sản phẩm tại Miền Nam", "compare"],
+    "MDX-15": ["Doanh thu theo nhóm sản phẩm trong năm gần nhất", "compare"],
     "MDX-16": ["Doanh thu theo nhóm sản phẩm tại Miền Nam năm gần nhất", "compare"],
     "MDX-17": ["Doanh thu nhóm sản phẩm theo vùng miền", "matrix"],
     "MDX-18": ["Top 5 thành phố có lợi nhuận cao nhất", "rank"],
@@ -1804,7 +1918,17 @@ document.addEventListener("DOMContentLoaded", function () {
     "MDX-37": ["Thời gian giao hàng và tỷ lệ đúng hạn theo phương thức giao", "compare"],
     "MDX-38": ["Đơn vị vận chuyển nào giao trễ nhiều nhất?", "rank"],
     "MDX-39": ["Chi phí vận chuyển theo vùng giao hàng", "compare"],
-    "MDX-40": ["Tỷ lệ chi phí vận chuyển trên doanh thu", "ratio"]
+    "MDX-40": ["Tỷ lệ chi phí vận chuyển trên doanh thu", "ratio"],
+    "MDX-41": ["Mỗi miền đóng góp bao nhiêu doanh thu?", "share"],
+    "MDX-42": ["Nhóm hàng nào vừa bán nhiều vừa lãi tốt?", "compare"],
+    "MDX-43": ["Quý 4 năm gần nhất, tháng nào bán tốt nhất?", "trend"],
+    "MDX-44": ["Ở Miền Nam, nhóm hàng nào bán chạy?", "compare"],
+    "MDX-45": ["Bán qua Website tăng thế nào qua các năm?", "trend"],
+    "MDX-46": ["Đại lý và Cửa hàng ở Miền Bắc, Miền Trung (2024–2025) bán nhóm hàng nào?", "compare"],
+    "MDX-47": ["Năm 2025, kho TP. Hồ Chí Minh nhập hàng chủ yếu từ nhà cung cấp nào?", "rank"],
+    "MDX-48": ["Doanh thu từng miền qua các năm", "matrix"],
+    "MDX-49": ["Quý nào tăng trưởng mạnh nhất so với cùng kỳ năm trước?", "ratio"],
+    "MDX-50": ["Mỗi kho đang giữ bao nhiêu hàng của từng nhóm?", "matrix"]
   };
   const ANSWER_KIND = {
     trend:   { icon: "fa-chart-line",            label: "Xu hướng" },
@@ -1821,25 +1945,31 @@ document.addEventListener("DOMContentLoaded", function () {
     "Nhân sự & Khuyến mãi":     { icon: "fa-bullhorn",        short: "Nhân sự & KM" },
     "Mua hàng & Nhà cung cấp":  { icon: "fa-truck-ramp-box",  short: "Mua hàng" },
     "Quản lý Kho & Tồn kho":    { icon: "fa-warehouse",       short: "Tồn kho" },
-    "Vận chuyển & Logistics":   { icon: "fa-truck-fast",      short: "Vận chuyển" }
+    "Vận chuyển & Logistics":   { icon: "fa-truck-fast",      short: "Vận chuyển" },
+    "Xem tổng hợp, chi tiết & lọc": { icon: "fa-cubes",     short: "Tổng hợp & lọc" }
   };
   // Câu hỏi có trang chi tiết riêng phù hợp hơn trang của phân hệ
   const QUESTION_ROUTE = {
     "MDX-06": "product", "MDX-07": "product", "MDX-08": "product",
     "MDX-13": "geography", "MDX-14": "geography", "MDX-15": "geography", "MDX-16": "geography", "MDX-17": "geography", "MDX-18": "geography",
-    "MDX-26": "supplier", "MDX-28": "supplier"
+    "MDX-26": "supplier", "MDX-28": "supplier",
+    "MDX-47": "purchase", "MDX-48": "multi-dim", "MDX-50": "inventory"
   };
   const ROUTE_LABEL = {
     sales: "Bán hàng", customer: "Khách hàng", inventory: "Tồn kho", purchase: "Mua hàng",
-    shipping: "Vận chuyển", product: "Sản phẩm", geography: "Khu vực", supplier: "Nhà cung cấp"
+    shipping: "Vận chuyển", product: "Sản phẩm", geography: "Khu vực", supplier: "Nhà cung cấp",
+    "multi-dim": "Phân tích đa chiều", olap: "Phân tích đa chiều"
   };
   let questionSection = "";
+  let currentQuestion = "MDX-01";
+  const openQuestionGroups = new Set();
 
   async function renderQuestionExplorer() {
     const el = document.getElementById("question-table");
     if (el && !mdxCatalog) el.innerHTML = Comp.renderState("loading", { compact: true });
     await loadCatalog();
     renderQuestions();
+    if (mdxCatalog && mdxCatalog.state === "ready") openQuestion(currentQuestion);
   }
 
   function setQuestionSection(sec) {
@@ -1888,7 +2018,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "MDX-12": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `Khách hàng có doanh thu cao nhất: ${qaB(r[0].label)} với ${qaMoney(r[0].value)}.` },
     "MDX-13": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}), lợi nhuận ${qaMoney(r[f[0]].value2)}.` },
     "MDX-14": { fmt: CUR, view: "hbar", focus: qaFocus.maxPerGroup, label: r => `${r.label} · ${r.grp}`, answer: (r, f) => `Tỉnh/thành có doanh thu cao nhất mỗi vùng: ${qaPerGroup(r, f, qaMoney)}.` },
-    "MDX-15": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Tại Miền Nam, nhóm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
+    "MDX-15": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, nhóm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).` },
     "MDX-16": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, tại Miền Nam nhóm ${qaB(r[f[0]].label)} có doanh thu cao nhất: ${qaMoney(r[f[0]].value)}.` },
     "MDX-17": { fmt: CUR, view: "matrix", answer: (r, f) => `Nhóm sản phẩm có doanh thu cao nhất ở từng vùng: ${qaPerGroup(r, f, qaMoney)}.`, focus: qaFocus.maxPerGroup },
     "MDX-18": { fmt: CUR, view: "hbar", focus: qaFocus.first(5), answer: r => `Lợi nhuận cao nhất: ${qaB(r[0].label)} (${qaMoney(r[0].value)}). 5 thành phố dẫn đầu được tô xanh.` },
@@ -1914,15 +2044,23 @@ document.addEventListener("DOMContentLoaded", function () {
     "MDX-37": { fmt: "days", focus: qaFocus.min, answer: r => r.map(x => `${qaB(x.label)}: trung bình ${Comp.formatValue(x.value, "days")}, đúng hẹn ${qaPct(x.value2)}`).join("<br>") },
     "MDX-38": { fmt: "number", tone: "bad", focus: qaFocus.max, answer: (r, f) => `${qaB(r[f[0]].label)} giao trễ nhiều nhất: tổng ${qaNum(r[f[0]].value)} ngày trễ, trên ${qaNum(r[f[0]].value2)} đơn giao trễ.` },
     "MDX-39": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Vùng ${qaB(r[f[0]].label)} có chi phí vận chuyển cao nhất: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)} tổng phí).` },
-    "MDX-40": { fmt: "percent", tone: "bad", focus: qaFocus.max, answer: (r, f) => `Toàn công ty, phí vận chuyển chiếm ${qaB(qaPct(r[0].note))} doanh thu. Cao nhất ở ${qaB(r[f[0]].label)}: ${qaPct(r[f[0]].value)}.` }
+    "MDX-40": { fmt: "percent", tone: "bad", focus: qaFocus.max, answer: (r, f) => `Toàn công ty, phí vận chuyển chiếm ${qaB(qaPct(r[0].note))} doanh thu. Cao nhất ở ${qaB(r[f[0]].label)}: ${qaPct(r[f[0]].value)}.` },
+    "MDX-41": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Gộp từ thành phố lên miền: ${qaB(r[f[0]].label)} đóng góp nhiều nhất, ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)} tổng doanh thu), lợi nhuận ${qaMoney(r[f[0]].value2)}.`, note: "Doanh thu của các tỉnh/thành được cộng lại theo từng miền." },
+    "MDX-42": { fmt: CUR, view: "hbar", focus: qaFocus.max, focusBad: rows => { const m = Math.max(...rows.map(x => Number(x.value3) || 0)); return rows.map((x, i) => (Number(x.value3) === m ? i : -1)).filter(i => i >= 0); },
+      answer: (r, f, fb) => `${qaB(r[f[0]].label)} có doanh thu lớn nhất: ${qaMoney(r[f[0]].value)}, biên lợi nhuận ${qaPct(r[f[0]].value3)}. Biên lợi nhuận cao nhất là ${qaB(r[fb[0]].label)}: ${qaPct(r[fb[0]].value3)}.`, note: "Doanh thu từng sản phẩm được cộng lại theo nhóm hàng. Cột cam là nhóm lãi trên mỗi đồng doanh thu cao nhất." },
+    "MDX-43": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Quý 4/${esc(r[0].note)} đạt ${qaMoney(r.reduce((t, x) => t + (Number(x.value) || 0), 0))}. ${qaB(r[f[0]].label)} cao nhất: ${qaMoney(r[f[0]].value)}.`, note: "Đi từ số cả năm, xuống Quý 4, rồi xuống từng tháng." },
+    "MDX-44": { fmt: CUR, focus: qaFocus.max, answer: (r, f) => `Chỉ xét Miền Nam (mọi năm): ${qaB(r[f[0]].label)} bán chạy nhất, ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).`, note: "Chỉ tính các đơn hàng ở Miền Nam, cộng tất cả các năm." },
+    "MDX-45": { fmt: CUR, focus: qaFocus.max, answer: r => { const a = r[0], b = r[r.length - 1]; return `Kênh Website tăng từ ${qaMoney(a.value)} (${esc(a.label)}) lên ${qaMoney(b.value)} (${esc(b.label)}), gấp ${qaNum(b.value / (a.value || 1))} lần.`; }, note: "Chỉ tính các đơn bán qua Website Khang Nghị." },
+    "MDX-46": { fmt: CUR, view: "hbar", focus: qaFocus.max, answer: (r, f) => `Trong khối con này, ${qaB(r[f[0]].label)} dẫn đầu: ${qaMoney(r[f[0]].value)} (${qaShare(r[f[0]], r)}).`, note: "Chỉ tính đơn hàng thỏa cả 3 điều kiện: năm 2024 hoặc 2025, ở Miền Bắc hoặc Miền Trung, bán qua Đại lý hoặc Cửa hàng." },
+    "MDX-47": { fmt: CUR, view: "hbar", focus: qaFocus.first(1), answer: r => `${qaB(r[0].label)} là nhà cung cấp lớn nhất: ${qaMoney(r[0].value)} (${qaShare(r[0], r)} giá trị nhập), ${qaNum(r[0].value2)} sản phẩm.`, note: "Chỉ tính các lần nhập hàng năm 2025 vào Kho TP. Hồ Chí Minh." },
+    "MDX-48": { fmt: CUR, view: "matrix", focus: rows => { const best = {}; rows.forEach((r, i) => { if (best[r.label] === undefined || Number(r.value) > Number(rows[best[r.label]].value)) best[r.label] = i; }); return Object.values(best); },
+      answer: (r, f) => `Miền có doanh thu cao nhất mỗi năm: ${f.map(i => `${esc(r[i].label)}: ${qaB(r[i].grp)}`).join(" · ")}.`, note: "Mỗi hàng là một năm, mỗi cột là một miền. Mở trang Phân tích đa chiều để đổi chỗ hàng và cột." },
+    "MDX-49": { fmt: "percent", focus: qaFocus.max, answer: (r, f) => `Năm ${esc(r[0].note)}, ${qaB(r[f[0]].label)} tăng mạnh nhất: ${qaPct(r[f[0]].value)} so với cùng kỳ (${qaMoney(r[f[0]].value3)} lên ${qaMoney(r[f[0]].value2)}).`, note: "So từng quý với đúng quý đó của năm trước." },
+    "MDX-50": { fmt: "number", view: "matrix", focus: rows => { const best = {}; rows.forEach((r, i) => { if (best[r.grp] === undefined || Number(r.value) > Number(rows[best[r.grp]].value)) best[r.grp] = i; }); return Object.values(best); },
+      answer: (r, f) => `Nhóm hàng tồn nhiều nhất ở mỗi kho: ${qaPerGroup(r, f, qaNum)}.`, note: "Lượng tồn ở lần kiểm kê gần nhất, chia theo kho và nhóm hàng." }
   };
 
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && document.getElementById("qa-modal")?.classList.contains("active")) closeQuestionAnswer();
-  });
-
   function closeQuestionAnswer() {
-    document.getElementById("qa-modal")?.classList.remove("active");
     Charts.destroy("qa-chart");
   }
 
@@ -1943,8 +2081,14 @@ document.addEventListener("DOMContentLoaded", function () {
   async function openQuestion(id) {
     const spec = QA_SPEC[id];
     const q = mdxCatalog && mdxCatalog.items.find(x => x.id === id);
-    const modal = document.getElementById("qa-modal");
-    if (!spec || !modal) return;
+    if (!spec || !document.getElementById("qa-panel")) return;
+    currentQuestion = id;
+    if (q) openQuestionGroups.add(q.section);
+    document.querySelectorAll(".qe-item").forEach(el => {
+      const on = el.dataset.id === id;
+      el.classList.toggle("is-active", on);
+      el.setAttribute("aria-current", on ? "true" : "false");
+    });
     const set = (elId, html) => { const e = document.getElementById(elId); if (e) e.innerHTML = html; };
     const m = q ? (SECTION_META[q.section] || { short: q.section }) : { short: "" };
     set("qa-no", esc(id.replace("MDX-", "")));
@@ -1955,10 +2099,17 @@ document.addEventListener("DOMContentLoaded", function () {
     Charts.destroy("qa-chart");
     const route = QUESTION_ROUTE[id] || SECTION_ROUTE[q && q.section] || "sales";
     const link = document.getElementById("qa-route");
-    if (link) { link.href = "#/" + route; link.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> Trang ${esc(ROUTE_LABEL[route] || "chi tiết")}`; }
-    modal.classList.add("active");
-
+    if (link) {
+      // Câu thao tác OLAP mở trang Phân tích đa chiều ở đúng tab (olap = Khoan sâu & lọc, multi-dim = Pivot)
+      const tab = route === "olap" ? "olap" : route === "multi-dim" ? "pivot" : "";
+      link.href = "#/" + (tab ? "multi-dim" : route);
+      link.onclick = () => {
+        if (tab) { multiDimTab = tab; try { localStorage.setItem("kn.multiDimTab", tab); } catch (e) { /* bỏ qua */ } }
+      };
+      link.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> Trang ${esc(ROUTE_LABEL[route] || "chi tiết")}`;
+    }
     const res = await Svc.getQuestionAnswer(id);
+    if (currentQuestion !== id) return;   // người dùng đã chọn câu khác trong lúc chờ
     if (res.state !== "ready") {
       const ans = document.getElementById("qa-answer");
       if (ans) ans.className = "qa-answer is-empty";
@@ -2022,29 +2173,31 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!g) groups.push(g = { section: r.section, items: [] });
       g.items.push(r);
     });
+    const cur = mdxCatalog.items.find(x => x.id === currentQuestion);
+    if (cur) openQuestionGroups.add(cur.section);
     el.innerHTML = groups.map(g => {
       const m = SECTION_META[g.section] || { icon: "fa-folder", short: g.section };
-      return `<div class="qe-group">
-        <h2 class="qe-group-title"><i class="fa-solid ${m.icon}"></i> ${esc(g.section)} <span>${g.items.length} câu</span></h2>
-        <div class="qe-grid">${g.items.map(r => {
+      const open = q || openQuestionGroups.has(g.section);
+      return `<details class="qe-group"${open ? " open" : ""} data-section="${esc(g.section)}" ontoggle="KhangNghiApp.toggleQuestionGroup(this)">
+        <summary class="qe-group-title"><i class="fa-solid ${m.icon}"></i> ${esc(m.short)} <span>${g.items.length}</span></summary>
+        <ul class="qe-items">${g.items.map(r => {
           const [plain, kind] = QUESTION_PLAIN[r.id] || [r.title, "compare"];
           const k = ANSWER_KIND[kind];
-          const dest = "Xem câu trả lời";
-          return `<article class="qe-card" tabindex="0" role="button" title="${esc(r.title)}"
-              onclick="KhangNghiApp.openQuestion('${esc(r.id)}')"
-              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();KhangNghiApp.openQuestion('${esc(r.id)}')}">
-            <div class="qe-card-top">
-              <span class="qe-no">${esc(r.id.replace("MDX-", ""))}</span>
-              <span class="qe-kind"><i class="fa-solid ${k.icon}"></i> ${k.label}</span>
-            </div>
-            <p class="qe-question">${esc(plain)}</p>
-            <div class="qe-card-foot">
-              <span class="qe-dest">${esc(dest)} <i class="fa-solid fa-arrow-right"></i></span>
-            </div>
-          </article>`;
-        }).join("")}</div>
-      </div>`;
+          const on = r.id === currentQuestion;
+          return `<li><button type="button" class="qe-item${on ? " is-active" : ""}" data-id="${esc(r.id)}" aria-current="${on}"
+              onclick="KhangNghiApp.openQuestion('${esc(r.id)}')">
+            <span class="qe-no">${esc(r.id.replace("MDX-", ""))}</span>
+            <span class="qe-question">${esc(plain)}</span>
+            <i class="fa-solid ${k.icon} qe-kind" title="${k.label}"></i>
+          </button></li>`;
+        }).join("")}</ul>
+      </details>`;
     }).join("");
+  }
+
+  function toggleQuestionGroup(el) {
+    const sec = el.dataset.section;
+    if (el.open) openQuestionGroups.add(sec); else openQuestionGroups.delete(sec);
   }
 
   function openQuestionMdx(id) {
@@ -2424,21 +2577,54 @@ document.addEventListener("DOMContentLoaded", function () {
   // --------------------------------------------------------------------------
   // TRẠNG THÁI KẾT NỐI DWH (topbar + sidebar)
   // --------------------------------------------------------------------------
+  // Nguồn số liệu các biểu đồ của trang đang xem (header X-Data-Source), làm mới khi đổi trang
+  const pageSources = new Set();
+  let connectionState = null;
+  const SOURCE_TEXT = {
+    SSAS: ["Nguồn: khối SSAS", "Số liệu trang này đọc từ khối KhangNghi_Cube (SSAS) bằng truy vấn MDX."],
+    SQL: ["Nguồn: DWH (SQL)", "Số liệu trang này truy vấn SQL trên kho DWH_KhangNghi (khối SSAS chưa kết nối được hoặc chỉ số này cần dữ liệu từng dòng)."],
+    MIX: ["Nguồn: SSAS + SQL", "Phần lớn số liệu đọc từ khối SSAS bằng MDX; các chỉ số khối không có (số đơn hàng, tồn kho mới nhất...) truy vấn SQL trên DWH."]
+  };
+
+  window.addEventListener("kn:data-source", e => {
+    String(e.detail || "").split("+").forEach(x => x && pageSources.add(x));
+    paintConnection();
+  });
+
+  function resetPageSources() {
+    pageSources.clear();
+    paintConnection();
+  }
+
   async function checkConnection() {
     const auth = window.KhangNghiAuth;
     if (!auth || !auth.isAuthenticated()) return;
-    const r = await Svc.getConnectionStatus();
+    // Lệnh kiểm tra kết nối không tính vào nguồn số liệu của trang đang xem
+    const before = new Set(pageSources);
+    connectionState = await Svc.getConnectionStatus();
+    pageSources.clear();
+    before.forEach(x => pageSources.add(x));
+    paintConnection();
+  }
+
+  function paintConnection() {
+    const r = connectionState;
+    if (!r) return;
     const badge = document.getElementById("lineage-badge");
     const text = document.getElementById("dwh-status-text");
     const nav = document.getElementById("nav-dwh-badge");
     const modalText = document.getElementById("lineage-status-text");
+    const src = pageSources.has("SSAS") ? (pageSources.has("SQL") ? "MIX" : "SSAS") : (pageSources.has("SQL") ? "SQL" : null);
     const map = {
-      ready: ["is-ok", "DWH đã kết nối", "Kết nối SQL Server thành công, kho dữ liệu đã có giao dịch bán hàng."],
+      ready: ["is-ok", src ? SOURCE_TEXT[src][0] : "DWH đã kết nối", src ? SOURCE_TEXT[src][1] : "Kết nối kho dữ liệu thành công, đã có giao dịch bán hàng."],
       empty: ["is-warning", "DWH chưa có dữ liệu", "Kết nối SQL Server thành công nhưng Fact_Sales chưa có giao dịch."],
       error: ["is-error", "Mất kết nối DWH", r.message || "Không truy vấn được kho dữ liệu."]
     };
     const [cls, label, detail] = map[r.state] || map.error;
-    if (badge) badge.className = `data-status-indicator ${cls}`;
+    if (badge) {
+      badge.className = `data-status-indicator ${cls}`;
+      badge.title = detail;
+    }
     if (text) text.textContent = label;
     if (modalText) modalText.textContent = detail;
     if (nav) {
@@ -2769,20 +2955,28 @@ ${source}
     swapMultiDimAxes,
     resetMultiDim,
     exportMultiDimToCSV,
+    setMultiDimTab,
+    resetMultiDimTab,
+    setMdView,
+    olapDrillAt,
+    olapRollUp,
+    olapGoTo,
+    setOlapHierarchy,
+    setOlapMeasure,
+    toggleOlapFilter,
+    applyOlapPreset,
+    resetOlap,
+    clearOlapFilters,
     setForecastGranularity,
     setForecastHorizon,
     applyForecastDates,
     resetForecastDates,
     selectForecastDrillMonth,
     setPeriodView,
-    updateWhatIf,
-    resetWhatIf,
-    applyWhatIfPreset,
-    saveWhatIfScenario,
-    deleteScenario,
     renderQuestions,
     setQuestionSection,
     openQuestion,
+    toggleQuestionGroup,
     closeQuestionAnswer,
     openQuestionMdx,
     openQuickChart,

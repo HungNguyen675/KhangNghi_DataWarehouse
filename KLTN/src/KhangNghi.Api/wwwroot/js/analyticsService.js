@@ -793,6 +793,23 @@ window.analyticsService = (function () {
     };
   }
 
+  // Thao tác OLAP: tham số mảng gửi lặp khóa (path=2025&path=4) để ASP.NET nhận đúng string[]
+  async function getOlapExplore(q) {
+    const sp = new URLSearchParams();
+    sp.append("hierarchy", q.hierarchy || "time");
+    sp.append("measure", q.measure || "revenue");
+    ["path", "years", "regions", "channels", "categories"].forEach(k => (q[k] || []).forEach(v => sp.append(k, v)));
+    const res = await get("/ssas/olap-explore?" + sp.toString());
+    if (!res.success) return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    return { state: "ready", data: res.data && res.data.data ? res.data.data : res.data };
+  }
+
+  async function getOlapOptions() {
+    const res = await get("/ssas/olap-options");
+    if (!res.success) return { state: res.status === 403 ? "forbidden" : "error", message: failMessage(res) };
+    return { state: "ready", data: res.data && res.data.data ? res.data.data : res.data };
+  }
+
   // Siêu dữ liệu khối KhangNghi_Cube dùng cho trình dựng truy vấn OLAP
   function getCubeMetadata() {
     return {
@@ -924,6 +941,8 @@ window.analyticsService = (function () {
     getQuickChart,
     getQuestionAnswer,
     getMultiDimAnalysis,
+    getOlapExplore,
+    getOlapOptions,
     getCubeMetadata,
     getCustomerDetail,
     getOrderDetail,

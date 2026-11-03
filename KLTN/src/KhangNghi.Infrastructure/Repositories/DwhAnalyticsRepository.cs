@@ -77,6 +77,12 @@ namespace KhangNghi.Infrastructure.Repositories
         Task<object?> GetQuickChartAsync(string id);
         Task<object?> GetMultiDimAnalysisAsync(string measure, string rowDim, string colDim);
 
+        // Thao tác OLAP (Roll-up, Drill-down, Slice, Dice) theo 3 phân cấp của khối SSAS, kèm câu MDX tương đương
+        Task<object?> GetOlapExploreAsync(string hierarchy, IReadOnlyList<string> path, string measure,
+            IReadOnlyList<int> years, IReadOnlyList<string> regions, IReadOnlyList<string> channels, IReadOnlyList<string> categories);
+        // Danh sách giá trị cho bộ lọc Slice/Dice
+        Task<object> GetOlapOptionsAsync();
+
         // Chi tiết doanh thu, lợi nhuận trong một năm (drill-down từ biểu đồ)
         Task<(IEnumerable<dynamic> Categories, IEnumerable<dynamic> Regions, IEnumerable<dynamic> Products)> GetYearBreakdownAsync(int year, int top = 10);
 
@@ -1106,90 +1112,9 @@ namespace KhangNghi.Infrastructure.Repositories
                     GROUP BY {rowInfo.selectExpr}, {colInfo.selectExpr}
                     ORDER BY RowKey, ColKey";
 
-                var rawData = (await db.QueryAsync(sql, commandTimeout: 60)).ToList();
-
-                var distinctRows = rawData.Select(x => (string)x.RowKey).Distinct().OrderBy(x => x).ToList();
-                var distinctCols = rawData.Select(x => (string)x.ColKey).Distinct().OrderBy(x => x).ToList();
-
-                // Tạo series cho ApexCharts (mỗi cột là 1 series)
-                var seriesList = new List<object>();
-                foreach (var col in distinctCols)
-                {
-                    var dataPoints = new List<double>();
-                    foreach (var row in distinctRows)
-                    {
-                        var match = rawData.FirstOrDefault(x => (string)x.RowKey == row && (string)x.ColKey == col);
-                        dataPoints.Add(match != null && match.MetricValue != null ? Convert.ToDouble(match.MetricValue) : 0);
-                    }
-                    seriesList.Add(new { name = col, data = dataPoints });
-                }
-
-                // Tạo rows ma trận cho Table
-                var tableRows = new List<Dictionary<string, object>>();
-                double grandTotal = 0;
-                string topRowName = "";
-                double topRowValue = -1;
-
-                foreach (var row in distinctRows)
-                {
-                    var dict = new Dictionary<string, object> { ["RowName"] = row };
-                    double rowSum = 0;
-                    foreach (var col in distinctCols)
-                    {
-                        var match = rawData.FirstOrDefault(x => (string)x.RowKey == row && (string)x.ColKey == col);
-                        double val = match != null && match.MetricValue != null ? Convert.ToDouble(match.MetricValue) : 0;
-                        dict[col] = val;
-                        rowSum += val;
-                    }
-                    dict["Total"] = rowSum;
-                    tableRows.Add(dict);
-
-                    grandTotal += rowSum;
-                    if (rowSum > topRowValue)
-                    {
-                        topRowValue = rowSum;
-                        topRowName = row;
-                    }
-                }
-
-                // Cột table
-                var tableCols = new List<object>
-                {
-                    new { key = "RowName", label = rowInfo.label }
-                };
-                foreach (var col in distinctCols)
-                {
-                    tableCols.Add(new { key = col, label = col, format = measureFormat });
-                }
-                tableCols.Add(new { key = "Total", label = "Tổng cả kỳ", format = measureFormat });
-
-                return new
-                {
-                    isMultiDim = true,
-                    measure = measureName,
-                    measureFormat = measureFormat,
-                    rowLabel = rowInfo.label,
-                    colLabel = colInfo.label,
-                    summary = new
-                    {
-                        total = grandTotal,
-                        topRow = topRowName,
-                        topRowValue = topRowValue,
-                        rowCount = distinctRows.Count,
-                        colCount = distinctCols.Count
-                    },
-                    chart = new
-                    {
-                        type = "groupedBar",
-                        categories = distinctRows,
-                        series = seriesList
-                    },
-                    table = new
-                    {
-                        columns = tableCols,
-                        rows = tableRows
-                    }
-                };
+                var rawData = (await db.QueryAsync(sql, commandTimeout: 60))
+                    .Select(x => ((string)x.RowKey, (string)x.ColKey, ToDouble((object)x.MetricValue))).ToList();
+                return BuildMultiDimResult(measureName, measureFormat, rowInfo.label, colInfo.label, rawData);
             }
             else
             {
@@ -1204,68 +1129,291 @@ namespace KhangNghi.Infrastructure.Repositories
                     GROUP BY {rowInfo.selectExpr}
                     ORDER BY MetricValue DESC";
 
-                var rawData = (await db.QueryAsync(sql, commandTimeout: 60)).ToList();
-                double grandTotal = 0;
-                foreach (var x in rawData)
-                {
-                    if (x.MetricValue != null) grandTotal += Convert.ToDouble(x.MetricValue);
-                }
-
-                string topLabel = "";
-                double topVal = 0;
-                var items = new List<object>();
-                foreach (var x in rawData)
-                {
-                    string lbl = (string)x.RowKey;
-                    double val = x.MetricValue != null ? Convert.ToDouble(x.MetricValue) : 0;
-                    if (string.IsNullOrEmpty(topLabel))
-                    {
-                        topLabel = lbl;
-                        topVal = val;
-                    }
-                    double pct = grandTotal > 0 ? Math.Round((val / grandTotal) * 100, 1) : 0;
-                    items.Add(new
-                    {
-                        label = lbl,
-                        value = val,
-                        percent = pct
-                    });
-                }
-
-                var tableCols = new List<object>
-                {
-                    new { key = "label", label = rowInfo.label },
-                    new { key = "value", label = measureName, format = measureFormat },
-                    new { key = "percent", label = "Tỷ trọng (%)", format = "percent" }
-                };
-
-                return new
-                {
-                    isMultiDim = false,
-                    measure = measureName,
-                    measureFormat = measureFormat,
-                    rowLabel = rowInfo.label,
-                    colLabel = "Không chia cột",
-                    summary = new
-                    {
-                        total = grandTotal,
-                        topRow = !string.IsNullOrEmpty(topLabel) ? topLabel : "—",
-                        topRowValue = topVal,
-                        rowCount = items.Count,
-                        colCount = 1
-                    },
-                    chart = new
-                    {
-                        type = "bar",
-                        items = items
-                    },
-                    table = new
-                    {
-                        columns = tableCols,
-                        rows = items
-                    }
-                };
+                var rawData = (await db.QueryAsync(sql, commandTimeout: 60))
+                    .Select(x => ((string)x.RowKey, ToDouble((object)x.MetricValue))).ToList();
+                return BuildRankingResult(measureName, measureFormat, rowInfo.label, rawData);
             }
+        }
+
+        private static double ToDouble(object? v) => v == null ? 0 : Convert.ToDouble(v);
+
+        /// <summary>Bảng chéo hàng × cột từ các bộ (hàng, cột, giá trị); dùng chung cho SQL và MDX.</summary>
+        internal static object BuildMultiDimResult(string measureName, string measureFormat, string rowLabel, string colLabel,
+            List<(string Row, string Col, double Value)> rawData)
+        {
+            var distinctRows = rawData.Select(x => x.Row).Distinct().OrderBy(x => x).ToList();
+            var distinctCols = rawData.Select(x => x.Col).Distinct().OrderBy(x => x).ToList();
+            var lookup = rawData.GroupBy(x => (x.Row, x.Col)).ToDictionary(g => g.Key, g => g.Sum(x => x.Value));
+            double Cell(string r, string c) => lookup.TryGetValue((r, c), out var v) ? v : 0;
+
+            // Tạo series cho ApexCharts (mỗi cột là 1 series)
+            var seriesList = distinctCols.Select(col => (object)new { name = col, data = distinctRows.Select(row => Cell(row, col)).ToList() }).ToList();
+
+            // Tạo rows ma trận cho Table
+            var tableRows = new List<Dictionary<string, object>>();
+            double grandTotal = 0;
+            string topRowName = "";
+            double topRowValue = -1;
+            foreach (var row in distinctRows)
+            {
+                var dict = new Dictionary<string, object> { ["RowName"] = row };
+                double rowSum = 0;
+                foreach (var col in distinctCols)
+                {
+                    double val = Cell(row, col);
+                    dict[col] = val;
+                    rowSum += val;
+                }
+                dict["Total"] = rowSum;
+                tableRows.Add(dict);
+                grandTotal += rowSum;
+                if (rowSum > topRowValue)
+                {
+                    topRowValue = rowSum;
+                    topRowName = row;
+                }
+            }
+
+            var tableCols = new List<object> { new { key = "RowName", label = rowLabel } };
+            foreach (var col in distinctCols) tableCols.Add(new { key = col, label = col, format = measureFormat });
+            tableCols.Add(new { key = "Total", label = "Tổng cả kỳ", format = measureFormat });
+
+            return new
+            {
+                isMultiDim = true,
+                measure = measureName,
+                measureFormat,
+                rowLabel,
+                colLabel,
+                summary = new { total = grandTotal, topRow = topRowName, topRowValue, rowCount = distinctRows.Count, colCount = distinctCols.Count },
+                chart = new { type = "groupedBar", categories = distinctRows, series = seriesList },
+                table = new { columns = tableCols, rows = tableRows }
+            };
+        }
+
+        /// <summary>Xếp hạng một chiều (đã sắp giảm dần, tối đa 15 dòng); dùng chung cho SQL và MDX.</summary>
+        internal static object BuildRankingResult(string measureName, string measureFormat, string rowLabel, List<(string Row, double Value)> rawData)
+        {
+            double grandTotal = rawData.Sum(x => x.Value);
+            var items = rawData.Select(x => new
+            {
+                label = x.Row,
+                value = x.Value,
+                percent = grandTotal > 0 ? Math.Round((x.Value / grandTotal) * 100, 1) : 0
+            }).ToList();
+
+            var tableCols = new List<object>
+            {
+                new { key = "label", label = rowLabel },
+                new { key = "value", label = measureName, format = measureFormat },
+                new { key = "percent", label = "Tỷ trọng (%)", format = "percent" }
+            };
+
+            return new
+            {
+                isMultiDim = false,
+                measure = measureName,
+                measureFormat,
+                rowLabel,
+                colLabel = "Không chia cột",
+                summary = new
+                {
+                    total = grandTotal,
+                    topRow = items.Count > 0 ? items[0].label : "—",
+                    topRowValue = items.Count > 0 ? items[0].value : 0,
+                    rowCount = items.Count,
+                    colCount = 1
+                },
+                chart = new { type = "bar", items },
+                table = new { columns = tableCols, rows = items }
+            };
+        }
+
+        // Một cấp trong phân cấp: cột SQL, tên cấp trong khối SSAS, nhãn hiển thị, cấp có key là số hay không
+        internal sealed record OlapLevel(string Column, string CubeLevel, string Label, bool Numeric);
+
+        internal static (OlapLevel[] Levels, string CubeHierarchy, string Name) ResolveOlapHierarchy(string hierarchy)
+        {
+            switch ((hierarchy ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "geo":
+                    return (new[]
+                    {
+                        new OlapLevel("loc.Region", "Region", "Khu vực", false),
+                        new OlapLevel("loc.City", "City", "Tỉnh/Thành phố", false)
+                    }, "[Dim Location].[PhanCap_Diali]", "Địa lý");
+                case "product":
+                    return (new[]
+                    {
+                        new OlapLevel("p.Category", "Category", "Danh mục", false),
+                        new OlapLevel("p.SubCategory", "Sub Category", "Phân nhóm", false),
+                        new OlapLevel("p.ProductName", "Product Name", "Sản phẩm", false)
+                    }, "[Dim Product].[Hierarchy]", "Sản phẩm");
+                default:
+                    return (new[]
+                    {
+                        new OlapLevel("t.Year", "Year", "Năm", true),
+                        new OlapLevel("t.Quarter", "Quarter", "Quý", true),
+                        new OlapLevel("t.Month", "Month", "Tháng", true)
+                    }, "[Dim Time].[PhanCap_ThoiGian]", "Thời gian");
+            }
+        }
+
+        internal static string OlapMemberLabel(OlapLevel level, string key) => level.CubeLevel switch
+        {
+            "Quarter" => "Quý " + key,
+            "Month" => "Tháng " + key,
+            _ => key
+        };
+
+        // Thoát ký tự ']' trong tên thành viên MDX
+        internal static string MdxKey(string value) => "&[" + value.Replace("]", "]]") + "]";
+
+        public async Task<object?> GetOlapExploreAsync(string hierarchy, IReadOnlyList<string> path, string measure,
+            IReadOnlyList<int> years, IReadOnlyList<string> regions, IReadOnlyList<string> channels, IReadOnlyList<string> categories)
+        {
+            var (levels, cubeHierarchy, hierarchyName) = ResolveOlapHierarchy(hierarchy);
+            var hKey = (hierarchy ?? string.Empty).Trim().ToLowerInvariant();
+            if (hKey != "geo" && hKey != "product") hKey = "time";
+
+            // Chỉ số đo trên Fact_Sales, khớp tên độ đo trong khối
+            var (measureSql, measureMdx, measureName, measureFormat) = (measure ?? string.Empty).Trim().ToLowerInvariant() switch
+            {
+                "profit" => ("f.ProfitAmount", "[Measures].[Profit Amount]", "Lợi nhuận", "vnd"),
+                "quantity" => ("f.Quantity", "[Measures].[Quantity]", "Số lượng bán", "number"),
+                "discount" => ("f.DiscountAmount", "[Measures].[Discount Amount]", "Tiền chiết khấu", "vnd"),
+                _ => ("f.SalesAmount", "[Measures].[Sales Amount]", "Doanh thu", "vnd")
+            };
+
+            // Đường khoan sâu không vượt quá cấp lá; cấp hiển thị là cấp ngay dưới đường đi
+            var cleanPath = (path ?? Array.Empty<string>()).Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToList();
+            if (cleanPath.Count > levels.Length - 1) cleanPath = cleanPath.Take(levels.Length - 1).ToList();
+            var depth = cleanPath.Count;
+            var level = levels[depth];
+
+            var where = new List<string>();
+            var prm = new DynamicParameters();
+            for (int i = 0; i < depth; i++)
+            {
+                if (levels[i].Numeric)
+                {
+                    if (!int.TryParse(cleanPath[i], out var n)) return null;
+                    prm.Add("p" + i, n);
+                }
+                else prm.Add("p" + i, cleanPath[i]);
+                where.Add($"{levels[i].Column} = @p{i}");
+            }
+
+            static List<string> Clean(IReadOnlyList<string>? xs) =>
+                (xs ?? Array.Empty<string>()).Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).Distinct().Take(20).ToList();
+            var fYears = (years ?? Array.Empty<int>()).Distinct().OrderBy(y => y).Take(20).ToList();
+            var fRegions = Clean(regions);
+            var fChannels = Clean(channels);
+            var fCategories = Clean(categories);
+            if (fYears.Count > 0) { where.Add("t.Year IN @Years"); prm.Add("Years", fYears); }
+            if (fRegions.Count > 0) { where.Add("loc.Region IN @Regions"); prm.Add("Regions", fRegions); }
+            if (fChannels.Count > 0) { where.Add("sc.ChannelName IN @Channels"); prm.Add("Channels", fChannels); }
+            if (fCategories.Count > 0) { where.Add("p.Category IN @Categories"); prm.Add("Categories", fCategories); }
+
+            var keyExpr = level.Numeric ? $"CAST({level.Column} AS VARCHAR(10))" : level.Column;
+            var orderBy = level.Numeric ? $"MIN({level.Column})" : "MetricValue DESC";
+            var sql = $@"
+                SELECT {keyExpr} AS MemberKey,
+                       CAST(ISNULL(SUM({measureSql}), 0) AS DECIMAL(19, 2)) AS MetricValue
+                FROM dbo.Fact_Sales f WITH (NOLOCK)
+                LEFT JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey
+                LEFT JOIN dbo.Dim_Location loc WITH (NOLOCK) ON f.LocationKey = loc.LocationKey
+                LEFT JOIN dbo.Dim_Product p WITH (NOLOCK) ON f.ProductKey = p.ProductKey
+                LEFT JOIN dbo.Dim_SalesChannel sc WITH (NOLOCK) ON f.ChannelKey = sc.ChannelKey
+                {(where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "")}
+                GROUP BY {keyExpr}
+                HAVING {keyExpr} IS NOT NULL
+                ORDER BY {orderBy}";
+
+            using var db = _connectionFactory.CreateConnection();
+            var raw = (await db.QueryAsync<(string MemberKey, decimal MetricValue)>(sql, prm, commandTimeout: 60)).ToList();
+
+            // Câu MDX tương đương trên khối SSAS
+            string rowSet;
+            var pathMdx = cubeHierarchy + ".[" + levels[0].CubeLevel + "]" + string.Concat(cleanPath.Select(v => "." + MdxKey(v)));
+            if (depth == 0) rowSet = $"{cubeHierarchy}.[{level.CubeLevel}].MEMBERS";
+            else if (hKey == "geo") rowSet = $"DESCENDANTS({pathMdx}, {cubeHierarchy}.[{level.CubeLevel}])";
+            else rowSet = pathMdx + ".CHILDREN";
+
+            var slicers = new List<string>();
+            void AddSlicer(string attr, IEnumerable<string> vals)
+            {
+                var members = vals.Select(v => attr + "." + MdxKey(v)).ToList();
+                if (members.Count == 1) slicers.Add(members[0]);
+                else if (members.Count > 1) slicers.Add("{ " + string.Join(", ", members) + " }");
+            }
+            AddSlicer("[Dim Time].[Year]", fYears.Select(y => y.ToString()));
+            AddSlicer("[Dim Location].[Region]", fRegions);
+            AddSlicer("[Dim Sales Channel].[Channel Name]", fChannels);
+            AddSlicer("[Dim Product].[Category]", fCategories);
+
+            var mdx = $"SELECT\n    {measureMdx} ON COLUMNS,\n    NON EMPTY {rowSet} ON ROWS\nFROM [KhangNghi_Cube]";
+            if (slicers.Count > 0) mdx += "\nWHERE ( " + string.Join(",\n        ", slicers) + " )";
+            mdx += ";";
+
+            return BuildOlapResult(hKey, hierarchyName, measureName, measureFormat, levels, cleanPath,
+                fYears, fRegions, fChannels, fCategories, raw.Select(x => (x.MemberKey, (double)x.MetricValue)).ToList(), mdx);
+        }
+
+        /// <summary>Kết quả thao tác OLAP từ các cặp (thành viên, giá trị) đã sắp xếp; dùng chung cho SQL và MDX.</summary>
+        internal static object BuildOlapResult(string hKey, string hierarchyName, string measureName, string measureFormat,
+            OlapLevel[] levels, List<string> cleanPath, List<int> fYears, List<string> fRegions, List<string> fChannels, List<string> fCategories,
+            List<(string Key, double Value)> raw, string mdx)
+        {
+            var depth = cleanPath.Count;
+            var level = levels[depth];
+            var total = raw.Sum(x => x.Value);
+            var rows = raw.Select(x => new
+            {
+                key = x.Key,
+                label = OlapMemberLabel(level, x.Key),
+                value = x.Value,
+                share = total > 0 ? Math.Round(x.Value / total * 100, 2) : 0
+            }).ToList();
+
+            // Số chiều đang bị lọc và số giá trị: 1 chiều 1 giá trị = Slice, còn lại = Dice
+            var filterDims = new[] { fYears.Count, fRegions.Count, fChannels.Count, fCategories.Count }.Count(c => c > 0);
+            var filterValues = fYears.Count + fRegions.Count + fChannels.Count + fCategories.Count;
+            var filterOp = filterDims == 0 ? "none" : (filterDims == 1 && filterValues == 1 ? "slice" : "dice");
+
+            return new
+            {
+                hierarchy = hKey,
+                hierarchyName,
+                measure = measureName,
+                measureFormat,
+                levels = levels.Select(l => l.Label).ToList(),
+                depth,
+                levelLabel = level.Label,
+                canDrill = depth < levels.Length - 1,
+                path = cleanPath.Select((v, i) => new { level = levels[i].Label, key = v, label = OlapMemberLabel(levels[i], v) }).ToList(),
+                filters = new { years = fYears, regions = fRegions, channels = fChannels, categories = fCategories },
+                filterOperation = filterOp,
+                total,
+                rows,
+                mdx
+            };
+        }
+
+        public async Task<object> GetOlapOptionsAsync()
+        {
+            using var db = _connectionFactory.CreateConnection();
+            const string sql = @"
+                SELECT DISTINCT t.Year FROM dbo.Fact_Sales f WITH (NOLOCK) JOIN dbo.Dim_Time t WITH (NOLOCK) ON f.TimeKey = t.TimeKey ORDER BY t.Year;
+                SELECT DISTINCT Region FROM dbo.Dim_Location WITH (NOLOCK) WHERE Region IS NOT NULL ORDER BY Region;
+                SELECT DISTINCT ChannelName FROM dbo.Dim_SalesChannel WITH (NOLOCK) WHERE ChannelName IS NOT NULL ORDER BY ChannelName;
+                SELECT DISTINCT Category FROM dbo.Dim_Product WITH (NOLOCK) WHERE Category IS NOT NULL ORDER BY Category;";
+            using var multi = await db.QueryMultipleAsync(sql);
+            var years = (await multi.ReadAsync<int>()).ToList();
+            var regions = (await multi.ReadAsync<string>()).ToList();
+            var channels = (await multi.ReadAsync<string>()).ToList();
+            var categories = (await multi.ReadAsync<string>()).ToList();
+            return new { years, regions, channels, categories };
         }
 
 public async Task<IEnumerable<dynamic>> Q40_RevenueVsShippingEfficiencyAsync()
