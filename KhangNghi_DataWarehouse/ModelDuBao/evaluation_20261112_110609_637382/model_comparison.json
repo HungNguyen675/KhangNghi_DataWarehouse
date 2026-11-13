@@ -1,0 +1,152 @@
+{
+  "evaluation_type": "recursive_multi_step",
+  "metric_level": "monthly_revenue",
+  "summary_method": "mean_of_three_cutoff_metrics",
+  "cutoffs": [
+    "2024-12-31",
+    "2025-03-31",
+    "2025-06-30"
+  ],
+  "data_sha256": "f432f59e499ef01d1d878384d4af3a0cc0b9b90c73378d74f318e883529b84b7",
+  "summary": [
+    {
+      "horizon_months": 3,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 653454430.121111,
+      "rmse_vnd": 787900106.6638128
+    },
+    {
+      "horizon_months": 3,
+      "model": "Prophet",
+      "mae_vnd": 534583989.3788889,
+      "rmse_vnd": 611737234.8829724
+    },
+    {
+      "horizon_months": 6,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 745887152.6305555,
+      "rmse_vnd": 917801436.7808996
+    },
+    {
+      "horizon_months": 6,
+      "model": "Prophet",
+      "mae_vnd": 628184500.898889,
+      "rmse_vnd": 749531417.9265052
+    }
+  ],
+  "by_cutoff": [
+    {
+      "cutoff": "2024-12-31",
+      "horizon_months": 3,
+      "model": "Prophet",
+      "mae_vnd": 651698136.7033333,
+      "rmse_vnd": 735581497.839396
+    },
+    {
+      "cutoff": "2024-12-31",
+      "horizon_months": 3,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 450013653.53999996,
+      "rmse_vnd": 529176458.07192224
+    },
+    {
+      "cutoff": "2024-12-31",
+      "horizon_months": 6,
+      "model": "Prophet",
+      "mae_vnd": 726286995.0316664,
+      "rmse_vnd": 810580801.7998688
+    },
+    {
+      "cutoff": "2024-12-31",
+      "horizon_months": 6,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 757625961.2783333,
+      "rmse_vnd": 1017000907.5886365
+    },
+    {
+      "cutoff": "2025-03-31",
+      "horizon_months": 3,
+      "model": "Prophet",
+      "mae_vnd": 682387712.4733335,
+      "rmse_vnd": 762187001.1470336
+    },
+    {
+      "cutoff": "2025-03-31",
+      "horizon_months": 3,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 496404176.27333325,
+      "rmse_vnd": 615559486.226677
+    },
+    {
+      "cutoff": "2025-03-31",
+      "horizon_months": 6,
+      "model": "Prophet",
+      "mae_vnd": 608374508.2816669,
+      "rmse_vnd": 699493346.7194808
+    },
+    {
+      "cutoff": "2025-03-31",
+      "horizon_months": 6,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 594259828.1666666,
+      "rmse_vnd": 671630851.5304769
+    },
+    {
+      "cutoff": "2025-06-30",
+      "horizon_months": 3,
+      "model": "Prophet",
+      "mae_vnd": 269666118.96000004,
+      "rmse_vnd": 337443205.66248775
+    },
+    {
+      "cutoff": "2025-06-30",
+      "horizon_months": 3,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 1013945460.5499998,
+      "rmse_vnd": 1218964375.6928391
+    },
+    {
+      "cutoff": "2025-06-30",
+      "horizon_months": 6,
+      "model": "Prophet",
+      "mae_vnd": 549891999.3833333,
+      "rmse_vnd": 738520105.2601662
+    },
+    {
+      "cutoff": "2025-06-30",
+      "horizon_months": 6,
+      "model": "Hybrid_Optimal",
+      "mae_vnd": 885775668.4466667,
+      "rmse_vnd": 1064772551.2235854
+    }
+  ],
+  "training_records": [
+    {
+      "cutoff": "2024-12-31",
+      "training_days": 1096,
+      "capping_value": 425566612.49999994,
+      "optimal_weights": {
+        "w_xgb": 1.5,
+        "w_cat": 0.516
+      }
+    },
+    {
+      "cutoff": "2025-03-31",
+      "training_days": 1186,
+      "capping_value": 425672387.5000001,
+      "optimal_weights": {
+        "w_xgb": 1.5,
+        "w_cat": 0.536
+      }
+    },
+    {
+      "cutoff": "2025-06-30",
+      "training_days": 1277,
+      "capping_value": 436536715.0,
+      "optimal_weights": {
+        "w_xgb": 1.5,
+        "w_cat": 0.467
+      }
+    }
+  ]
+}

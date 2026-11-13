@@ -1,0 +1,40 @@
+# Build và cache
+**/bin/
+**/obj/
+**/.vs/
+**/node_modules/
+**/__pycache__/
+**/.venv/
+**/venv/
+*.pyc
+*.user
+*.suo
+*.log
+*.pdb
+
+# Bản chạy đã publish
+**/BanChay_Desktop/
+**/BanChay_Web/
+**/*.WebView2/
+**/deploy/EtlRunner/
+
+# Cấu hình riêng và khóa bí mật
+.env
+.env.*
+*.env
+!.env.example
+*.pfx
+*.key
+appsettings.Local.json
+appsettings.Secrets.json
+
+# Sao lưu cơ sở dữ liệu
+*.bak
+*.abf
+*.mdf
+*.ldf
+*.ndf
+**/KhangNghi_Backups/
+
+# Tệp tạm
+~$*

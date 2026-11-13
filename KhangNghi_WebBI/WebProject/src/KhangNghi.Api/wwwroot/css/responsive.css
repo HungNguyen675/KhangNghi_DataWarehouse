@@ -1,0 +1,208 @@
+/* ==========================================================================
+   KHANG NGHI BI - RESPONSIVE STYLES
+   Breakpoints for Desktop, Tablet, and Mobile
+   ========================================================================== */
+
+/* Large Screens & Desktop (<= 1280px) */
+@media (max-width: 1280px) {
+  .topbar-copilot-btn span,
+  .data-status-indicator span:last-child {
+    display: none;
+  }
+
+  .topbar-copilot-btn {
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .data-status-indicator {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* Medium Desktop (<= 1200px) */
+@media (max-width: 1200px) {
+  .grid-charts-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-charts-main-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet Screens (768px - 1024px) */
+@media (max-width: 992px) {
+  :root {
+    --sidebar-width: 72px;
+  }
+
+  .brand-title,
+  .nav-text,
+  .nav-badge,
+  .menu-group-header,
+  .user-info {
+    display: none !important;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .sidebar-toggle-btn {
+    display: none;
+  }
+
+  .menu-group-header {
+    display: block !important;
+    height: 1px;
+    padding: 0;
+    margin: 10px 8px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0;
+  }
+
+  .sidebar-footer {
+    margin: 0 10px 12px;
+    padding: 8px 0;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #topbar {
+    left: var(--sidebar-width) !important;
+  }
+
+  #main-content {
+    margin-left: var(--sidebar-width) !important;
+  }
+
+  .breadcrumb #breadcrumb-category,
+  .breadcrumb .breadcrumb-separator {
+    display: none;
+  }
+
+  .grid-charts-2,
+  .grid-charts-3 {
+    grid-template-columns: 1fr;
+  }
+
+  #main-content {
+    padding: 20px;
+  }
+}
+
+/* Mobile Screens (< 768px) */
+@media (max-width: 768px) {
+  #sidebar {
+    transform: translateX(-100%);
+    width: 264px;
+    box-shadow: 12px 0 32px rgba(0, 0, 0, 0.25);
+  }
+
+  .sidebar-footer {
+    margin: 0 12px 12px;
+    padding: 10px;
+    flex-direction: row;
+  }
+
+  .menu-group-header {
+    height: auto;
+    margin: 0;
+    background: none;
+    font-size: 10.5px;
+    padding: 16px 10px 6px;
+  }
+
+  .topbar-divider,
+  .data-status-indicator,
+  .topbar-year i {
+    display: none !important;
+  }
+
+  .global-search-wrapper {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar-right {
+    gap: 6px;
+  }
+
+  #sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .brand-title,
+  .nav-text,
+  .nav-badge,
+  .menu-group-header,
+  .user-info {
+    display: flex !important;
+  }
+
+  .sidebar-brand {
+    justify-content: flex-start;
+    padding: 0 20px;
+  }
+
+  .nav-item {
+    justify-content: flex-start;
+    padding: 10px 14px;
+  }
+
+  #topbar {
+    left: 0 !important;
+    padding: 0 16px;
+  }
+
+  #main-content {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+
+  .topbar-left .breadcrumb {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+
+  .grid-kpi {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .explorer-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .explorer-filter-select {
+    width: 100%;
+  }
+}
+
+/* Mobile Small (< 480px) */
+@media (max-width: 480px) {
+  .grid-kpi {
+    grid-template-columns: 1fr;
+  }
+  
+  #btn-theme-toggle,
+  #filter-panel-toggle,
+  .topbar-copilot-btn {
+    display: none; /* Copilot vẫn mở được từ menu Trợ lý AI trong sidebar */
+  }
+}

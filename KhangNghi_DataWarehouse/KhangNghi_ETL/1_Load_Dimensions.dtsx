@@ -1,0 +1,463 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/2/2026 1:32:52 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="HUNGNGUYEN"
+  DTS:CreatorName="HUNGNGUYEN\xehoi"
+  DTS:DTSID="{A624F9A7-1A39-4234-A820-23FE3C2DEFB0}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
+  DTS:LocaleID="1066"
+  DTS:ObjectName="1_Load_Dimensions"
+  DTS:PackageType="5"
+  DTS:VersionBuild="21"
+  DTS:VersionGUID="{602FF280-B488-466A-BE2E-E2F95D18A5BF}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Customer.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{AAAEED5F-B993-4A36-B22C-3D03A06C71C3}"
+      DTS:ObjectName="Dim_Customer.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Customer.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Employee.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{5264B923-2AA5-446E-9F4C-68578D3C47B3}"
+      DTS:ObjectName="Dim_Employee.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Employee.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Location.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{4714151F-62EB-4DBE-8F19-8C30EA2C41C6}"
+      DTS:ObjectName="Dim_Location.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Location.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Manufacturer.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{39AD6C46-CD92-4204-945F-65B47B4C6913}"
+      DTS:ObjectName="Dim_Manufacturer.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Manufacturer.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_PaymentMethod.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{562586D7-9FAF-4205-8105-E3A3C7497D7C}"
+      DTS:ObjectName="Dim_PaymentMethod.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_PaymentMethod.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Product.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{663568D1-FD6B-4A7F-AC37-A4C73125592B}"
+      DTS:ObjectName="Dim_Product.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Product.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Promotion.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{849E8E2E-B756-4F13-B3F9-7380B1814237}"
+      DTS:ObjectName="Dim_Promotion.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Promotion.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_SalesChannel.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{673EAEB5-DC88-4B9A-B955-47899B8198CA}"
+      DTS:ObjectName="Dim_SalesChannel.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_SalesChannel.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Service.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{81B4ECC4-C9DE-4EA2-B82D-FD490759F769}"
+      DTS:ObjectName="Dim_Service.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Service.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Shipper.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{345C6E93-FC84-4B8C-B767-4C10AEBE4BFF}"
+      DTS:ObjectName="Dim_Shipper.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Shipper.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Supplier.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{5A711C3F-A357-42BE-9912-5F94F2B9D878}"
+      DTS:ObjectName="Dim_Supplier.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Supplier.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Time.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{EB745ECA-5934-4365-8E37-BBFDE09D157B}"
+      DTS:ObjectName="Dim_Time.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Time.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Dim_Warehouse.dtsx]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{071F3080-2252-4AE1-BE3E-AFD381894117}"
+      DTS:ObjectName="Dim_Warehouse.dtsx">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="E:\CNTT_KLCN235_Nguyễn Trường Hưng\KhangNghi_DataWarehouse\KhangNghi_ETL\Dim_Warehouse.dtsx" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[HungNguyen.DWH_KhangNghi.sa]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{2B0512E4-C349-4B29-9161-3EF873059CC9}"
+      DTS:ObjectName="HungNguyen.DWH_KhangNghi.sa">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=DWH_KhangNghi;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{2B0512E4-C349-4B29-9161-3EF873059CC9}HungNguyen.DWH_KhangNghi.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAACnGCCWgFJ+EkXL0+NDqPHKOj/lQPeVaX9jF4Y7LW16hAAAAAAOgAAAAAIAACAAAAAew/cKCoeC0LnhY6b1SByR4nIctxoCvNrfwXFLyuLWsRAAAADP4j5FQvyWjjjmOGeG5jDCQAAAAFUSuiQS3lU0vOPrBBsf3oC9FyEsXTNLmn6rDeHSAGiCyAMw5HS/L1kCIaPPTDxT4RCf+XogyyXUVSLHZUo901I</DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[HungNguyen.KhangNghi_OLTP.sa]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{335A30D2-1FA6-45DD-AEBE-4703A7A0D79D}"
+      DTS:ObjectName="HungNguyen.KhangNghi_OLTP.sa">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=HungNguyen;User ID=sa;Initial Catalog=KhangNghi_OLTP;Provider=SQLNCLI11.1;Persist Security Info=True;Application Name=SSIS-1_Load_Dimensions-{335A30D2-1FA6-45DD-AEBE-4703A7A0D79D}HungNguyen.KhangNghi_OLTP.sa;Auto Translate=False;">
+          <DTS:Password
+            DTS:Name="Password"
+            Sensitive="1"
+            Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAX8MQQl0QEESCU52cSMmtIwAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABEjJ2r1aIPefpCz5i7g+5Gki1J1nIPffkpukteDSHlZwAAAAAOgAAAAAIAACAAAAA3itZHRT6e7CCSMAvwXrAW6yaWmky269sZaPKH2Fq+MRAAAACDUasm3RoBmzWgyCHqr1/uQAAAAL8MdLRd+pC/GBdNCloMphdkSI84F3LUJYAxWTzKDxc4asUOYKrx+WJiddvDeI+CEKfiXVO34OIlqlVsxXrz4y8</DTS:Password>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Cách thức thanh toán"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{680F5802-905C-4AA3-AD50-7CCB94D0615A}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Cách thức thanh toán"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{562586D7-9FAF-4205-8105-E3A3C7497D7C}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Dịch Vụ"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{E8D3CEF2-A5BF-48BC-95EB-8291FA1BB548}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Dịch Vụ"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{81B4ECC4-C9DE-4EA2-B82D-FD490759F769}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Giao Hàng"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{F638493A-B885-40C8-8FC9-C5458B179A21}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Giao Hàng"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{345C6E93-FC84-4B8C-B767-4C10AEBE4BFF}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Khuyến Mãi"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{6679EE5C-21F1-466C-A944-386902B64CF8}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Khuyến Mãi"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{849E8E2E-B756-4F13-B3F9-7380B1814237}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Khách hàng"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{C696C540-6ABC-4A27-AB67-CA75E2CD2FAB}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Khách hàng"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{AAAEED5F-B993-4A36-B22C-3D03A06C71C3}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Kênh Bán Hàng"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{0439518F-29CB-47D6-8A38-9D0BCF799EEB}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Kênh Bán Hàng"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{673EAEB5-DC88-4B9A-B955-47899B8198CA}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Nhà Cung Cấp"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{C9328421-06BA-4E91-A802-348EB3304E6D}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Nhà Cung Cấp"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{5A711C3F-A357-42BE-9912-5F94F2B9D878}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Nhà Kho"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{F3AFEBD1-5573-4257-ACC0-1FFF8474FEB4}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Nhà Kho"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{071F3080-2252-4AE1-BE3E-AFD381894117}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Nhà Sản Xuất"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{73F20394-8AD3-4DFF-80CA-0E8CA905442F}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Nhà Sản Xuất"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{39AD6C46-CD92-4204-945F-65B47B4C6913}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Nhân Viên"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Chạy Dim Nhân Viên "
+      DTS:DTSID="{9A09F1B7-5446-4D3E-87D6-47CB907257DF}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Nhân Viên"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{5264B923-2AA5-446E-9F4C-68578D3C47B3}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Sản Phẩm"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{8EC04FBF-FF56-4EE4-A719-F0479A2CE0F5}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Sản Phẩm"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{663568D1-FD6B-4A7F-AC37-A4C73125592B}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Thời Gian"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{04B80760-6116-419C-8A69-8E693D088308}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Thời Gian"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{EB745ECA-5934-4365-8E37-BBFDE09D157B}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Chạy Dim Địa Điểm"
+      DTS:CreationName="Microsoft.ExecutePackageTask"
+      DTS:Description="Execute Package Task"
+      DTS:DTSID="{2653A5B6-6387-472B-9B09-918949E23ED8}"
+      DTS:ExecutableType="Microsoft.ExecutePackageTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Chạy Dim Địa Điểm"
+      DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <ExecutePackageTask>
+          <Connection>{4714151F-62EB-4DBE-8F19-8C30EA2C41C6}</Connection>
+        </ExecutePackageTask>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="192,41.6"
+          Id="Package\Chạy Dim Cách thức thanh toán"
+          TopLeft="54.5238096398764,151.411764573164" />
+        <NodeLayout
+          Size="163.2,41.6"
+          Id="Package\Chạy Dim Dịch Vụ"
+          TopLeft="54.3650793530839,210.039215502167" />
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Chạy Dim Địa Điểm"
+          TopLeft="462.619048603842,87.0915031916347" />
+        <NodeLayout
+          Size="176,41.6"
+          Id="Package\Chạy Dim Giao Hàng"
+          TopLeft="275.304762281346,213.692810270206" />
+        <NodeLayout
+          Size="200,41.6"
+          Id="Package\Chạy Dim Kênh Bán Hàng"
+          TopLeft="660.936509198714,158.633986789056" />
+        <NodeLayout
+          Size="182.4,41.6"
+          Id="Package\Chạy Dim Khách hàng"
+          TopLeft="62.3809525137451,86.2418299897652" />
+        <NodeLayout
+          Size="181.6,41.6"
+          Id="Package\Chạy Dim Khuyến Mãi"
+          TopLeft="459.365080215223,150.222222090547" />
+        <NodeLayout
+          Size="194.4,41.6"
+          Id="Package\Chạy Dim Nhà Cung Cấp"
+          TopLeft="497.288889738019,215.495424666645" />
+        <NodeLayout
+          Size="167.2,41.6"
+          Id="Package\Chạy Dim Nhà Kho"
+          TopLeft="69.7650791934286,278.508496534885" />
+        <NodeLayout
+          Size="191.2,41.6"
+          Id="Package\Chạy Dim Nhà Sản Xuất"
+          TopLeft="658.253969655218,86.0718953493913" />
+        <NodeLayout
+          Size="175.2,41.6"
+          Id="Package\Chạy Dim Nhân Viên"
+          TopLeft="262.380952939492,87.9411763935044" />
+        <NodeLayout
+          Size="174.4,41.6"
+          Id="Package\Chạy Dim Sản Phẩm"
+          TopLeft="271.507937085905,152.261437775034" />
+        <NodeLayout
+          Size="172,41.6"
+          Id="Package\Chạy Dim Thời Gian"
+          TopLeft="708.320636218996,215.891503100475" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

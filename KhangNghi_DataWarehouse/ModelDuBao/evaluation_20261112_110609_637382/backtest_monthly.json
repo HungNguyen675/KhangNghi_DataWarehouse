@@ -1,0 +1,74 @@
+[
+  {
+    "month": "2025-01",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 3370388424.87,
+    "actual_revenue_vnd": 3987563688.0
+  },
+  {
+    "month": "2025-02",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 2945385806.13,
+    "actual_revenue_vnd": 3197619275.0
+  },
+  {
+    "month": "2025-03",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 3459610321.8900003,
+    "actual_revenue_vnd": 4545296000.0
+  },
+  {
+    "month": "2025-04",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 3754185983.68,
+    "actual_revenue_vnd": 4169602313.0
+  },
+  {
+    "month": "2025-05",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 4757806941.56,
+    "actual_revenue_vnd": 5458212938.0
+  },
+  {
+    "month": "2025-06",
+    "cutoff": "2024-12-31",
+    "predicted_revenue_vnd": 6464200315.68,
+    "actual_revenue_vnd": 7751005550.0
+  },
+  {
+    "month": "2025-07",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 4760277580.05,
+    "actual_revenue_vnd": 4221754375.0
+  },
+  {
+    "month": "2025-08",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 6548733098.16,
+    "actual_revenue_vnd": 6770625463.0
+  },
+  {
+    "month": "2025-09",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 8334124986.99,
+    "actual_revenue_vnd": 8285542200.0
+  },
+  {
+    "month": "2025-10",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 6472980343.3,
+    "actual_revenue_vnd": 7591009125.0
+  },
+  {
+    "month": "2025-11",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 8080808100.21,
+    "actual_revenue_vnd": 9374935088.0
+  },
+  {
+    "month": "2025-12",
+    "cutoff": "2025-06-30",
+    "predicted_revenue_vnd": 8834437520.07,
+    "actual_revenue_vnd": 8912635390.0
+  }
+]

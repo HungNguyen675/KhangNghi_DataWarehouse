@@ -1,0 +1,21 @@
+## Visual Studio .gitignore
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+.vscode/
+*.DotSettings.user
+*.ide/
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.bak
